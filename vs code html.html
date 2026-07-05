@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Galstyan's Speaking Club</title>
+    <meta
+      name="description"
+      content="GSC — English Speaking Club in Sergiev Posad. English ON."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <img src="gsc-logo.jpg" alt="GSC logo" class="logo" />
+        </div>
+        <nav>
+          <a href="#home" class="nav-link active">⌂ Home</a>
+          <a href="#questions" class="nav-link">🎲 Random Question</a>
+          <a href="#meetups" class="nav-link">📅 Meetups</a>
+          <a href="#account" class="nav-link">👤 My Account</a>
+          <a href="#admin" class="nav-link">🏆 Admin</a>
+          <a href="#about" class="nav-link">ⓘ About Club</a>
+        </nav>
+        <div class="join-card">
+          <strong>Join our community</strong>
+          <span>Never miss a meetup.</span>
+          <a
+            class="telegram-btn"
+            href="https://t.me/galstyanspeakingclub"
+            target="_blank"
+            >Join Telegram</a
+          >
+        </div>
+        <div class="socials">
+          <a href="https://t.me/galstyanspeakingclub" target="_blank">TG</a>
+          <a href="https://instagram.com/galstyansspeakingclub" target="_blank"
+            >IG</a
+          ><a href="#" target="_blank">VK</a>
+        </div>
+      </aside>
+      <main>
+        <section id="home" class="hero">
+          <div class="topbar">
+            <button class="pill">🌐 English</button>
+            <button class="outline" onclick="openAuth()">
+              Login / Register
+            </button>
+          </div>
+          <div class="hero-art"></div>
+          <div class="hero-content">
+            <p class="location">📍 Sergiev Posad, Russia</p>
+            <h1>English <span>ON.</span></h1>
+            <p class="tagline">No Russian. Just conversations. Just people.</p>
+            <div class="hero-actions">
+              <a href="#questions" class="primary">Start a Question</a
+              ><a href="#meetups" class="secondary">Next Meetup</a>
+            </div>
+          </div>
+        </section>
+        <section id="questions" class="panel question-panel">
+          <div class="panel-intro">
+            <h2>Random Question 🎲</h2>
+            <p>
+              Get a unique question. Never repeated until the full deck is
+              finished.
+            </p>
+            <div class="mini-list">
+              <span>💬 Great conversations</span><span>👥 New connections</span
+              ><span>🧡 Have fun</span>
+            </div>
+          </div>
+          <div class="question-card">
+            <div class="question-top">
+              <span id="questionCounter">#001</span
+              ><select id="categorySelect"></select>
+            </div>
+            <p id="questionText">Tap the button to start.</p>
+            <div class="question-actions">
+              <button onclick="nextQuestion()" class="primary">
+                Next Question ↻</button
+              ><button onclick="resetQuestions()" class="ghost">Reset</button>
+            </div>
+            <small
+              >🛡 This question will not repeat for this device until
+              reset.</small
+            >
+          </div>
+          <div class="stats-card">
+            <h3>Your Stats</h3>
+            <p>Questions answered <strong id="answeredCount">0</strong></p>
+            <p>Unique seen <strong id="uniqueCount">0</strong></p>
+            <p>Remaining <strong id="remainingCount">0</strong></p>
+          </div>
+        </section>
+        <section class="cards-grid">
+          <article class="feature-card">
+            <div class="icon">☕</div>
+            <h3>Meetups</h3>
+            <p>Weekly English meetups in Sergiev Posad.</p>
+            <a href="#meetups">View Meetups</a>
+          </article>
+          <article class="feature-card">
+            <div class="icon blue">🎲</div>
+            <h3>Conversation Cards</h3>
+            <p>Use cards at meetups to start amazing conversations.</p>
+            <a href="#questions">Open Cards</a>
+          </article>
+          <article class="feature-card">
+            <div class="icon">🏅</div>
+            <h3>My Progress</h3>
+            <p>Track attendance, badges and every 7th meetup free.</p>
+            <a href="#account">See Progress</a>
+          </article>
+          <article class="feature-card">
+            <div class="icon blue">👥</div>
+            <h3>Members</h3>
+            <p>Become part of the GSC community.</p>
+            <a href="#account">Register</a>
+          </article>
+        </section>
+        <section id="meetups" class="panel split">
+          <div>
+            <h2>Next Meetup</h2>
+            <p class="muted">
+              The first meetup will be announced once we have enough members to
+              create a great experience.
+            </p>
+            <ul class="clean-list">
+              <li>📍 Sergiev Posad</li>
+              <li>💳 500 ₽ per meetup</li>
+              <li>🇬🇧 English only</li>
+              <li>👥 Recommended group: 6–10 people</li>
+            </ul>
+          </div>
+          <div class="glass-box">
+            <h3>The GSC Way</h3>
+            <p><b>English ON.</b></p>
+            <p>From the first minute to the last, we speak English only.</p>
+            <p>Progress over perfection.</p>
+          </div>
+        </section>
+        <section id="account" class="panel">
+          <h2>Member Registration</h2>
+          <p class="muted">
+            Create a local demo profile. Full online accounts can be connected
+            later with a real database.
+          </p>
+          <form id="memberForm" class="form">
+            <input id="memberName" placeholder="Your name" required /><input
+              id="memberTelegram"
+              placeholder="Telegram username"
+            /><select id="memberLevel">
+              <option>A1 Beginner</option>
+              <option>A2 Elementary</option>
+              <option>B1 Intermediate</option>
+              <option>B2 Upper Intermediate</option>
+              <option>C1 Advanced</option></select
+            ><input
+              id="memberInterests"
+              placeholder="Interests: travel, movies, business..."
+            /><button class="primary" type="submit">Save Profile</button>
+          </form>
+          <div id="profileCard" class="member-card hidden"></div>
+        </section>
+        <section id="admin" class="panel">
+          <h2>Admin Control</h2>
+          <p class="muted">
+            For now this is stored on your device. Later we can make it
+            password-protected and online.
+          </p>
+          <div class="admin-row">
+            <input id="adminName" placeholder="Member name" /><input
+              id="adminVisits"
+              type="number"
+              min="0"
+              placeholder="Visits"
+            /><button class="primary" onclick="saveAttendance()">
+              Save Attendance
+            </button>
+          </div>
+          <div id="attendanceList" class="attendance-list"></div>
+        </section>
+        <section id="about" class="panel">
+          <h2>About GSC</h2>
+          <p>
+            Galstyan's Speaking Club is a community where people meet, connect,
+            and speak English naturally.
+          </p>
+          <p><b>Speak English. Meet people. Have fun.</b></p>
+        </section>
+        <footer>
+          <span>❖</span
+          ><em
+            >“The limits of my language are the limits of my world.” — Ludwig
+            Wittgenstein</em
+          ><b>SPEAK ENGLISH • MEET PEOPLE • HAVE FUN</b>
+        </footer>
+      </main>
+    </div>
+    <div id="authModal" class="modal hidden">
+      <div class="modal-card">
+        <button class="close" onclick="closeAuth()">×</button>
+        <h2>Login / Register</h2>
+        <p>
+          This demo saves your profile on this device. Real login comes in the
+          next version.
+        </p>
+        <a href="#account" onclick="closeAuth()" class="primary"
+          >Create Profile</a
+        >
+      </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
