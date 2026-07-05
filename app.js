@@ -18,7 +18,21 @@ function nextQuestion(){ const seen = getSeen(); const available = pool().filter
 function resetQuestions(){ localStorage.removeItem('gsc_seen_questions'); document.getElementById('questionText').textContent = 'Questions reset. Tap Next Question.'; document.getElementById('questionCounter').textContent = '#001'; updateStats(); }
 function updateStats(){ const seen = getSeen(); const currentPool = pool(); const seenInCategory = currentPool.filter(q => seen.includes(q.id)).length; document.getElementById('answeredCount').textContent = seen.length; document.getElementById('uniqueCount').textContent = seenInCategory; document.getElementById('remainingCount').textContent = Math.max(0, currentPool.length - seenInCategory); }
 updateStats();
-function openAuth(){ document.getElementById('authModal').classList.remove('hidden'); }
+async function openAuth() {
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: "google",
+    options: {
+      redirectTo: "https://www.galstyansspeakingclub.ru"
+    }
+  });
+
+  if (error) {
+    alert(error.message);
+    console.error(error);
+  }
+}
+
+//function openAuth(){ document.getElementById('authModal').classList.remove('hidden'); }
 function closeAuth(){ document.getElementById('authModal').classList.add('hidden'); }
 document.getElementById('memberForm').addEventListener('submit', (e) => { e.preventDefault(); const profile = { name: document.getElementById('memberName').value, telegram: document.getElementById('memberTelegram').value, level: document.getElementById('memberLevel').value, interests: document.getElementById('memberInterests').value, visits: 0 }; localStorage.setItem('gsc_profile', JSON.stringify(profile)); renderProfile(); });
 function renderProfile(){ const profile = JSON.parse(localStorage.getItem('gsc_profile') || 'null'); if(!profile) return; const card = document.getElementById('profileCard'); const remaining = 7 - (profile.visits % 7 || 0); card.classList.remove('hidden'); card.innerHTML = `<h3>GSC Member</h3><p><b>${profile.name}</b> · ${profile.level}</p><p>Telegram: ${profile.telegram || '—'}</p><p>Interests: ${profile.interests || '—'}</p><p>Meetups attended: <b>${profile.visits}</b></p><p>Next free meetup in: <b>${remaining === 7 ? 7 : remaining}</b></p>`; }
