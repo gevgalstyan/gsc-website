@@ -5,6 +5,7 @@ const SUPABASE_URL = "https://vmvsxxtaqtvaotrooafq.supabase.co";
 const SUPABASE_KEY = "sb_publishable_LEnh4oxd15-H9WbrUxlttQ_M046BB5u";
 
 let supabaseClient = null;
+
 try {
   if (window.supabase && window.supabase.createClient) {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -19,7 +20,109 @@ try {
 // ============================================================
 // QUESTION BANK (unchanged content)
 // ============================================================
-const QUESTION_BANK = {"Ice Breakers": ["What made you smile this week?", "What is one small thing that makes your day better?", "What is your favorite way to spend a free evening?", "What is something most people do not know about you?", "What was the best part of your day today?", "Are you more of a morning person or a night person?", "What is one thing you are really good at?", "What is your comfort food?", "What app do you use too much?", "What is one habit you want to build?", "What is your favorite place in your city?", "What is one thing you always notice about people?", "What kind of music gives you energy?", "What is your favorite season and why?", "What is one thing you would like to try this year?"], "Travel": ["If you could live in any country for one year, where would you go?", "What city surprised you the most?", "Beach, mountains, or city trip?", "What is your dream travel route?", "What is the best food you have tried while traveling?", "Would you rather travel alone or with friends?", "What country feels mysterious to you?", "What is one place in Russia you want to visit?", "What is your best travel memory?", "What travel mistake taught you something?"], "Funny": ["What is the funniest misunderstanding you have ever had?", "If animals could talk, which animal would be the rudest?", "What is the most useless superpower you can imagine?", "What is your most embarrassing small mistake?", "If your life had a soundtrack, what song would play today?", "What food do you secretly judge people for liking?", "What is something silly you believed as a child?", "If you had to rename yourself, what name would you choose?", "What would you do if you became invisible for one hour?", "What is a harmless lie people often tell?"], "Deep": ["What does success mean to you?", "What advice would you give your younger self?", "What are you currently trying to improve in yourself?", "What makes a person truly interesting?", "What is a fear you want to overcome?", "What kind of life do you want in ten years?", "What is something money cannot buy?", "What is one decision that changed your life?", "What do you want people to remember about you?", "What does freedom mean to you?"], "Career": ["What would your dream job look like?", "What skill would help you earn more money?", "Would you rather work for yourself or for a company?", "What is one business idea you find interesting?", "What is the best work advice you have heard?", "What motivates you more: money, freedom, or recognition?", "What job would you never want to do?", "What is one thing you learned from work?", "What makes a good leader?", "Would you rather be a specialist or a generalist?"], "Movies": ["What movie can you watch again and again?", "Which character do you relate to?", "What film ending disappointed you?", "Would you rather live in a comedy, action movie, or fantasy movie?", "What movie made you think deeply?", "What series are you watching now?", "Which actor always makes a movie better?", "What is your favorite movie quote?", "What movie would you recommend to everyone?", "What childhood cartoon do you still like?"], "Food": ["What food could you eat every day?", "What dish represents your family?", "What is the best café or restaurant in your city?", "Do you prefer cooking or ordering food?", "What food do you dislike that everyone else seems to love?", "What is your perfect breakfast?", "What country has the best cuisine?", "Sweet or salty?", "What is one dish you want to learn to cook?", "What is your guilty pleasure snack?"], "Dreams": ["What is one big dream you rarely talk about?", "If money was not a problem, what would you do?", "What kind of house would you like to live in?", "What would your perfect weekend look like?", "What is one thing you want to experience at least once?", "What would you do if you had one year completely free?", "What does your ideal morning look like?", "What is a dream you had as a child?", "What goal are you afraid to start?", "What would make this year unforgettable for you?"]};
+const QUESTION_BANK = {
+  "Ice Breakers": [
+    "What made you smile this week?",
+    "What is one small thing that makes your day better?",
+    "What is your favorite way to spend a free evening?",
+    "What is something most people do not know about you?",
+    "What was the best part of your day today?",
+    "Are you more of a morning person or a night person?",
+    "What is one thing you are really good at?",
+    "What is your comfort food?",
+    "What app do you use too much?",
+    "What is one habit you want to build?",
+    "What is your favorite place in your city?",
+    "What is one thing you always notice about people?",
+    "What kind of music gives you energy?",
+    "What is your favorite season and why?",
+    "What is one thing you would like to try this year?"
+  ],
+  "Travel": [
+    "If you could live in any country for one year, where would you go?",
+    "What city surprised you the most?",
+    "Beach, mountains, or city trip?",
+    "What is your dream travel route?",
+    "What is the best food you have tried while traveling?",
+    "Would you rather travel alone or with friends?",
+    "What country feels mysterious to you?",
+    "What is one place in Russia you want to visit?",
+    "What is your best travel memory?",
+    "What travel mistake taught you something?"
+  ],
+  "Funny": [
+    "What is the funniest misunderstanding you have ever had?",
+    "If animals could talk, which animal would be the rudest?",
+    "What is the most useless superpower you can imagine?",
+    "What is your most embarrassing small mistake?",
+    "If your life had a soundtrack, what song would play today?",
+    "What food do you secretly judge people for liking?",
+    "What is something silly you believed as a child?",
+    "If you had to rename yourself, what name would you choose?",
+    "What would you do if you became invisible for one hour?",
+    "What is a harmless lie people often tell?"
+  ],
+  "Deep": [
+    "What does success mean to you?",
+    "What advice would you give your younger self?",
+    "What are you currently trying to improve in yourself?",
+    "What makes a person truly interesting?",
+    "What is a fear you want to overcome?",
+    "What kind of life do you want in ten years?",
+    "What is something money cannot buy?",
+    "What is one decision that changed your life?",
+    "What do you want people to remember about you?",
+    "What does freedom mean to you?"
+  ],
+  "Career": [
+    "What would your dream job look like?",
+    "What skill would help you earn more money?",
+    "Would you rather work for yourself or for a company?",
+    "What is one business idea you find interesting?",
+    "What is the best work advice you have heard?",
+    "What motivates you more: money, freedom, or recognition?",
+    "What job would you never want to do?",
+    "What is one thing you learned from work?",
+    "What makes a good leader?",
+    "Would you rather be a specialist or a generalist?"
+  ],
+  "Movies": [
+    "What movie can you watch again and again?",
+    "Which character do you relate to?",
+    "What film ending disappointed you?",
+    "Would you rather live in a comedy, action movie, or fantasy movie?",
+    "What movie made you think deeply?",
+    "What series are you watching now?",
+    "Which actor always makes a movie better?",
+    "What is your favorite movie quote?",
+    "What movie would you recommend to everyone?",
+    "What childhood cartoon do you still like?"
+  ],
+  "Food": [
+    "What food could you eat every day?",
+    "What dish represents your family?",
+    "What is the best café or restaurant in your city?",
+    "Do you prefer cooking or ordering food?",
+    "What food do you dislike that everyone else seems to love?",
+    "What is your perfect breakfast?",
+    "What country has the best cuisine?",
+    "Sweet or salty?",
+    "What is one dish you want to learn to cook?",
+    "What is your guilty pleasure snack?"
+  ],
+  "Dreams": [
+    "What is one big dream you rarely talk about?",
+    "If money was not a problem, what would you do?",
+    "What kind of house would you like to live in?",
+    "What would your perfect weekend look like?",
+    "What is one thing you want to experience at least once?",
+    "What would you do if you had one year completely free?",
+    "What does your ideal morning look like?",
+    "What is a dream you had as a child?",
+    "What goal are you afraid to start?",
+    "What would make this year unforgettable for you?"
+  ]
+};
 
 const allQuestions = Object.entries(QUESTION_BANK).flatMap(([category, qs]) =>
   qs.map((text, idx) => ({ id: `${category}-${idx}`, category, text }))
@@ -180,8 +283,6 @@ function renderAuthState(user) {
       }
     }
 
-
-    
     closeAuth();
   } else {
     if (authButton) authButton.textContent = 'Login / Register';
@@ -194,7 +295,6 @@ async function ensureUserProfile(user) {
   if (!supabaseClient || !user) return;
 
   const meta = user.user_metadata || {};
-
   const profile = {
     id: user.id,
     full_name: meta.full_name || meta.name || user.email || 'Member',
@@ -243,7 +343,14 @@ function renderProfile() {
 
   const remaining = 7 - (profile.visits % 7 || 0);
   card.classList.remove('hidden');
-  card.innerHTML = `<h3>GSC Member</h3><p><b>${profile.name}</b> · ${profile.level}</p><p>Telegram: ${profile.telegram || '—'}</p><p>Interests: ${profile.interests || '—'}</p><p>Meetups attended: <b>${profile.visits}</b></p><p>Next free meetup in: <b>${remaining === 7 ? 7 : remaining}</b></p>`;
+  card.innerHTML = `
+    <h3>GSC Member</h3>
+    <p><b>${profile.name}</b> · ${profile.level}</p>
+    <p>Telegram: ${profile.telegram || '—'}</p>
+    <p>Interests: ${profile.interests || '—'}</p>
+    <p>Meetups attended: <b>${profile.visits}</b></p>
+    <p>Next free meetup in: <b>${remaining === 7 ? 7 : remaining}</b></p>
+  `;
 }
 
 function saveAttendance() {
@@ -271,7 +378,12 @@ function renderAttendance() {
   if (!list) return;
 
   list.innerHTML = Object.entries(data)
-    .map(([name, visits]) => `<div class="attendance-item"><span>${name}</span><b>${visits} visits · ${visits % 7 === 6 ? 'next is free' : (7 - visits % 7) + ' until free'}</b></div>`)
+    .map(([name, visits]) => `
+      <div class="attendance-item">
+        <span>${name}</span>
+        <b>${visits} visits · ${visits % 7 === 6 ? 'next is free' : (7 - visits % 7) + ' until free'}</b>
+      </div>
+    `)
     .join('');
 }
 
