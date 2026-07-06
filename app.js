@@ -5,6 +5,7 @@ const SUPABASE_URL = "https://vmvsxxtaqtvaotrooafq.supabase.co";
 const SUPABASE_KEY = "sb_publishable_LEnh4oxd15-H9WbrUxlttQ_M046BB5u";
 
 let supabaseClient = null;
+let realtimeChannel = null; // Канал для мгновенной синхронизации
 
 try {
   if (window.supabase && window.supabase.createClient) {
@@ -175,7 +176,7 @@ const QUESTION_BANK = {
 };
 
 // ============================================================
-// COMBINATORIAL ENGINE (Generates thousands of extra variations)
+// COMBINATORIAL ENGINE (Generates stable hashed IDs)
 // ============================================================
 const COMBINATORS = {
   templates: [
@@ -200,15 +201,22 @@ const COMBINATORS = {
   }
 };
 
-// Flatten out the base bank questions safely
+// Простая функция хэширования строк, чтобы ID динамических вопросов ВСЕГДА совпадали на ПК и iPhone
+function hashCode(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  return 'dyn-' + Math.abs(hash).toString(36);
+}
+
 const staticQuestions = Object.entries(QUESTION_BANK).flatMap(([category, qs]) =>
   qs.map((text, idx) => ({ id: `${category}-${idx}`, category, text }))
 );
 
-// Procedural generator to append thousands of algorithmic options seamlessly
 function generateDynamicQuestions() {
   const dynamicList = [];
-  let counter = 0;
   
   for (const template of COMBINATORS.templates) {
     const neededTokens = [...template.matchAll(/\{([^}]+)\}/g)].map(m => m[1]);
@@ -221,7 +229,7 @@ function generateDynamicQuestions() {
           for (const t2 of arr2) {
             let qText = template.replace(`{${neededTokens[0]}}`, t1).replace(`{${neededTokens[1]}}`, t2);
             dynamicList.push({
-              id: `Dynamic-2B-${counter++}`,
+              id: hashCode(qText),
               category: "Deep",
               text: qText
             });
@@ -234,7 +242,7 @@ function generateDynamicQuestions() {
         for (const t of arr) {
           let qText = template.replace(`{${neededTokens[0]}}`, t);
           dynamicList.push({
-            id: `Dynamic-1B-${counter++}`,
+            id: hashCode(qText),
             category: "Ice Breakers",
             text: qText
           });
@@ -245,7 +253,6 @@ function generateDynamicQuestions() {
   return dynamicList;
 }
 
-// Assemble static and dynamically generated questions into one single production pool
 const allQuestions = [...staticQuestions, ...generateDynamicQuestions()];
 let selectedCategory = 'All';
 
@@ -274,9 +281,13 @@ function getSeen() {
   return seenCache;
 }
 
-function setSeen(seen) {
+function setSeen(seen, skipSync = false) {
   seenCache = seen;
   localStorage.setItem('gsc_seen_questions', JSON.stringify(seen));
+  // Если вызов не из realtime-подписки, обновляем UI
+  if (!skipSync) {
+    updateStats();
+  }
 }
 
 function pool() {
@@ -298,6 +309,9 @@ async function nextQuestion() {
   seen.push(q.id);
   setSeen(seen);
 
+  document.getElementById('questionText').textContent = q.text;
+  document.getElementById('questionCounter').textContent = '#' + String(seen.length).padStart(3, '0');
+
   if (supabaseClient) {
     try {
       const { data } = await supabaseClient.auth.getUser();
@@ -316,9 +330,6 @@ async function nextQuestion() {
       console.error("Failed to sync question view to Supabase:", e);
     }
   }
-
-  document.getElementById('questionText').textContent = q.text;
-  document.getElementById('questionCounter').textContent = '#' + String(seen.length).padStart(3, '0');
   updateStats();
 }
 
@@ -354,9 +365,62 @@ function updateStats() {
   const currentPool = pool();
   const seenInCategory = currentPool.filter(q => seen.includes(q.id)).length;
 
-  document.getElementById('answeredCount').textContent = seen.length;
-  document.getElementById('uniqueCount').textContent = seenInCategory;
-  document.getElementById('remainingCount').textContent = Math.max(0, currentPool.length - seenInCategory);
+  const answeredEl = document.getElementById('answeredCount');
+  const uniqueEl = document.getElementById('uniqueCount');
+  const remainingEl = document.getElementById('remainingCount');
+
+  if (answeredEl) answeredEl.textContent = seen.length;
+  if (uniqueEl) uniqueEl.textContent = seenInCategory;
+  if (remainingEl) remainingEl.textContent = Math.max(0, currentPool.length - seenInCategory);
+}
+
+// ============================================================
+// REALTIME SYNC ENGINE (Fixes PC <-> iPhone Synchronization)
+// ============================================================
+function setupRealtimeSubscription(userId) {
+  if (!supabaseClient || !userId) return;
+
+  // Если старый канал активен, закрываем его
+  if (realtimeChannel) {
+    supabaseClient.removeChannel(realtimeChannel);
+  }
+
+  // Создаем подписку на изменения в таблице истории для конкретного пользователя
+  realtimeChannel = supabaseClient
+    .channel(`public:user_question_history:user_id=eq.${userId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*', 
+        schema: 'public',
+        table: 'user_question_history',
+        filter: `user_id=eq.${userId}`
+      },
+      async (payload) => {
+        console.log("Realtime sync triggered:", payload.eventType);
+        // При любом изменении (новые ответы или ресет) полностью обновляем локальный кэш
+        const { data, error } = await supabaseClient
+          .from('user_question_history')
+          .select('question_id')
+          .eq('user_id', userId);
+
+        if (!error && data) {
+          const updatedSeen = data.map(row => row.question_id);
+          setSeen(updatedSeen);
+          
+          // Если на втором устройстве был сброс (удаление строк)
+          if (payload.eventType === 'DELETE' && updatedSeen.length === 0) {
+            const textEl = document.getElementById('questionText');
+            const countEl = document.getElementById('questionCounter');
+            if (textEl) textEl.textContent = 'Questions reset. Tap Next Question.';
+            if (countEl) countEl.textContent = '#001';
+          }
+        }
+      }
+    )
+    .subscribe((status) => {
+      console.log("Realtime sync status:", status);
+    });
 }
 
 // ============================================================
@@ -392,16 +456,25 @@ async function initAuth() {
     const { data, error } = await supabaseClient.auth.getSession();
     if (error) console.error("getSession error:", error);
     
-    renderAuthState(data && data.session ? data.session.user : null);
+    const user = data && data.session ? data.session.user : null;
+    renderAuthState(user);
 
-    if (data && data.session) {
-      await loadQuestionHistory(data.session.user);
+    if (user) {
+      await loadQuestionHistory(user);
+      setupRealtimeSubscription(user.id); // Включаем реалтайм при загрузке
     }
 
     supabaseClient.auth.onAuthStateChange(async (_event, session) => {
-      renderAuthState(session ? session.user : null);
-      if (session) {
-        await loadQuestionHistory(session.user);
+      const currentUser = session ? session.user : null;
+      renderAuthState(currentUser);
+      if (currentUser) {
+        await loadQuestionHistory(currentUser);
+        setupRealtimeSubscription(currentUser.id); // Переподключаем реалтайм при смене сессии
+      } else {
+        if (realtimeChannel) {
+          supabaseClient.removeChannel(realtimeChannel);
+          realtimeChannel = null;
+        }
       }
     });
    
