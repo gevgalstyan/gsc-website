@@ -1,5 +1,5 @@
 // ============================================================
-// SUPABASE INIT (safe — must never break the rest of the app)
+// SUPABASE INIT (safe — must never break the rest of the app)-
 // ============================================================
 const SUPABASE_URL = "https://vmvsxxtaqtvaotrooafq.supabase.co";
 const SUPABASE_KEY = "sb_publishable_LEnh4oxd15-H9WbrUxlttQ_M046BB5u";
