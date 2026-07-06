@@ -199,8 +199,25 @@ async function nextQuestion() {
   updateStats();
 }
 
-function resetQuestions() {
+async function resetQuestions() {
+  setSeen([]);
   localStorage.removeItem('gsc_seen_questions');
+
+  if (supabaseClient) {
+    const { data } = await supabaseClient.auth.getUser();
+
+    if (data.user) {
+      const { error } = await supabaseClient
+        .from('user_question_history')
+        .delete()
+        .eq('user_id', data.user.id);
+
+      if (error) {
+        console.error('Reset question history error:', error);
+      }
+    }
+  }
+
   document.getElementById('questionText').textContent = 'Questions reset. Tap Next Question.';
   document.getElementById('questionCounter').textContent = '#001';
   updateStats();
