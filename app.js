@@ -180,6 +180,29 @@ function renderAuthState(user) {
       }
     }
 
+async function ensureUserProfile(user) {
+  if (!supabaseClient || !user) return;
+
+  const meta = user.user_metadata || {};
+
+  const profile = {
+    id: user.id,
+    full_name: meta.full_name || meta.name || user.email || 'Member',
+    avatar_url: meta.avatar_url || meta.picture || '',
+    role: 'member'
+  };
+
+  const { error } = await supabaseClient
+    .from('user_profiles')
+    .upsert(profile, { onConflict: 'id' });
+
+  if (error) {
+    console.error('Profile upsert error:', error);
+  } else {
+    console.log('User profile synced:', profile);
+  }
+}
+    
     closeAuth();
   } else {
     if (authButton) authButton.textContent = 'Login / Register';
