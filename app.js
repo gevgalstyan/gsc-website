@@ -267,6 +267,7 @@ function renderAuthState(user) {
     const meta = user.user_metadata || {};
     const displayName = meta.full_name || meta.name || user.email || 'Member';
     const avatarUrl = meta.avatar_url || meta.picture || '';
+    ensureUserProfile(user);
 
     if (authButton) authButton.textContent = 'My Account';
     if (loggedOutBlock) loggedOutBlock.classList.add('hidden');
