@@ -180,6 +180,16 @@ function renderAuthState(user) {
       }
     }
 
+
+    
+    closeAuth();
+  } else {
+    if (authButton) authButton.textContent = 'Login / Register';
+    if (loggedOutBlock) loggedOutBlock.classList.remove('hidden');
+    if (loggedInBlock) loggedInBlock.classList.add('hidden');
+  }
+}
+
 async function ensureUserProfile(user) {
   if (!supabaseClient || !user) return;
 
@@ -200,14 +210,6 @@ async function ensureUserProfile(user) {
     console.error('Profile upsert error:', error);
   } else {
     console.log('User profile synced:', profile);
-  }
-}
-    
-    closeAuth();
-  } else {
-    if (authButton) authButton.textContent = 'Login / Register';
-    if (loggedOutBlock) loggedOutBlock.classList.remove('hidden');
-    if (loggedInBlock) loggedInBlock.classList.add('hidden');
   }
 }
 
