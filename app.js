@@ -161,7 +161,7 @@ function pool() {
   return allQuestions.filter(q => selectedCategory === 'All' || q.category === selectedCategory);
 }
 
-function nextQuestion() {
+async function nextQuestion() {
   const seen = getSeen();
   const available = pool().filter(q => !seen.includes(q.id));
 
@@ -175,6 +175,22 @@ function nextQuestion() {
   const q = available[Math.floor(Math.random() * available.length)];
   seen.push(q.id);
   setSeen(seen);
+
+  if (supabaseClient) {
+  const { data } = await supabaseClient.auth.getUser();
+
+  if (data.user) {
+    await supabaseClient
+      .from('user_question_history')
+      .upsert({
+        user_id: data.user.id,
+        question_id: q.id,
+        category: q.category,
+        question_text: q.text,
+        action: 'seen'
+      });
+  }
+}
 
   document.getElementById('questionText').textContent = q.text;
   document.getElementById('questionCounter').textContent = '#' + String(seen.length).padStart(3, '0');
