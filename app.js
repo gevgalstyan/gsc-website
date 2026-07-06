@@ -149,11 +149,13 @@ function initQuestions() {
   updateStats();
 }
 
-function getSeen() {
-  return JSON.parse(localStorage.getItem('gsc_seen_questions') || '[]');
-}
+let seenCache = [];
 
+function getSeen() {
+  return seenCache;
+}
 function setSeen(seen) {
+  seenCache = seen;
   localStorage.setItem('gsc_seen_questions', JSON.stringify(seen));
 }
 
@@ -217,6 +219,26 @@ function updateStats() {
 // ============================================================
 // AUTH FUNCTIONS
 // ============================================================
+async function loadQuestionHistory(user) {
+  if (!supabaseClient || !user) return;
+
+  const { data, error } = await supabaseClient
+    .from('user_question_history')
+    .select('question_id')
+    .eq('user_id', user.id);
+
+  if (error) {
+    console.error('Load question history error:', error);
+    return;
+  }
+
+  const seen = (data || []).map(row => row.question_id);
+  setSeen(seen);
+  updateStats();
+
+  console.log('Question history loaded:', seen);
+}
+
 async function initAuth() {
   if (!supabaseClient) {
     renderAuthState(null);
@@ -226,11 +248,21 @@ async function initAuth() {
   try {
     const { data, error } = await supabaseClient.auth.getSession();
     if (error) console.error("getSession error:", error);
+    
     renderAuthState(data && data.session ? data.session.user : null);
 
-    supabaseClient.auth.onAuthStateChange((_event, session) => {
-      renderAuthState(session ? session.user : null);
-    });
+    if (data && data.session) {
+  await loadQuestionHistory(data.session.user);
+}
+
+supabaseClient.auth.onAuthStateChange(async (_event, session) => {
+  renderAuthState(session ? session.user : null);
+
+  if (session) {
+    await loadQuestionHistory(session.user);
+  }
+});
+   
   } catch (err) {
     console.error("Auth init failed:", err);
     renderAuthState(null);
