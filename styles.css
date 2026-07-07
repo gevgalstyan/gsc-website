@@ -132,13 +132,15 @@ nav {
   border: 1px solid rgba(255,255,255,.14);
   transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
 
-  opacity: .65;
+  opacity: .40;
+  filter: saturate(.35);
   transition: all .28s ease;
 }
 
 .social-link:hover{
    
    opacity: 1; 
+   filter: saturate(1.4);
    transform: translateY(-4px) scale(1.12) rotate(6deg);
 
    
