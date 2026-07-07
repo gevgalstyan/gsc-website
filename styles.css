@@ -132,8 +132,8 @@ nav {
   transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
 }
 
-.social-link:hover {
-  transform: translateY(-4px) scale(1.12);
+.social-link:hover{
+    transform: translateY(-4px) scale(1.12) rotate(8deg);
 }
 
 .social-link.telegram:hover {
