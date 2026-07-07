@@ -109,7 +109,7 @@ nav {
   font-weight: 700;
   cursor: pointer;
 }
-
+/*-------------- here starts----------- */
 .socials {
   display: flex;
   gap: 12px;
@@ -123,6 +123,53 @@ nav {
   display: grid;
   place-items: center;
   color: #d9e0ee;
+
+   .socials {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.social-link {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  text-decoration: none;
+  font-size: 22px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.14);
+  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+}
+
+.social-link:hover {
+  transform: translateY(-4px) scale(1.12);
+}
+
+.social-link.telegram:hover {
+  background: #229ED9;
+  box-shadow: 0 10px 26px rgba(34,158,217,.45);
+}
+
+.social-link.instagram:hover {
+  background: radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 8%, #fd5949 45%, #d6249f 65%, #285AEB 100%);
+  box-shadow: 0 10px 26px rgba(214,36,159,.45);
+}
+
+.social-link.threads:hover {
+  background: #111;
+  box-shadow: 0 10px 26px rgba(255,255,255,.22);
+}
+
+.social-link.vk:hover {
+  background: #0077FF;
+  box-shadow: 0 10px 26px rgba(0,119,255,.45);
+}
+/* here ends just in case */
 }
 
 /* ============================================================
