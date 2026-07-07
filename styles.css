@@ -118,6 +118,7 @@ nav {
 }
 
 .social-link {
+  
   width: 46px;
   height: 46px;
   border-radius: 50%;
@@ -130,10 +131,17 @@ nav {
   background: rgba(255,255,255,.08);
   border: 1px solid rgba(255,255,255,.14);
   transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+
+  opacity: .65;
+  transition: all .28s ease;
 }
 
 .social-link:hover{
-    transform: translateY(-4px) scale(1.12) rotate(6deg);
+   
+   opacity: 1; 
+   transform: translateY(-4px) scale(1.12) rotate(6deg);
+
+   
 }
 
 .social-link.telegram:hover {
