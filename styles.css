@@ -581,10 +581,22 @@ footer b {
     grid-template-columns: repeat(3, 1fr);
   }
   
-  .join-card,
-  .socials {
-    display: none;
-  }
+.join-card {
+  display: none;
+}
+
+.socials {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin: 24px 0 12px;
+}
+
+.social-link {
+  width: 42px;
+  height: 42px;
+  font-size: 20px;
+}
   
   main {
     padding: 0 14px 24px;
