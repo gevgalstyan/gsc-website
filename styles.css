@@ -133,7 +133,7 @@ nav {
 }
 
 .social-link:hover{
-    transform: translateY(-4px) scale(1.12) rotate(8deg);
+    transform: translateY(-4px) scale(1.12) rotate(6deg);
 }
 
 .social-link.telegram:hover {
