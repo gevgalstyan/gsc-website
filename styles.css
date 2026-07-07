@@ -112,20 +112,6 @@ nav {
 /*-------------- here starts----------- */
 .socials {
   display: flex;
-  gap: 12px;
-}
-
-.socials a {
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  color: #d9e0ee;
-
-   .socials {
-  display: flex;
   justify-content: center;
   gap: 14px;
   margin-top: 20px;
