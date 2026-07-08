@@ -611,56 +611,193 @@ input {
    FOOTER RESPONSIVE
    ============================================================ */
 
-@media (max-width:900px){
+/* ============================================================
+   FOOTER
+   ============================================================ */
 
- .site-footer{
-  grid-template-columns:1fr;
-  text-align:center;
-  gap:18px;
-  padding:24px 18px;
+.site-footer{
+  display:grid;
+  grid-template-columns:1fr 1.4fr auto;
+  align-items:center;
+  gap:24px;
+  margin:28px 0 0;
+  padding:24px;
+  border-radius:22px;
+  border:1px solid rgba(255,118,37,.22);
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255,107,0,.16), transparent 35%),
+    linear-gradient(90deg, rgba(255,91,15,.10), rgba(24,70,170,.10));
+  color:#e7e8ec;
 }
 
 .footer-brand{
   display:flex;
-  flex-direction:column;
   align-items:center;
-  justify-content:center;
-  gap:10px;
+  gap:14px;
 }
 
 .footer-brand div{
-  text-align:center;
+  text-align:left;
+}
+
+.footer-icon{
+  width:46px;
+  height:46px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:rgba(255,107,0,.12);
+  color:#ff6b00;
+  font-size:26px;
+  box-shadow:0 0 24px rgba(255,107,0,.18);
+}
+
+.footer-brand strong{
+  display:block;
+  font-size:16px;
+  color:#fff;
+}
+
+.footer-brand p{
+  margin:4px 0 0;
+  font-size:13px;
+  color:#aeb6c5;
 }
 
 .footer-quote{
   text-align:center;
-  font-size:14px;
-  line-height:1.6;
-  max-width:280px;
-  margin:0 auto;
+  line-height:1.5;
+  font-style:italic;
+  color:#d7dbe5;
+}
+
+.footer-quote small{
+  display:block;
+  margin-top:6px;
+  color:#ff8a25;
+  font-style:normal;
+  font-size:12px;
 }
 
 .footer-links{
-  display:grid;
-  grid-template-columns:repeat(4, 44px);
-  justify-content:center;
-  gap:12px;
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
 }
 
 .footer-links a{
-  width:44px;
-  height:44px;
-  padding:0;
+  width:40px;
+  height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   border-radius:50%;
-  font-size:18px;
+  text-decoration:none;
+  color:#9ca3af;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.05);
+  transition:all .25s ease;
 }
 
 .footer-links a.text-link{
-  grid-column:span 2;
-  width:100%;
+  width:auto;
+  padding:0 16px;
   border-radius:999px;
-  font-size:15px;
 }
+
+.footer-links a:hover{
+  color:#fff;
+  transform:translateY(-4px) scale(1.14) rotate(6deg);
+}
+
+.footer-links a.text-link:hover{
+  border-color:#ff6b00;
+  background:rgba(255,107,0,.14);
+  box-shadow:0 8px 22px rgba(255,107,0,.25);
+}
+
+.footer-links a[href*="t.me"]:hover{
+  background:#229ED9;
+  border-color:#229ED9;
+  box-shadow:0 10px 26px rgba(34,158,217,.45);
+}
+
+.footer-links a[href*="instagram"]:hover{
+  background:radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 8%, #fd5949 45%, #d6249f 65%, #285AEB 100%);
+  border-color:#fd5949;
+  box-shadow:0 10px 26px rgba(214,36,159,.45);
+}
+
+.footer-links a[href*="threads"]:hover{
+  background:#111;
+  border-color:#fff;
+  box-shadow:0 10px 26px rgba(255,255,255,.22);
+}
+
+.footer-links a[href*="vk.ru"]:hover{
+  background:#0077FF;
+  border-color:#0077FF;
+  box-shadow:0 10px 26px rgba(0,119,255,.45);
+}
+
+
+/* ============================================================
+   FOOTER MOBILE
+   ============================================================ */
+
+@media (max-width:900px){
+
+  .site-footer{
+    grid-template-columns:1fr;
+    text-align:center;
+    gap:20px;
+    padding:26px 18px;
+  }
+
+  .footer-brand{
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+  }
+
+  .footer-brand div{
+    text-align:center;
+  }
+
+  .footer-quote{
+    max-width:280px;
+    margin:0 auto;
+    font-size:14px;
+    line-height:1.6;
+  }
+
+  .footer-links{
+    display:grid;
+    grid-template-columns:repeat(4, 46px);
+    justify-content:center;
+    align-items:center;
+    gap:12px;
+  }
+
+  .footer-links a{
+    width:46px;
+    height:46px;
+    padding:0;
+    border-radius:50%;
+    font-size:18px;
+  }
+
+  .footer-links a.text-link{
+    grid-column:span 2;
+    width:100%;
+    height:42px;
+    padding:0;
+    border-radius:999px;
+    font-size:15px;
+  }
 }
 /* ============================================================
    11. SYSTEM MODALS & AUTH OVERLAYS
