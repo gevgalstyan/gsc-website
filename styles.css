@@ -540,53 +540,72 @@ input {
   font-size: 12px;
 }
 .footer-links{
-    display:flex;
-    justify-content:flex-end;
-    align-items:center;
-    gap:10px;
-    flex-wrap:wrap;
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
 }
 
 .footer-links a{
-
-    width:40px;
-    height:40px;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    border-radius:50%;
-
-    text-decoration:none;
-
-    color:#9ca3af;
-
-    border:1px solid rgba(255,255,255,.14);
-
-    transition:.25s;
+  width:40px;
+  height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  text-decoration:none;
+  color:#9ca3af;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.05);
+  transition:all .25s ease;
 }
 
 .footer-links a:first-child{
-
-    width:auto;
-    padding:0 16px;
-    border-radius:999px;
-
+  width:auto;
+  padding:0 16px;
+  border-radius:999px;
 }
 
 .footer-links a:hover{
+  color:#fff;
+  transform:translateY(-4px) scale(1.14) rotate(6deg);
+}
 
-    color:white;
+/* Privacy */
+.footer-links a:first-child:hover{
+  border-color:#ff6b00;
+  background:rgba(255,107,0,.14);
+  box-shadow:0 8px 22px rgba(255,107,0,.25);
+}
 
-    transform:translateY(-3px);
+/* Telegram */
+.footer-links a[href*="t.me"]:hover{
+  background:#229ED9;
+  border-color:#229ED9;
+  box-shadow:0 10px 26px rgba(34,158,217,.45);
+}
 
-    border-color:#ff6b00;
+/* Instagram */
+.footer-links a[href*="instagram"]:hover{
+  background:radial-gradient(circle at 30% 110%, #fdf497 0%, #fdf497 8%, #fd5949 45%, #d6249f 65%, #285AEB 100%);
+  border-color:#fd5949;
+  box-shadow:0 10px 26px rgba(214,36,159,.45);
+}
 
-    background:rgba(255,107,0,.12);
+/* Threads */
+.footer-links a[href*="threads"]:hover{
+  background:#111;
+  border-color:#fff;
+  box-shadow:0 10px 26px rgba(255,255,255,.22);
+}
 
-    box-shadow:0 8px 22px rgba(255,107,0,.25);
-
+/* VK */
+.footer-links a[href*="vk.ru"]:hover{
+  background:#0077FF;
+  border-color:#0077FF;
+  box-shadow:0 10px 26px rgba(0,119,255,.45);
+}
 }
 /* ============================================================
    FOOTER RESPONSIVE
