@@ -539,31 +539,55 @@ input {
   font-style: normal;
   font-size: 12px;
 }
-
-.footer-links {
-  display: flex;
-  justify-content: flex-end;
+.footer-links{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
 }
 
-.footer-links a {
-  padding: 10px 16px;
+.footer-links a{
 
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,.14);
+    width:40px;
+    height:40px;
 
-  color: #9ca3af;
-  text-decoration: none;
+    display:flex;
+    align-items:center;
+    justify-content:center;
 
-  transition: all .25s ease;
+    border-radius:50%;
+
+    text-decoration:none;
+
+    color:#9ca3af;
+
+    border:1px solid rgba(255,255,255,.14);
+
+    transition:.25s;
 }
 
-.footer-links a:hover {
-  color: #fff;
-  border-color: #ff6b00;
-  background: rgba(255,107,0,.12);
-  box-shadow: 0 8px 22px rgba(255,107,0,.22);
+.footer-links a:first-child{
+
+    width:auto;
+    padding:0 16px;
+    border-radius:999px;
+
 }
 
+.footer-links a:hover{
+
+    color:white;
+
+    transform:translateY(-3px);
+
+    border-color:#ff6b00;
+
+    background:rgba(255,107,0,.12);
+
+    box-shadow:0 8px 22px rgba(255,107,0,.25);
+
+}
 /* ============================================================
    FOOTER RESPONSIVE
    ============================================================ */
