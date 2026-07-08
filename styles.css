@@ -654,10 +654,11 @@ input {
     gap:10px;
   }
 
-  .footer-links a:first-child{
+.footer-links a.text-link{
     width:auto;
-    min-height:40px;
-  }
+    padding:0 16px;
+    border-radius:999px;
+}
 
 }
 /* ============================================================
