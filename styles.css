@@ -464,29 +464,87 @@ input {
 /* ============================================================
    10. FOOTER
    ============================================================ */
-footer {
-  display: flex;
+.site-footer {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  margin: 24px 0 0;
-  padding: 22px;
-  border-radius: 18px;
-  background: linear-gradient(90deg, rgba(255, 91, 15, 0.10), rgba(24, 70, 170, 0.08));
+  gap: 24px;
+  margin: 28px 0 0;
+  padding: 24px;
+  border-radius: 22px;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(255, 107, 0, .16), transparent 35%),
+    linear-gradient(90deg, rgba(255, 91, 15, .10), rgba(24, 70, 170, .10));
+  border: 1px solid rgba(255, 118, 37, .22);
   color: #e7e8ec;
 }
 
-footer span {
-  font-size: 32px;
-  color: #ff6b00;
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
-footer b {
+.footer-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 107, 0, .12);
   color: #ff6b00;
+  font-size: 26px;
+  box-shadow: 0 0 24px rgba(255, 107, 0, .18);
+}
+
+.footer-brand strong {
+  display: block;
+  font-size: 16px;
+  color: #fff;
+}
+
+.footer-brand p {
+  margin: 4px 0 0;
+  color: #aeb6c5;
   font-size: 13px;
-  letter-spacing: 2px;
 }
 
+.footer-quote {
+  color: #d7dbe5;
+  font-style: italic;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.footer-quote small {
+  display: block;
+  margin-top: 6px;
+  color: #ff8a25;
+  font-style: normal;
+  font-size: 12px;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.footer-links a {
+  color: #9ca3af;
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 999px;
+  padding: 10px 14px;
+  text-decoration: none;
+  transition: .25s ease;
+  white-space: nowrap;
+}
+
+.footer-links a:hover {
+  color: #fff;
+  border-color: #ff6b00;
+  background: rgba(255, 107, 0, .12);
+  box-shadow: 0 8px 22px rgba(255, 107, 0, .20);
+}
 /* ============================================================
    11. SYSTEM MODALS & AUTH OVERLAYS
    ============================================================ */
