@@ -23,8 +23,8 @@
           ><a href="#questions" class="nav-link">🎲 Random Question</a
           ><a href="#meetups" class="nav-link">📅 Meetups</a
           ><a href="#account" class="nav-link">👤 My Account</a
-          ><a href="#admin" class="nav-link">🏆 Admin</a
-          ><a href="#about" class="nav-link">ⓘ About Club</a>
+          <a href="#admin" class="nav-link admin-only hidden">🏆 Admin</a>
+          <a href="#about" class="nav-link">ⓘ About Club</a>
         </nav>
         <div class="join-card">
           <strong>Join our community</strong><span>Never miss a meetup.</span
@@ -180,7 +180,7 @@
           </form>
           <div id="profileCard" class="member-card hidden"></div>
         </section>
-        <section id="admin" class="panel">
+        <section id="admin" class="panel admin-only hidden">
           <h2>Admin Control</h2>
           <p class="muted">
             For now this is stored on your device. Later we can make it
