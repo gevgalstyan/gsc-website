@@ -298,10 +298,6 @@ main {
 }
 
 .question-card {
-  height: 520px;
-  display: flex;
-  flex-direction: column;
-
   text-align: center;
   border: 2px solid #ff4a1d;
   border-radius: 22px;
@@ -334,43 +330,24 @@ input {
 }
 
 .question-card p {
-  flex: 1;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  margin: 24px 0;
-
-  font-size: 34px;
+  font-size: 30px;
   font-weight: 800;
-  line-height: 1.25;
-  text-align: center;
+  line-height: 1.32;
+  min-height: 125px;
 }
+
 .question-actions {
-  margin-top: auto;
-  height: 48px;
   display: flex;
   gap: 10px;
   justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.question-actions .primary {
-  width: 180px;
-  height: 48px;
 }
 
 .question-card small {
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
   color: #b9bfcb;
   margin-top: 18px;
-  flex-shrink: 0;
 }
+
 /* ============================================================
    8. STATS & FEATURES CONTAINER GRIDS
    ============================================================ */
