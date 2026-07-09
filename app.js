@@ -530,13 +530,15 @@ function renderAuthState(user) {
   const emailEl = document.getElementById('userEmail');
   const avatarEl = document.getElementById('userAvatar');
 
-  const adminSection = document.getElementById('admin');
-  const adminNavLink = document.querySelector('a[href="#admin"]');
+ if (adminSection) adminSection.style.display = isAdmin ? '' : 'none';  /* <<<< admin hidden */
+if (adminNavLink) adminNavLink.style.display = isAdmin ? '' : 'none';
 
   const isAdmin = user && ADMIN_EMAILS.includes((user.email || '').toLowerCase());
 
-  if (adminSection) adminSection.style.display = isAdmin ? '' : 'none';
-  if (adminNavLink) adminNavLink.style.display = isAdmin ? '' : 'none';
+ document.querySelectorAll('.admin-only').forEach(el => {
+  el.classList.toggle('hidden', !isAdmin);
+
+ });
 
   if (user) {
     const meta = user.user_metadata || {};
