@@ -4,6 +4,12 @@
 const SUPABASE_URL = "https://vmvsxxtaqtvaotrooafq.supabase.co";
 const SUPABASE_KEY = "sb_publishable_LEnh4oxd15-H9WbrUxlttQ_M046BB5u";
 
+const ADMIN_EMAILS = [
+  "galstyanoff@gmail.com"
+  "gevgalstyan@gmail.com"
+  "21galstyan@gmail.com"
+];
+
 let supabaseClient = null;
 let realtimeChannel = null; // Канал для мгновенной синхронизации
 
