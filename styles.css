@@ -347,23 +347,29 @@ input {
   line-height: 1.25;
   text-align: center;
 }
-
 .question-actions {
   margin-top: auto;
-
+  height: 48px;
   display: flex;
   gap: 10px;
   justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .question-actions .primary {
-  min-width: 180px;
+  width: 180px;
+  height: 48px;
 }
 
 .question-card small {
-  display: block;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #b9bfcb;
   margin-top: 18px;
+  flex-shrink: 0;
 }
 /* ============================================================
    8. STATS & FEATURES CONTAINER GRIDS
