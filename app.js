@@ -7,6 +7,7 @@ const SUPABASE_KEY = "sb_publishable_LEnh4oxd15-H9WbrUxlttQ_M046BB5u";
 const ADMIN_EMAILS = [
   "galstyanoff@gmail.com",
   "gevgalstyan@gmail.com",
+  "galstyanwork@gmail.com",
   "21galstyan@gmail.com"
 ];
 
