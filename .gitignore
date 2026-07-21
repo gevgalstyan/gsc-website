@@ -1,0 +1,43 @@
+node_modules/
+.next/
+out/
+dist/
+coverage/
+
+# Local environment and secrets
+.env*
+!.env.example
+
+# Logs and local runtime files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+*.pid
+
+# TypeScript and tooling caches
+*.tsbuildinfo
+.eslintcache
+.turbo/
+
+# Temporary files, backups, and browser-test artifacts
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+original-site-backup-*/
+test-results/
+playwright-report/
+screenshots/
+*.screenshot.png
+*-screenshot.png
+
+# OS and editor metadata
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
