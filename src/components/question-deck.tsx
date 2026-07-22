@@ -1,6 +1,6 @@
 "use client";
 
-import { RotateCcw, Shuffle, Sparkles } from "lucide-react";
+import { ArrowLeft, Copy, Heart, RotateCcw, Shuffle, Sparkles } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
   categories,
@@ -12,8 +12,11 @@ import {
   type Question,
 } from "@/lib/questions";
 
+// Storage contract: v3 keeps explored IDs, v2 is read only for migration, and
+// favorites v1 stores a deduplicated ID array. Session history stays in memory.
 const storageKey = "gsc_question_progress_v3";
 const legacyStorageKey = "gsc_seen_questions_v2";
+const favoritesStorageKey = "gsc_question_favorites_v1";
 const validQuestionIds = new Set(questions.map((question) => question.id));
 
 type StoredProgress = {
@@ -52,17 +55,32 @@ function saveProgress(seen: string[]) {
   }
 }
 
+function readFavorites(): string[] {
+  try { return sanitizeSeen(JSON.parse(localStorage.getItem(favoritesStorageKey) || "[]")); } catch { return []; }
+}
+
+function saveFavorites(favorites: string[]) {
+  try { localStorage.setItem(favoritesStorageKey, JSON.stringify(favorites)); } catch { /* Favorites remain available for this session. */ }
+}
+
 export function QuestionDeck() {
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
   const [seen, setSeen] = useState<string[]>([]);
   const [question, setQuestion] = useState<Question | null>(null);
+  const [history, setHistory] = useState<string[]>([]);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [feedback, setFeedback] = useState("");
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const loadStoredQuestions = window.setTimeout(() => {
       const restored = readProgress();
       setSeen(restored);
+      const restoredFavorites = readFavorites();
+      setFavorites(restoredFavorites);
+      saveFavorites(restoredFavorites);
       saveProgress(restored);
       setReady(true);
     }, 0);
@@ -72,28 +90,48 @@ export function QuestionDeck() {
   const pool = useMemo(
     () => questions.filter((item) =>
       (category === "all" || item.category === category)
-      && (difficulty === "all" || item.difficulty === difficulty)),
-    [category, difficulty],
+      && (difficulty === "all" || item.difficulty === difficulty)
+      && (!favoritesOnly || favorites.includes(item.id))),
+    [category, difficulty, favorites, favoritesOnly],
   );
   const seenSet = useMemo(() => new Set(seen), [seen]);
   const seenHere = pool.filter((item) => seenSet.has(item.id)).length;
   const remaining = pool.length - seenHere;
-  const exhausted = ready && remaining === 0;
+  const exhausted = ready && (favoritesOnly ? pool.length === 0 : remaining === 0);
   const categoryLabel = category === "all" ? "All Categories" : category;
   const difficultyLabel = difficulty === "all" ? "All Levels" : difficultyLabels[difficulty];
+  const currentFavorite = question ? favorites.includes(question.id) : false;
+
+  function compatible(item: Question, nextCategory = category, nextDifficulty = difficulty, onlyFavorites = favoritesOnly) {
+    return (nextCategory === "all" || item.category === nextCategory)
+      && (nextDifficulty === "all" || item.difficulty === nextDifficulty)
+      && (!onlyFavorites || favorites.includes(item.id));
+  }
+
+  function clearCurrentForFilters(nextCategory = category, nextDifficulty = difficulty, onlyFavorites = favoritesOnly) {
+    setQuestion(null);
+    setHistory((items) => items.filter((id) => {
+      const item = questions.find((candidate) => candidate.id === id);
+      return item ? compatible(item, nextCategory, nextDifficulty, onlyFavorites) : false;
+    }));
+    setFeedback("");
+  }
 
   function changeCategory(nextCategory: CategoryFilter) {
     setCategory(nextCategory);
-    setQuestion(null);
+    clearCurrentForFilters(nextCategory, difficulty);
   }
 
   function changeDifficulty(nextDifficulty: DifficultyFilter) {
     setDifficulty(nextDifficulty);
-    setQuestion(null);
+    clearCurrentForFilters(category, nextDifficulty);
   }
 
   function next() {
-    const available = pool.filter((item) => !seenSet.has(item.id));
+    const favoriteChoices = pool.filter((item) => item.id !== question?.id);
+    const available = favoritesOnly
+      ? (favoriteChoices.length ? favoriteChoices : pool)
+      : pool.filter((item) => !seenSet.has(item.id));
     if (!available.length) {
       setQuestion(null);
       return;
@@ -101,16 +139,60 @@ export function QuestionDeck() {
     const nextQuestion = available[Math.floor(Math.random() * available.length)];
     const updated = [...seen, nextQuestion.id];
     setSeen(updated);
+    if (question) setHistory((items) => [...items, question.id]);
     setQuestion(nextQuestion);
+    setFeedback("");
     saveProgress(updated);
   }
 
   function reset() {
+    if (seenHere > 0 && !window.confirm(`Reset explored progress for ${categoryLabel}, ${difficultyLabel}${favoritesOnly ? ", Favorites" : ""}? Favorites will be kept.`)) return;
     const poolIds = new Set(pool.map((item) => item.id));
     const updated = seen.filter((id) => !poolIds.has(id));
     setSeen(updated);
     setQuestion(null);
     saveProgress(updated);
+  }
+
+  function previous() {
+    const compatibleHistory = history.filter((id) => {
+      const item = questions.find((candidate) => candidate.id === id);
+      return item ? pool.some((candidate) => candidate.id === item.id) : false;
+    });
+    const previousId = compatibleHistory.at(-1);
+    if (!previousId) return;
+    setHistory(compatibleHistory.slice(0, -1));
+    setQuestion(questions.find((item) => item.id === previousId) ?? null);
+    setFeedback("");
+  }
+
+  function toggleFavorite() {
+    if (!question) return;
+    const removing = favorites.includes(question.id);
+    const updated = removing ? favorites.filter((id) => id !== question.id) : [...favorites, question.id];
+    setFavorites(updated);
+    saveFavorites(updated);
+    setFeedback(removing ? "Removed from favorites." : "Added to favorites.");
+    if (removing && favoritesOnly) {
+      setQuestion(null);
+      setHistory((items) => items.filter((id) => id !== question.id));
+    }
+  }
+
+  async function copyQuestion() {
+    if (!question) return;
+    try {
+      await navigator.clipboard.writeText(question.text);
+      setFeedback("Copied.");
+    } catch {
+      setFeedback("Couldn’t copy. Please select the question text instead.");
+    }
+  }
+
+  function toggleFavoritesView() {
+    const nextValue = !favoritesOnly;
+    setFavoritesOnly(nextValue);
+    clearCurrentForFilters(category, difficulty, nextValue);
   }
 
   return (
@@ -128,9 +210,12 @@ export function QuestionDeck() {
               <span>{difficultyLabels[level].split(" — ")[0]}</span><small>{difficultyLabels[level].split(" — ")[1]}</small>
             </button>
           ))}
+          <button className={`favorites-filter ${favoritesOnly ? "active" : ""}`} aria-pressed={favoritesOnly} onClick={toggleFavoritesView}>
+            <Heart aria-hidden="true" /> Favorites <small>{favorites.length}</small>
+          </button>
         </div>
         <p className="filter-summary" aria-live="polite">
-          <span>{categoryLabel}</span><i>•</i><span>{difficultyLabel}</span><strong>{pool.length} available</strong>
+          <span>{categoryLabel}</span><i>•</i><span>{difficultyLabel}</span>{favoritesOnly && <><i>•</i><span>Favorites</span></>}<strong>{pool.length} available</strong>
         </p>
       </div>
 
@@ -164,19 +249,26 @@ export function QuestionDeck() {
           <div className="question-copy" aria-live="polite">
             <div>
               {question && <span className={`level-badge level-${question.difficulty}`}>{difficultyLabels[question.difficulty]}</span>}
-              <p>{question?.text || (exhausted
-                ? "You’ve explored every question in this selection. Reset this pool to start again."
+              <p>{question?.text || (favoritesOnly && pool.length === 0
+                ? "No favorites match this selection yet. Save a question or adjust the filters."
+                : exhausted ? "You’ve explored every question in this selection. Reset this pool to start again."
                 : "Ready? Draw a question and let the conversation take you somewhere unexpected.")}</p>
             </div>
           </div>
-          <div className="question-controls">
-            <button className="button button-primary" onClick={next} disabled={!ready || exhausted}><Shuffle aria-hidden="true" />Draw a question</button>
-            <button className="icon-button" onClick={reset} disabled={!ready || seenHere === 0} aria-label={`Reset ${categoryLabel}, ${difficultyLabel} pool`} title="Reset selected pool"><RotateCcw aria-hidden="true" /></button>
+          <div className="question-actions" aria-label="Question navigation">
+            <button onClick={previous} disabled={!question || !history.some((id) => pool.some((item) => item.id === id))}><ArrowLeft aria-hidden="true" />Previous</button>
+            <button className={currentFavorite ? "active" : ""} onClick={toggleFavorite} disabled={!question} aria-pressed={currentFavorite}><Heart aria-hidden="true" />Favorite</button>
+            <button onClick={copyQuestion} disabled={!question}><Copy aria-hidden="true" />Copy</button>
+            <button className="button button-primary next-question" onClick={next} disabled={!ready || exhausted || pool.length === 0}><Shuffle aria-hidden="true" />Next question</button>
           </div>
-          <div className="deck-progress" role="progressbar" aria-label="Questions explored in selected pool" aria-valuemin={0} aria-valuemax={pool.length} aria-valuenow={seenHere}>
-            <span style={{ width: `${pool.length ? seenHere / pool.length * 100 : 0}%` }} />
+          <div className="question-progress-row">
+            <div className="deck-progress" role="progressbar" aria-label="Questions explored in selected pool" aria-valuemin={0} aria-valuemax={pool.length} aria-valuenow={seenHere}>
+              <span style={{ width: `${pool.length ? seenHere / pool.length * 100 : 0}%` }} />
+            </div>
+            <button className="reset-pool" onClick={reset} disabled={!ready || seenHere === 0}><RotateCcw aria-hidden="true" />Reset explored</button>
           </div>
           <small>{seenHere} explored <i>•</i> {Math.max(0, remaining)} remaining</small>
+          <span className="question-feedback" role="status" aria-live="polite">{feedback}</span>
         </div>
       </div>
     </section>

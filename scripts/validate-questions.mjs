@@ -6,11 +6,7 @@ const EXPECTED_CATEGORIES = [
   "Friendship & Relationships", "Would You Rather", "Storytelling", "Culture & Traditions", "Music", "Health & Lifestyle",
   "Education & Learning", "Nature & Environment", "Language & Communication", "Society & the Future",
 ];
-const ORIGINAL_COUNTS = {
-  "Ice Breakers": 30, Travel: 30, Funny: 30, Deep: 30, Career: 30, Movies: 30, Food: 30, Dreams: 30,
-  "Tech & AI": 12, "Mindset & Habits": 10,
-};
-const ORIGINAL_HASH = "04c3316643ac00519f68b6880fb3a41c465c141034ed2727af9d2433952aeddd";
+const PREVIOUS_LIBRARY_HASH = "d4ea3daed63615f35efa150158d0765f86c39276b35c43121de23a49b82fe26f";
 const VALID_LEVELS = new Set(["beginner", "intermediate", "advanced"]);
 const bank = JSON.parse(fs.readFileSync("src/data/questions.json", "utf8"));
 const failures = [];
@@ -24,18 +20,18 @@ const all = [];
 for (const category of EXPECTED_CATEGORIES) {
   const items = bank[category] ?? [];
   const levels = Object.groupBy(items, (question) => question.difficulty);
-  assert(items.length === 50, `${category}: expected 50 questions; found ${items.length}`);
-  assert((levels.beginner?.length ?? 0) === 15, `${category}: expected 15 beginner questions`);
-  assert((levels.intermediate?.length ?? 0) === 20, `${category}: expected 20 intermediate questions`);
-  assert((levels.advanced?.length ?? 0) === 15, `${category}: expected 15 advanced questions`);
+  assert(items.length === 100, `${category}: expected 100 questions; found ${items.length}`);
+  assert((levels.beginner?.length ?? 0) === 30, `${category}: expected 30 beginner questions`);
+  assert((levels.intermediate?.length ?? 0) === 40, `${category}: expected 40 intermediate questions`);
+  assert((levels.advanced?.length ?? 0) === 30, `${category}: expected 30 advanced questions`);
   for (const question of items) all.push({ ...question, category });
 }
 
 const globalLevels = Object.groupBy(all, (question) => question.difficulty);
-assert(all.length === 1000, `Expected 1,000 questions; found ${all.length}`);
-assert((globalLevels.beginner?.length ?? 0) === 300, "Expected 300 beginner questions");
-assert((globalLevels.intermediate?.length ?? 0) === 400, "Expected 400 intermediate questions");
-assert((globalLevels.advanced?.length ?? 0) === 300, "Expected 300 advanced questions");
+assert(all.length === 2000, `Expected 2,000 questions; found ${all.length}`);
+assert((globalLevels.beginner?.length ?? 0) === 600, "Expected 600 beginner questions");
+assert((globalLevels.intermediate?.length ?? 0) === 800, "Expected 800 intermediate questions");
+assert((globalLevels.advanced?.length ?? 0) === 600, "Expected 600 advanced questions");
 
 const ids = new Set();
 const normalizedTexts = new Map();
@@ -51,12 +47,12 @@ for (const question of all) {
   normalizedTexts.set(normalized, question.id);
 }
 
-const originals = Object.entries(ORIGINAL_COUNTS).flatMap(([category, count]) =>
-  bank[category].slice(0, count).map((question, index) => ({ id: `${category}-${index}`, category, text: question.text })),
-);
-const originalHash = crypto.createHash("sha256").update(JSON.stringify(originals)).digest("hex");
-assert(originals.length === 262, `Expected 262 original questions; found ${originals.length}`);
-assert(originalHash === ORIGINAL_HASH, "Original question IDs, categories, or text changed");
+const previousLibrary = EXPECTED_CATEGORIES.flatMap((category) => bank[category].slice(0, 50).map((question) => ({ ...question, category })));
+const previousHash = crypto.createHash("sha256").update(JSON.stringify(previousLibrary)).digest("hex");
+assert(previousLibrary.length === 1000, `Expected 1,000 previous questions; found ${previousLibrary.length}`);
+assert(previousHash === PREVIOUS_LIBRARY_HASH, "A previous question ID, category, text, or difficulty changed");
+const longest = [...all].sort((left, right) => right.text.length - left.text.length)[0];
+assert(longest.text.length <= 180, `${longest.id} is excessively long at ${longest.text.length} characters`);
 
 const tokenSet = (text) => new Set(normalize(text).split(" ").filter((word) => word.length > 3));
 const nearDuplicates = [];
@@ -75,11 +71,11 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("✓ 1,000 questions across 20 categories");
-console.log("✓ Every category: 15 beginner, 20 intermediate, 15 advanced");
-console.log("✓ Global levels: 300 beginner, 400 intermediate, 300 advanced");
+console.log("✓ 2,000 questions across 20 categories");
+console.log("✓ Every category: 30 beginner, 40 intermediate, 30 advanced");
+console.log("✓ Global levels: 600 beginner, 800 intermediate, 600 advanced");
 console.log(`✓ ${ids.size} unique IDs and ${normalizedTexts.size} unique normalized texts`);
-console.log("✓ All 262 original ID/category/text records preserved");
+console.log("✓ All 1,000 previous ID/category/text/difficulty records preserved");
+console.log(`✓ Longest question reviewed: ${longest.text.length} characters (${longest.id})`);
 console.log(`Near-duplicate review candidates (token containment ≥ 0.80): ${nearDuplicates.length}`);
 for (const [left, right, similarity] of nearDuplicates) console.log(`  ${similarity.toFixed(2)}  ${left} <> ${right}`);
-
