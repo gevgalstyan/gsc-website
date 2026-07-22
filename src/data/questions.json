@@ -1,284 +1,5042 @@
 {
   "Ice Breakers": [
-    "What made you smile this week?",
-    "What is one small thing that makes your day better?",
-    "What is your favorite way to spend a free evening?",
-    "What is something most people do not know about you?",
-    "What was the best part of your day today?",
-    "Are you more of a morning person or a night person?",
-    "What is one thing you are really good at?",
-    "What is your comfort food?",
-    "What app do you use too much?",
-    "What is one habit you want to build?",
-    "What is your favorite place in your city?",
-    "What is one thing you always notice about people?",
-    "What kind of music gives you energy?",
-    "What is your favorite season and why?",
-    "What is one thing you would like to try this year?",
-    "What is your favorite smell?",
-    "What is a simple thing that always makes you happy?",
-    "What is your favorite way to relax?",
-    "What is one thing you are proud of this month?",
-    "What do you usually do when you have free time?",
-    "What is your favorite drink?",
-    "What is your favorite day of the week?",
-    "What is one small goal you have right now?",
-    "What is something you can talk about for hours?",
-    "What is your favorite thing about your hometown?",
-    "What is one thing you want to learn?",
-    "What is your favorite memory from school?",
-    "What is something that gives you energy?",
-    "What is one thing you always carry with you?",
-    "What is your favorite way to start the day?"
+    {
+      "id": "Ice Breakers-0",
+      "text": "What made you smile this week?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-1",
+      "text": "What is one small thing that makes your day better?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-2",
+      "text": "What is your favorite way to spend a free evening?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-3",
+      "text": "What is something most people do not know about you?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Ice Breakers-4",
+      "text": "What was the best part of your day today?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-5",
+      "text": "Are you more of a morning person or a night person?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-6",
+      "text": "What is one thing you are really good at?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-7",
+      "text": "What is your comfort food?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-8",
+      "text": "What app do you use too much?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-9",
+      "text": "What is one habit you want to build?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-10",
+      "text": "What is your favorite place in your city?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-11",
+      "text": "What is one thing you always notice about people?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Ice Breakers-12",
+      "text": "What kind of music gives you energy?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-13",
+      "text": "What is your favorite season and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-14",
+      "text": "What is one thing you would like to try this year?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-15",
+      "text": "What is your favorite smell?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-16",
+      "text": "What is a simple thing that always makes you happy?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-17",
+      "text": "What is your favorite way to relax?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Ice Breakers-18",
+      "text": "What is one thing you are proud of this month?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Ice Breakers-19",
+      "text": "What do you usually do when you have free time?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-20",
+      "text": "What is your favorite drink?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-21",
+      "text": "What is your favorite day of the week?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-22",
+      "text": "What is one small goal you have right now?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-23",
+      "text": "What is something you can talk about for hours?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Ice Breakers-24",
+      "text": "What is your favorite thing about your hometown?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Ice Breakers-25",
+      "text": "What is one thing you want to learn?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-26",
+      "text": "What is your favorite memory from school?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Ice Breakers-27",
+      "text": "What is something that gives you energy?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-28",
+      "text": "What is one thing you always carry with you?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Ice Breakers-29",
+      "text": "What is your favorite way to start the day?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-30",
+      "text": "What is a small pleasure you enjoyed recently?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-31",
+      "text": "How do you like to spend a quiet Sunday?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-32",
+      "text": "Which everyday task do you find surprisingly satisfying?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-33",
+      "text": "What kind of weather puts you in a good mood?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-34",
+      "text": "What is a useful item you bought recently?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Ice Breakers-35",
+      "text": "How would your closest friends describe your sense of humor?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-36",
+      "text": "Which part of your daily routine would you happily change?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-37",
+      "text": "Tell us about a recent moment when time passed quickly.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-38",
+      "text": "What local place would you show to a first-time visitor?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-39",
+      "text": "Which personal quality has helped you most this year?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-40",
+      "text": "What activity helps you feel comfortable in a new group?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-41",
+      "text": "Which hobby or interest have you grown into over time?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-42",
+      "text": "What ordinary experience deserves more appreciation?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Ice Breakers-43",
+      "text": "What first impression do people often form about you, and how accurate is it?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Ice Breakers-44",
+      "text": "Which social custom would you find hardest to explain to an outsider?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Ice Breakers-45",
+      "text": "How does the way you spend free time reflect your priorities?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Ice Breakers-46",
+      "text": "What makes a conversation memorable rather than merely pleasant?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Ice Breakers-47",
+      "text": "Which part of your personality appears only when you feel completely comfortable?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Ice Breakers-48",
+      "text": "How do you decide when to follow a plan and when to be spontaneous?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Ice Breakers-49",
+      "text": "What everyday choice reveals more about a person than people realize?",
+      "difficulty": "advanced"
+    }
   ],
   "Travel": [
-    "If you could live in any country for one year, where would you go?",
-    "What city surprised you the most?",
-    "Beach, mountains, or city trip?",
-    "What is your dream travel route?",
-    "What is the best food you have tried while traveling?",
-    "Would you rather travel alone or with friends?",
-    "What country feels mysterious to you?",
-    "What is one place in Russia you want to visit?",
-    "What is your best travel memory?",
-    "What travel mistake taught you something?",
-    "What country would you visit again?",
-    "Do you prefer hotels, apartments, or camping?",
-    "What is the longest trip you have ever taken?",
-    "What is the most beautiful place you have seen?",
-    "What city would you like to explore at night?",
-    "What travel item is always in your bag?",
-    "Would you rather travel by plane, train, or car?",
-    "What is your favorite airport or train station experience?",
-    "What is one country you know almost nothing about but want to visit?",
-    "Do you plan trips carefully or improvise?",
-    "What is your perfect weekend trip?",
-    "What place feels overrated to you?",
-    "What place feels underrated to you?",
-    "What is the scariest travel experience you had?",
-    "Would you rather travel to the past or the future?",
-    "What local tradition from another country do you like?",
-    "What is the best souvenir you have bought?",
-    "What language would help you travel more easily?",
-    "What is your favorite type of landscape?",
-    "Where would you go if you had a free ticket tomorrow?"
+    {
+      "id": "Travel-0",
+      "text": "If you could live in any country for one year, where would you go?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Travel-1",
+      "text": "What city surprised you the most?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-2",
+      "text": "Beach, mountains, or city trip?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-3",
+      "text": "What is your dream travel route?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Travel-4",
+      "text": "What is the best food you have tried while traveling?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-5",
+      "text": "Would you rather travel alone or with friends?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-6",
+      "text": "What country feels mysterious to you?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Travel-7",
+      "text": "What is one place in Russia you want to visit?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-8",
+      "text": "What is your best travel memory?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-9",
+      "text": "What travel mistake taught you something?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-10",
+      "text": "What country would you visit again?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-11",
+      "text": "Do you prefer hotels, apartments, or camping?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-12",
+      "text": "What is the longest trip you have ever taken?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-13",
+      "text": "What is the most beautiful place you have seen?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-14",
+      "text": "What city would you like to explore at night?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-15",
+      "text": "What travel item is always in your bag?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-16",
+      "text": "Would you rather travel by plane, train, or car?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-17",
+      "text": "What is your favorite airport or train station experience?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-18",
+      "text": "What is one country you know almost nothing about but want to visit?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Travel-19",
+      "text": "Do you plan trips carefully or improvise?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-20",
+      "text": "What is your perfect weekend trip?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-21",
+      "text": "What place feels overrated to you?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Travel-22",
+      "text": "What place feels underrated to you?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Travel-23",
+      "text": "What is the scariest travel experience you had?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-24",
+      "text": "Would you rather travel to the past or the future?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Travel-25",
+      "text": "What local tradition from another country do you like?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Travel-26",
+      "text": "What is the best souvenir you have bought?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-27",
+      "text": "What language would help you travel more easily?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-28",
+      "text": "What is your favorite type of landscape?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-29",
+      "text": "Where would you go if you had a free ticket tomorrow?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-30",
+      "text": "What do you like to do on the first day of a trip?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-31",
+      "text": "Which place near your home is good for a day trip?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-32",
+      "text": "What do you usually pack first?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-33",
+      "text": "How do you pass the time on a long journey?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-34",
+      "text": "Which season do you prefer for traveling, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Travel-35",
+      "text": "Tell us about a journey that did not go according to plan.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-36",
+      "text": "How do you choose between famous sights and local neighborhoods?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-37",
+      "text": "What makes a travel companion easy to spend time with?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-38",
+      "text": "Which destination would suit a slow, month-long visit?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-39",
+      "text": "How can visitors support local businesses while traveling?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-40",
+      "text": "What part of travel planning do you enjoy or avoid?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-41",
+      "text": "Describe a place that looked different from its photographs.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-42",
+      "text": "What have you learned by observing everyday life in another place?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Travel-43",
+      "text": "How can tourism preserve a place while also changing it?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Travel-44",
+      "text": "When does searching for an authentic experience become unrealistic?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Travel-45",
+      "text": "How might frequent travel shape a person’s sense of home?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Travel-46",
+      "text": "What responsibilities do travelers have toward communities they visit?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Travel-47",
+      "text": "How does speaking the local language change the experience of a place?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Travel-48",
+      "text": "Which is more valuable in travel: comfort, discovery, or connection?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Travel-49",
+      "text": "How would you design a trip that challenges your usual way of seeing the world?",
+      "difficulty": "advanced"
+    }
   ],
   "Funny": [
-    "What is the funniest misunderstanding you have ever had?",
-    "If animals could talk, which animal would be the rudest?",
-    "What is the most useless superpower you can imagine?",
-    "What is your most embarrassing small mistake?",
-    "If your life had a soundtrack, what song would play today?",
-    "What food do you secretly judge people for liking?",
-    "What is something silly you believed as a child?",
-    "If you had to rename yourself, what name would you choose?",
-    "What would you do if you became invisible for one hour?",
-    "What is a harmless lie people often tell?",
-    "What is the worst advice you have ever heard?",
-    "What is the weirdest thing in your room?",
-    "What is a funny habit you have?",
-    "What is the strangest compliment you have received?",
-    "What would your pet say about you?",
-    "What is the funniest thing you have seen online recently?",
-    "What is your most irrational fear?",
-    "What job would be terrible if people had to sing all day?",
-    "What would you do if you woke up as a cat?",
-    "What is the funniest excuse for being late?",
-    "What is the weirdest food combination you like?",
-    "If your phone could talk, what would it complain about?",
-    "What is something adults do that is actually childish?",
-    "What is the worst name for a restaurant?",
-    "What is the funniest thing a child has said to you?",
-    "What is one thing you are bad at but still enjoy?",
-    "What is the most dramatic reaction to a small problem?",
-    "If you opened a useless business, what would it sell?",
-    "What is the funniest way to introduce yourself?",
-    "What is a normal thing that feels illegal?"
+    {
+      "id": "Funny-0",
+      "text": "What is the funniest misunderstanding you have ever had?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Funny-1",
+      "text": "If animals could talk, which animal would be the rudest?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-2",
+      "text": "What is the most useless superpower you can imagine?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-3",
+      "text": "What is your most embarrassing small mistake?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-4",
+      "text": "If your life had a soundtrack, what song would play today?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-5",
+      "text": "What food do you secretly judge people for liking?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Funny-6",
+      "text": "What is something silly you believed as a child?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-7",
+      "text": "If you had to rename yourself, what name would you choose?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-8",
+      "text": "What would you do if you became invisible for one hour?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-9",
+      "text": "What is a harmless lie people often tell?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Funny-10",
+      "text": "What is the worst advice you have ever heard?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Funny-11",
+      "text": "What is the weirdest thing in your room?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-12",
+      "text": "What is a funny habit you have?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-13",
+      "text": "What is the strangest compliment you have received?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-14",
+      "text": "What would your pet say about you?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-15",
+      "text": "What is the funniest thing you have seen online recently?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-16",
+      "text": "What is your most irrational fear?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Funny-17",
+      "text": "What job would be terrible if people had to sing all day?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-18",
+      "text": "What would you do if you woke up as a cat?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-19",
+      "text": "What is the funniest excuse for being late?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-20",
+      "text": "What is the weirdest food combination you like?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-21",
+      "text": "If your phone could talk, what would it complain about?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Funny-22",
+      "text": "What is something adults do that is actually childish?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Funny-23",
+      "text": "What is the worst name for a restaurant?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-24",
+      "text": "What is the funniest thing a child has said to you?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-25",
+      "text": "What is one thing you are bad at but still enjoy?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-26",
+      "text": "What is the most dramatic reaction to a small problem?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Funny-27",
+      "text": "If you opened a useless business, what would it sell?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-28",
+      "text": "What is the funniest way to introduce yourself?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-29",
+      "text": "What is a normal thing that feels illegal?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-30",
+      "text": "What would be a terrible name for a cat?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-31",
+      "text": "Which vegetable would make the best detective, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-32",
+      "text": "What is the silliest sound you can describe?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-33",
+      "text": "If socks had personalities, what would yours be like?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-34",
+      "text": "What everyday object would be funniest if it were enormous?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Funny-35",
+      "text": "Invent a polite excuse for leaving the world’s most boring party.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-36",
+      "text": "What would happen if everyone had to wear a hat that showed their mood?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-37",
+      "text": "Describe the worst possible theme for a luxury hotel.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-38",
+      "text": "If your week were a comedy series, what would this episode be called?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-39",
+      "text": "What harmless competition could you unexpectedly become world champion in?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-40",
+      "text": "How would you explain coffee to an alien who had never felt tired?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-41",
+      "text": "Which historical figure would be most confused by a group chat?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-42",
+      "text": "Create a new holiday that celebrates something completely ordinary.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Funny-43",
+      "text": "What social rule would become absurd if everyone followed it too literally?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Funny-44",
+      "text": "How would society change if people laughed whenever they tried to lie?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Funny-45",
+      "text": "Design an advertisement for a product that nobody could possibly need.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Funny-46",
+      "text": "What serious profession would produce the funniest reality television show?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Funny-47",
+      "text": "If embarrassment were a currency, how would you become wealthy?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Funny-48",
+      "text": "What minor inconvenience could inspire an unnecessarily dramatic epic film?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Funny-49",
+      "text": "Which modern habit would look most ridiculous to someone from five hundred years ago?",
+      "difficulty": "advanced"
+    }
   ],
   "Deep": [
-    "What does success mean to you?",
-    "What advice would you give your younger self?",
-    "What are you currently trying to improve in yourself?",
-    "What makes a person truly interesting?",
-    "What is a fear you want to overcome?",
-    "What kind of life do you want in ten years?",
-    "What is something money cannot buy?",
-    "What is one decision that changed your life?",
-    "What do you want people to remember about you?",
-    "What does freedom mean to you?",
-    "What is one lesson life taught you recently?",
-    "What makes you feel alive?",
-    "What kind of people inspire you?",
-    "What is something you are still healing from?",
-    "What does a peaceful life look like to you?",
-    "What is one thing you wish people understood better?",
-    "What is the difference between being busy and being productive?",
-    "What is one belief you changed your mind about?",
-    "What is something you need to forgive yourself for?",
-    "What makes a friendship strong?",
-    "What does loyalty mean to you?",
-    "What is one thing you would never sell for money?",
-    "What does happiness mean to you?",
-    "What is something you are grateful for today?",
-    "What is the hardest truth to accept?",
-    "What kind of legacy do you want to leave?",
-    "What is a moment that made you stronger?",
-    "What do you think people worry about too much?",
-    "What is something simple that feels meaningful?",
-    "What is one question you ask yourself often?"
+    {
+      "id": "Deep-0",
+      "text": "What does success mean to you?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-1",
+      "text": "What advice would you give your younger self?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-2",
+      "text": "What are you currently trying to improve in yourself?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-3",
+      "text": "What makes a person truly interesting?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Deep-4",
+      "text": "What is a fear you want to overcome?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-5",
+      "text": "What kind of life do you want in ten years?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Deep-6",
+      "text": "What is something money cannot buy?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-7",
+      "text": "What is one decision that changed your life?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-8",
+      "text": "What do you want people to remember about you?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Deep-9",
+      "text": "What does freedom mean to you?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Deep-10",
+      "text": "What is one lesson life taught you recently?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-11",
+      "text": "What makes you feel alive?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-12",
+      "text": "What kind of people inspire you?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-13",
+      "text": "What is something you are still healing from?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Deep-14",
+      "text": "What does a peaceful life look like to you?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-15",
+      "text": "What is one thing you wish people understood better?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-16",
+      "text": "What is the difference between being busy and being productive?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-17",
+      "text": "What is one belief you changed your mind about?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-18",
+      "text": "What is something you need to forgive yourself for?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Deep-19",
+      "text": "What makes a friendship strong?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-20",
+      "text": "What does loyalty mean to you?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-21",
+      "text": "What is one thing you would never sell for money?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-22",
+      "text": "What does happiness mean to you?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-23",
+      "text": "What is something you are grateful for today?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-24",
+      "text": "What is the hardest truth to accept?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Deep-25",
+      "text": "What kind of legacy do you want to leave?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Deep-26",
+      "text": "What is a moment that made you stronger?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-27",
+      "text": "What do you think people worry about too much?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-28",
+      "text": "What is something simple that feels meaningful?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-29",
+      "text": "What is one question you ask yourself often?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-30",
+      "text": "What helps you feel calm after a busy day?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-31",
+      "text": "Which personal value is important to you?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-32",
+      "text": "What kind of support do people need when learning something new?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-33",
+      "text": "When do you feel most like yourself?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-34",
+      "text": "What small choice has improved your daily life?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Deep-35",
+      "text": "How can people stay hopeful without ignoring real problems?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-36",
+      "text": "What does it mean to use your time well?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-37",
+      "text": "When has changing your opinion helped you grow?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-38",
+      "text": "How do you recognize that a goal is truly your own?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-39",
+      "text": "What makes an apology feel sincere?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-40",
+      "text": "Which matters more in a difficult moment: honesty or kindness?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-41",
+      "text": "How can people protect their peace without avoiding responsibility?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-42",
+      "text": "What have you learned from spending time with people unlike yourself?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Deep-43",
+      "text": "Can a meaningful life also be an ordinary one? Explain your view.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Deep-44",
+      "text": "How much of identity is chosen, and how much is shaped by circumstance?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Deep-45",
+      "text": "When can accepting uncertainty be more useful than seeking an answer?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Deep-46",
+      "text": "What is the difference between changing yourself and becoming more fully yourself?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Deep-47",
+      "text": "How should we balance gratitude for the present with ambition for the future?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Deep-48",
+      "text": "Can people understand one another deeply without sharing similar experiences?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Deep-49",
+      "text": "What makes a principle worth keeping when it becomes inconvenient?",
+      "difficulty": "advanced"
+    }
   ],
   "Career": [
-    "What would your dream job look like?",
-    "What skill would help you earn more money?",
-    "Would you rather work for yourself or for a company?",
-    "What is one business idea you find interesting?",
-    "What is the best work advice you have heard?",
-    "What motivates you more: money, freedom, or recognition?",
-    "What job would you never want to do?",
-    "What is one thing you learned from work?",
-    "What makes a good leader?",
-    "Would you rather be a specialist or a generalist?",
-    "What is the hardest part of your work?",
-    "What is one skill everyone should learn?",
-    "What makes a workplace toxic?",
-    "What makes a workplace healthy?",
-    "Would you rather earn more or have more free time?",
-    "What is one mistake people make in business?",
-    "What kind of boss would you be?",
-    "What is a job that deserves more respect?",
-    "What is one thing you want to build in your career?",
-    "What is your biggest work-related goal?",
-    "What makes a person professional?",
-    "What is the best way to deal with stress at work?",
-    "What is one business you would never start?",
-    "What is one business you would love to own?",
-    "What do customers really care about?",
-    "What makes service excellent?",
-    "What is one thing you learned from a difficult customer?",
-    "What is better: talent or discipline?",
-    "What is one thing you would change about your work life?",
-    "What does financial freedom mean to you?"
+    {
+      "id": "Career-0",
+      "text": "What would your dream job look like?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-1",
+      "text": "What skill would help you earn more money?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Career-2",
+      "text": "Would you rather work for yourself or for a company?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-3",
+      "text": "What is one business idea you find interesting?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Career-4",
+      "text": "What is the best work advice you have heard?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-5",
+      "text": "What motivates you more: money, freedom, or recognition?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-6",
+      "text": "What job would you never want to do?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-7",
+      "text": "What is one thing you learned from work?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-8",
+      "text": "What makes a good leader?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Career-9",
+      "text": "Would you rather be a specialist or a generalist?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-10",
+      "text": "What is the hardest part of your work?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-11",
+      "text": "What is one skill everyone should learn?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-12",
+      "text": "What makes a workplace toxic?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Career-13",
+      "text": "What makes a workplace healthy?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-14",
+      "text": "Would you rather earn more or have more free time?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-15",
+      "text": "What is one mistake people make in business?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Career-16",
+      "text": "What kind of boss would you be?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-17",
+      "text": "What is a job that deserves more respect?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-18",
+      "text": "What is one thing you want to build in your career?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-19",
+      "text": "What is your biggest work-related goal?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-20",
+      "text": "What makes a person professional?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-21",
+      "text": "What is the best way to deal with stress at work?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-22",
+      "text": "What is one business you would never start?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-23",
+      "text": "What is one business you would love to own?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-24",
+      "text": "What do customers really care about?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Career-25",
+      "text": "What makes service excellent?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-26",
+      "text": "What is one thing you learned from a difficult customer?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-27",
+      "text": "What is better: talent or discipline?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Career-28",
+      "text": "What is one thing you would change about your work life?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-29",
+      "text": "What does financial freedom mean to you?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Career-30",
+      "text": "Which task makes a workday feel productive to you?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-31",
+      "text": "What kind of schedule helps you work well?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-32",
+      "text": "Which tool or app is most useful in your work or studies?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-33",
+      "text": "What skill would you enjoy teaching to a colleague?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-34",
+      "text": "How do you like to celebrate finishing a difficult task?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Career-35",
+      "text": "Tell us about feedback that changed how you approach your work.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-36",
+      "text": "How can a team make new members feel included?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-37",
+      "text": "What makes a meeting worth everyone’s time?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-38",
+      "text": "How do you decide which professional skill to learn next?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-39",
+      "text": "What can managers do to make mistakes easier to discuss?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-40",
+      "text": "How would you improve the first week in a new job?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-41",
+      "text": "Which matters more for teamwork: clear roles or flexibility?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-42",
+      "text": "What kind of challenge keeps work interesting for you?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Career-43",
+      "text": "How should organizations balance efficiency with employee wellbeing?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Career-44",
+      "text": "When does professional ambition become counterproductive?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Career-45",
+      "text": "How might automation change what people consider meaningful work?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Career-46",
+      "text": "What should a leader do when the popular decision is not the responsible one?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Career-47",
+      "text": "How can workplaces reward collaboration without discouraging individual initiative?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Career-48",
+      "text": "What obligations do companies have beyond serving customers and employees?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Career-49",
+      "text": "How should a person evaluate a career opportunity whose benefits are uncertain?",
+      "difficulty": "advanced"
+    }
   ],
   "Movies": [
-    "What movie can you watch again and again?",
-    "Which character do you relate to?",
-    "What film ending disappointed you?",
-    "Would you rather live in a comedy, action movie, or fantasy movie?",
-    "What movie made you think deeply?",
-    "What series are you watching now?",
-    "Which actor always makes a movie better?",
-    "What is your favorite movie quote?",
-    "What movie would you recommend to everyone?",
-    "What childhood cartoon do you still like?",
-    "What movie villain do you secretly like?",
-    "What movie made you cry?",
-    "What movie made you laugh the most?",
-    "What series is overrated?",
-    "What series is underrated?",
-    "What movie world would you like to visit?",
-    "What character would be your best friend?",
-    "What movie do you hate but everyone loves?",
-    "What movie do you love but others dislike?",
-    "What is the best movie soundtrack?",
-    "Do you prefer movies or series?",
-    "What movie genre do you never get tired of?",
-    "What movie scene do you remember clearly?",
-    "What actor would play you in a movie?",
-    "What movie taught you something?",
-    "What film should never get a remake?",
-    "What movie has the best atmosphere?",
-    "What is your favorite animated movie?",
-    "What movie would you show to a foreign friend?",
-    "What movie changed your mood completely?"
+    {
+      "id": "Movies-0",
+      "text": "What movie can you watch again and again?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-1",
+      "text": "Which character do you relate to?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Movies-2",
+      "text": "What film ending disappointed you?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-3",
+      "text": "Would you rather live in a comedy, action movie, or fantasy movie?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-4",
+      "text": "What movie made you think deeply?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Movies-5",
+      "text": "What series are you watching now?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-6",
+      "text": "Which actor always makes a movie better?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-7",
+      "text": "What is your favorite movie quote?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-8",
+      "text": "What movie would you recommend to everyone?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-9",
+      "text": "What childhood cartoon do you still like?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-10",
+      "text": "What movie villain do you secretly like?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-11",
+      "text": "What movie made you cry?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-12",
+      "text": "What movie made you laugh the most?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-13",
+      "text": "What series is overrated?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Movies-14",
+      "text": "What series is underrated?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Movies-15",
+      "text": "What movie world would you like to visit?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-16",
+      "text": "What character would be your best friend?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-17",
+      "text": "What movie do you hate but everyone loves?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Movies-18",
+      "text": "What movie do you love but others dislike?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Movies-19",
+      "text": "What is the best movie soundtrack?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-20",
+      "text": "Do you prefer movies or series?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-21",
+      "text": "What movie genre do you never get tired of?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-22",
+      "text": "What movie scene do you remember clearly?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-23",
+      "text": "What actor would play you in a movie?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-24",
+      "text": "What movie taught you something?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-25",
+      "text": "What film should never get a remake?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Movies-26",
+      "text": "What movie has the best atmosphere?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-27",
+      "text": "What is your favorite animated movie?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-28",
+      "text": "What movie would you show to a foreign friend?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Movies-29",
+      "text": "What movie changed your mood completely?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-30",
+      "text": "Where do you prefer to watch films, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-31",
+      "text": "Which film character always makes you smile?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-32",
+      "text": "What snack belongs with a movie night?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-33",
+      "text": "Which movie would you like to watch for the first time again?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-34",
+      "text": "What kind of film suits a rainy evening?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Movies-35",
+      "text": "How does watching a film with friends change the experience?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-36",
+      "text": "Tell us about a character whose choices surprised you.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-37",
+      "text": "What makes an opening scene immediately interesting?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-38",
+      "text": "Which book adaptation handled its source material well?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-39",
+      "text": "How important is realism in a story you enjoy?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-40",
+      "text": "What makes a supporting character unforgettable?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-41",
+      "text": "Which film deserves more attention in your opinion?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-42",
+      "text": "How can subtitles or dubbing change the way a performance feels?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Movies-43",
+      "text": "Can a film be artistically successful if its message is unclear?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Movies-44",
+      "text": "How do movies influence what audiences consider normal or desirable?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Movies-45",
+      "text": "When does nostalgia improve a film, and when does it limit originality?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Movies-46",
+      "text": "Should creators update older stories for modern audiences or preserve their original context?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Movies-47",
+      "text": "How can an unreliable narrator make a story more powerful?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Movies-48",
+      "text": "What separates meaningful ambiguity from an unsatisfying ending?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Movies-49",
+      "text": "How does the business of filmmaking shape the stories that reach audiences?",
+      "difficulty": "advanced"
+    }
   ],
   "Food": [
-    "What food could you eat every day?",
-    "What dish represents your family?",
-    "What is the best café or restaurant in your city?",
-    "Do you prefer cooking or ordering food?",
-    "What food do you dislike that everyone else seems to love?",
-    "What is your perfect breakfast?",
-    "What country has the best cuisine?",
-    "Sweet or salty?",
-    "What is one dish you want to learn to cook?",
-    "What is your guilty pleasure snack?",
-    "What is your favorite street food?",
-    "What food reminds you of childhood?",
-    "What is the best thing to eat late at night?",
-    "What is your favorite homemade dish?",
-    "What drink do you order most often?",
-    "What is one food you will never try again?",
-    "What is the best sauce?",
-    "What is the most overrated food?",
-    "What is the most underrated food?",
-    "What is your favorite dessert?",
-    "Would you rather eat only meat or only vegetables for a week?",
-    "What is the perfect food for a cold day?",
-    "What food makes people happy?",
-    "What is your favorite barbecue food?",
-    "What is one dish you cook well?",
-    "What food trend you do not understand?",
-    "What food would you miss abroad?",
-    "What is better: simple food or fancy food?",
-    "What is your favorite comfort meal?",
-    "What food would serve to impress guests?"
+    {
+      "id": "Food-0",
+      "text": "What food could you eat every day?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-1",
+      "text": "What dish represents your family?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Food-2",
+      "text": "What is the best café or restaurant in your city?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-3",
+      "text": "Do you prefer cooking or ordering food?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-4",
+      "text": "What food do you dislike that everyone else seems to love?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-5",
+      "text": "What is your perfect breakfast?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-6",
+      "text": "What country has the best cuisine?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Food-7",
+      "text": "Sweet or salty?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-8",
+      "text": "What is one dish you want to learn to cook?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-9",
+      "text": "What is your guilty pleasure snack?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-10",
+      "text": "What is your favorite street food?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-11",
+      "text": "What food reminds you of childhood?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-12",
+      "text": "What is the best thing to eat late at night?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-13",
+      "text": "What is your favorite homemade dish?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-14",
+      "text": "What drink do you order most often?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-15",
+      "text": "What is one food you will never try again?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-16",
+      "text": "What is the best sauce?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-17",
+      "text": "What is the most overrated food?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Food-18",
+      "text": "What is the most underrated food?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Food-19",
+      "text": "What is your favorite dessert?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-20",
+      "text": "Would you rather eat only meat or only vegetables for a week?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Food-21",
+      "text": "What is the perfect food for a cold day?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-22",
+      "text": "What food makes people happy?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Food-23",
+      "text": "What is your favorite barbecue food?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-24",
+      "text": "What is one dish you cook well?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-25",
+      "text": "What food trend you do not understand?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-26",
+      "text": "What food would you miss abroad?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Food-27",
+      "text": "What is better: simple food or fancy food?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-28",
+      "text": "What is your favorite comfort meal?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Food-29",
+      "text": "What food would serve to impress guests?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-30",
+      "text": "Which meal do you most enjoy sharing with other people?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-31",
+      "text": "What ingredient do you always keep at home?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-32",
+      "text": "How do you make a simple meal feel special?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-33",
+      "text": "Which fruit or vegetable is best in season?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-34",
+      "text": "What would you serve at a relaxed weekend lunch?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Food-35",
+      "text": "Tell us about a recipe that took several attempts to learn.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-36",
+      "text": "How do family recipes change as they pass between generations?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-37",
+      "text": "What makes a restaurant feel welcoming before the food arrives?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-38",
+      "text": "How has your relationship with cooking changed over time?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-39",
+      "text": "Which food tradition would you enjoy introducing to visitors?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-40",
+      "text": "What meal would represent your city to someone new?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-41",
+      "text": "How do smell and atmosphere affect the way food tastes?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-42",
+      "text": "What makes a shared meal good for conversation?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Food-43",
+      "text": "How does food help people maintain a connection to a place or culture?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Food-44",
+      "text": "When does adapting a traditional dish become innovation rather than loss?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Food-45",
+      "text": "How should convenience, cost, health, and pleasure influence food choices?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Food-46",
+      "text": "What does hospitality through food communicate without words?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Food-47",
+      "text": "How have global food trends changed local eating habits?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Food-48",
+      "text": "Why can the same flavor create comfort for one person and discomfort for another?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Food-49",
+      "text": "What responsibilities do restaurants have when presenting food from another culture?",
+      "difficulty": "advanced"
+    }
   ],
   "Dreams": [
-    "What is one big dream you rarely talk about?",
-    "If money was not a problem, what would you do?",
-    "What kind of house would you like to live in?",
-    "What would your perfect weekend look like?",
-    "What is one thing you want to experience at least once?",
-    "What would you do if you had one year completely free?",
-    "What does your ideal morning look like?",
-    "What is a dream you had as a child?",
-    "What goal are you afraid to start?",
-    "What would make this year unforgettable for you?",
-    "What is one place you dream of visiting?",
-    "What skill do you dream of mastering?",
-    "What would your perfect life look like?",
-    "What would you do if you knew you could not fail?",
-    "What is one thing you want to own someday?",
-    "What kind of family life do you dream about?",
-    "What is one dream you already achieved?",
-    "What dream changed as you got older?",
-    "What would you build if you had unlimited resources?",
-    "What is one adventure you want to have?",
-    "What would your dream business be?",
-    "What would your dream vacation look like?",
-    "What is one thing you want to do before turning 40?",
-    "What would make you feel truly successful?",
-    "What is one dream that scares you?",
-    "What future version of yourself do you want to meet?",
-    "What is one goal you want to start this month?",
-    "What would your ideal city look like?",
-    "What is one thing you want to be remembered for?",
-    "What dream is worth working hard for?"
+    {
+      "id": "Dreams-0",
+      "text": "What is one big dream you rarely talk about?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Dreams-1",
+      "text": "If money was not a problem, what would you do?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Dreams-2",
+      "text": "What kind of house would you like to live in?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-3",
+      "text": "What would your perfect weekend look like?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-4",
+      "text": "What is one thing you want to experience at least once?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-5",
+      "text": "What would you do if you had one year completely free?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-6",
+      "text": "What does your ideal morning look like?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-7",
+      "text": "What is a dream you had as a child?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-8",
+      "text": "What goal are you afraid to start?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Dreams-9",
+      "text": "What would make this year unforgettable for you?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-10",
+      "text": "What is one place you dream of visiting?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-11",
+      "text": "What skill do you dream of mastering?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-12",
+      "text": "What would your perfect life look like?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Dreams-13",
+      "text": "What would you do if you knew you could not fail?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Dreams-14",
+      "text": "What is one thing you want to own someday?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-15",
+      "text": "What kind of family life do you dream about?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-16",
+      "text": "What is one dream you already achieved?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-17",
+      "text": "What dream changed as you got older?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-18",
+      "text": "What would you build if you had unlimited resources?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Dreams-19",
+      "text": "What is one adventure you want to have?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-20",
+      "text": "What would your dream business be?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-21",
+      "text": "What would your dream vacation look like?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-22",
+      "text": "What is one thing you want to do before turning 40?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-23",
+      "text": "What would make you feel truly successful?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-24",
+      "text": "What is one dream that scares you?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-25",
+      "text": "What future version of yourself do you want to meet?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Dreams-26",
+      "text": "What is one goal you want to start this month?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-27",
+      "text": "What would your ideal city look like?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-28",
+      "text": "What is one thing you want to be remembered for?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Dreams-29",
+      "text": "What dream is worth working hard for?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-30",
+      "text": "What would you like to learn in the next few years?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-31",
+      "text": "Which place would you love to call home for a while?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-32",
+      "text": "What creative project would you like to try?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-33",
+      "text": "How would you spend an ideal day off next year?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-34",
+      "text": "What experience would you like to share with friends?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Dreams-35",
+      "text": "Which dream became more realistic after you took a small step?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-36",
+      "text": "How do you keep a long-term goal interesting?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-37",
+      "text": "What kind of support makes it easier to pursue an ambition?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-38",
+      "text": "Which goal would you choose if you could focus on only one for a year?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-39",
+      "text": "How do you tell the difference between patience and delay?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-40",
+      "text": "What dream would require you to develop a new side of yourself?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-41",
+      "text": "How have other people’s expectations influenced your plans?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-42",
+      "text": "Describe a future achievement that would feel meaningful even without recognition.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Dreams-43",
+      "text": "How should people respond when a long-held dream no longer fits who they are?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Dreams-44",
+      "text": "Can pursuing one ambition close too many valuable alternatives?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Dreams-45",
+      "text": "How much should practical limits shape an imaginative vision of the future?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Dreams-46",
+      "text": "What is gained and lost when a private dream becomes a public commitment?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Dreams-47",
+      "text": "How can ambition remain healthy in a culture of constant comparison?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Dreams-48",
+      "text": "When is redefining success wiser than working harder toward the original goal?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Dreams-49",
+      "text": "How might achieving a major dream change the meaning it once had?",
+      "difficulty": "advanced"
+    }
   ],
   "Tech & AI": [
-    "Will AI replace creative jobs entirely, or just make them easier?",
-    "What is an old piece of technology you miss?",
-    "If you could install any skill directly into your brain, what would it be?",
-    "Are smart devices making us dumber?",
-    "Would you agree to live in a perfectly designed virtual reality forever?",
-    "What is the most annoying thing about social media?",
-    "How much screen time is too much for an adult?",
-    "What technology from sci-fi movies do you want to see invented next?",
-    "Do you remember life before smartphones? What was better about it?",
-    "Would you trust a self-driving car to take you across the country?",
-    "What app completely changed how you live your life?",
-    "If you could delete one social media platform from existence, which would it be?"
+    {
+      "id": "Tech & AI-0",
+      "text": "Will AI replace creative jobs entirely, or just make them easier?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Tech & AI-1",
+      "text": "What is an old piece of technology you miss?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-2",
+      "text": "If you could install any skill directly into your brain, what would it be?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-3",
+      "text": "Are smart devices making us dumber?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Tech & AI-4",
+      "text": "Would you agree to live in a perfectly designed virtual reality forever?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Tech & AI-5",
+      "text": "What is the most annoying thing about social media?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-6",
+      "text": "How much screen time is too much for an adult?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-7",
+      "text": "What technology from sci-fi movies do you want to see invented next?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-8",
+      "text": "Do you remember life before smartphones? What was better about it?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-9",
+      "text": "Would you trust a self-driving car to take you across the country?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-10",
+      "text": "What app completely changed how you live your life?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-11",
+      "text": "If you could delete one social media platform from existence, which would it be?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Tech & AI-12",
+      "text": "Which device do you use most during a normal day?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-13",
+      "text": "What technology makes an everyday task easier for you?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-14",
+      "text": "Which app would be hardest for you to stop using?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-15",
+      "text": "How do you usually learn to use a new device?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-16",
+      "text": "What is one digital feature you find confusing?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-17",
+      "text": "Which piece of technology would you give to your younger self?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-18",
+      "text": "How do you organize photos and files on your devices?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-19",
+      "text": "What do you enjoy doing without a screen?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-20",
+      "text": "Which online service saves you the most time?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-21",
+      "text": "What simple invention would improve your daily routine?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-22",
+      "text": "How do you decide when to replace an old device?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-23",
+      "text": "Which technology do older and younger people use differently?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Tech & AI-24",
+      "text": "How has messaging technology changed the way friendships work?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-25",
+      "text": "What makes an app easy or frustrating to use?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-26",
+      "text": "How do you decide whether an online source is trustworthy?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-27",
+      "text": "Which tasks should people avoid giving entirely to AI?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-28",
+      "text": "How can schools teach responsible use of artificial intelligence?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-29",
+      "text": "What would make you comfortable using a home robot?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-30",
+      "text": "How does constant access to information affect attention?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-31",
+      "text": "What personal data are people too willing to share online?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-32",
+      "text": "Tell us about a technology that created a problem while solving another.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-33",
+      "text": "How can online communities encourage better conversations?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-34",
+      "text": "Which job would benefit most from a helpful AI assistant?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-35",
+      "text": "What boundaries do you set between work technology and personal time?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-36",
+      "text": "How might translation technology change language learning?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-37",
+      "text": "What makes digital communication feel genuinely human?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-38",
+      "text": "How would you explain a modern smartphone to someone from the 1980s?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Tech & AI-39",
+      "text": "Who should be accountable when an automated system causes harm?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Tech & AI-40",
+      "text": "How might AI-generated media change our idea of originality?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Tech & AI-41",
+      "text": "Should people have a right to understand decisions made by algorithms about them?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Tech & AI-42",
+      "text": "How can society benefit from automation without widening inequality?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Tech & AI-43",
+      "text": "What does meaningful consent look like when digital services collect complex data?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Tech & AI-44",
+      "text": "Could dependence on recommendation systems reduce personal discovery?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Tech & AI-45",
+      "text": "How should schools assess learning when AI can produce convincing answers?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Tech & AI-46",
+      "text": "When does technological convenience become a loss of useful skill?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Tech & AI-47",
+      "text": "How might virtual relationships challenge traditional ideas of companionship?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Tech & AI-48",
+      "text": "What human abilities may become more valuable as artificial intelligence improves?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Tech & AI-49",
+      "text": "How should developers balance rapid innovation with risks they cannot fully predict?",
+      "difficulty": "advanced"
+    }
   ],
   "Mindset & Habits": [
-    "What is a bad habit you broke, and how did you do it?",
-    "Why is it so hard to say 'no' to people sometimes?",
-    "What triggers your stress the most, and how do you cool down?",
-    "Do you think people can genuinely change their core personality?",
-    "What does your morning routine say about your current mental state?",
-    "How do you handle negative criticism?",
-    "What is the best psychological trick you know for dealing with people?",
-    "Do you listen to understand or listen to reply?",
-    "What is something you pretend to care about just to be polite?",
-    "How long can you sit completely alone with your thoughts?"
+    {
+      "id": "Mindset & Habits-0",
+      "text": "What is a bad habit you broke, and how did you do it?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-1",
+      "text": "Why is it so hard to say 'no' to people sometimes?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-2",
+      "text": "What triggers your stress the most, and how do you cool down?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-3",
+      "text": "Do you think people can genuinely change their core personality?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Mindset & Habits-4",
+      "text": "What does your morning routine say about your current mental state?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Mindset & Habits-5",
+      "text": "How do you handle negative criticism?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-6",
+      "text": "What is the best psychological trick you know for dealing with people?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-7",
+      "text": "Do you listen to understand or listen to reply?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Mindset & Habits-8",
+      "text": "What is something you pretend to care about just to be polite?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-9",
+      "text": "How long can you sit completely alone with your thoughts?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-10",
+      "text": "What helps you begin a task you have been avoiding?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-11",
+      "text": "Which evening habit helps you rest well?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-12",
+      "text": "How do you remember small daily tasks?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-13",
+      "text": "What healthy break do you take during a busy day?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-14",
+      "text": "Which habit makes your mornings easier?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-15",
+      "text": "What helps you return to a routine after a break?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-16",
+      "text": "How do you reward yourself for steady progress?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-17",
+      "text": "Which distraction is hardest for you to ignore?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-18",
+      "text": "What makes a new habit enjoyable?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-19",
+      "text": "How do you prepare for an important day?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-20",
+      "text": "Which simple routine helps you stay organized?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-21",
+      "text": "What do you do when you need fresh energy?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-22",
+      "text": "Which habit would you recommend to a busy friend?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Mindset & Habits-23",
+      "text": "Why do some habits survive busy periods while others disappear?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-24",
+      "text": "How can people make progress without relying on motivation?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-25",
+      "text": "What helps you respond thoughtfully instead of reacting quickly?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-26",
+      "text": "How do your surroundings influence your concentration?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-27",
+      "text": "When is it useful to lower your expectations for a day?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-28",
+      "text": "What routine helps you separate work from personal time?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-29",
+      "text": "How can a friend support change without becoming controlling?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-30",
+      "text": "What have you learned from failing to maintain a habit?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-31",
+      "text": "How do you prevent one difficult day from becoming a difficult week?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-32",
+      "text": "What kind of reminder actually changes your behavior?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-33",
+      "text": "How does sleep affect the choices you make the next day?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-34",
+      "text": "Which is more useful for growth: tracking results or noticing patterns?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-35",
+      "text": "How do you decide whether to improve a weakness or use a strength?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-36",
+      "text": "What makes advice easy to understand but hard to follow?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-37",
+      "text": "How can people create room for spontaneity inside a routine?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Mindset & Habits-38",
+      "text": "To what extent do repeated actions shape identity?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Mindset & Habits-39",
+      "text": "How can self-discipline remain flexible rather than becoming self-punishment?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Mindset & Habits-40",
+      "text": "Why do people sometimes protect habits that no longer serve them?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Mindset & Habits-41",
+      "text": "How does the language of productivity influence the way people value rest?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Mindset & Habits-42",
+      "text": "When can consistency become resistance to necessary change?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Mindset & Habits-43",
+      "text": "How might a person distinguish self-acceptance from avoiding growth?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Mindset & Habits-44",
+      "text": "What role should discomfort play in meaningful personal development?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Mindset & Habits-45",
+      "text": "How can people question an automatic assumption before it shapes a decision?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Mindset & Habits-46",
+      "text": "Why can understanding the cause of a habit still be insufficient to change it?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Mindset & Habits-47",
+      "text": "How do social expectations become part of a person’s inner voice?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Mindset & Habits-48",
+      "text": "What is the difference between emotional control and emotional awareness?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Mindset & Habits-49",
+      "text": "How can someone pursue improvement without treating life as a permanent project?",
+      "difficulty": "advanced"
+    }
+  ],
+  "Friendship & Relationships": [
+    {
+      "id": "Friendship & Relationships-0",
+      "text": "What do you enjoy doing with friends?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-1",
+      "text": "How do you usually keep in touch with people?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-2",
+      "text": "What makes someone easy to talk to?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-3",
+      "text": "How do you welcome a new person into a group?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-4",
+      "text": "What is a good way to celebrate a friend’s success?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-5",
+      "text": "Which quality do you appreciate most in a friend?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-6",
+      "text": "How do you prefer to make plans with others?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-7",
+      "text": "What small act can make someone feel included?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-8",
+      "text": "Where do adults often meet new friends?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-9",
+      "text": "How do you show someone that you are listening?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-10",
+      "text": "What kind of message is nice to receive unexpectedly?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-11",
+      "text": "How do you spend time with a friend who lives far away?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-12",
+      "text": "What shared activity helps people become closer?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-13",
+      "text": "How can friends make an ordinary day more enjoyable?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-14",
+      "text": "What helps you feel comfortable around someone new?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Friendship & Relationships-15",
+      "text": "How do friendships change when people enter different stages of life?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-16",
+      "text": "What helps a friendship recover after a misunderstanding?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-17",
+      "text": "How can someone set a boundary without sounding unfriendly?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-18",
+      "text": "Tell us about a friendship that began in an unexpected way.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-19",
+      "text": "What makes long-distance friendships last?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-20",
+      "text": "How should friends handle very different communication styles?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-21",
+      "text": "When is honest advice more helpful than simple encouragement?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-22",
+      "text": "How can a quiet person contribute to a lively social group?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-23",
+      "text": "What makes shared silence comfortable rather than awkward?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-24",
+      "text": "How do you recognize when someone needs company or space?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-25",
+      "text": "What role does humor play in strong relationships?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-26",
+      "text": "How can adults make time for friendship during busy periods?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-27",
+      "text": "What is a fair way to handle plans that one person often cancels?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-28",
+      "text": "How can people disagree without weakening their connection?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-29",
+      "text": "What makes an online friendship feel real?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-30",
+      "text": "How do shared memories influence a friendship?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-31",
+      "text": "What can a group do when one member feels left out?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-32",
+      "text": "How does trust grow through small everyday actions?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-33",
+      "text": "What kind of support is helpful during a major life change?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-34",
+      "text": "How do you balance being dependable with protecting your own time?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Friendship & Relationships-35",
+      "text": "Can a friendship remain close when two people’s values develop in different directions?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Friendship & Relationships-36",
+      "text": "How should loyalty change when a friend repeatedly makes harmful choices?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Friendship & Relationships-37",
+      "text": "Why can receiving support sometimes feel more difficult than giving it?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Friendship & Relationships-38",
+      "text": "How does power operate inside friendships that appear equal?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Friendship & Relationships-39",
+      "text": "What is the difference between accepting someone and enabling their behavior?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Friendship & Relationships-40",
+      "text": "Can a relationship be meaningful even if it is temporary?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Friendship & Relationships-41",
+      "text": "How do unspoken expectations create conflict between people?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Friendship & Relationships-42",
+      "text": "When is distance a healthy response to tension rather than avoidance?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Friendship & Relationships-43",
+      "text": "How does vulnerability influence both trust and risk in relationships?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Friendship & Relationships-44",
+      "text": "What do people owe one another after a friendship naturally fades?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Friendship & Relationships-45",
+      "text": "How can a community encourage closeness without demanding conformity?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Friendship & Relationships-46",
+      "text": "Why do some people find it easier to connect through shared work than conversation?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Friendship & Relationships-47",
+      "text": "How should people respond when care is expressed in a form they do not recognize?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Friendship & Relationships-48",
+      "text": "Can forgiveness restore a relationship without restoring the same level of trust?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Friendship & Relationships-49",
+      "text": "How does a person remain authentic while adapting to different social groups?",
+      "difficulty": "advanced"
+    }
+  ],
+  "Would You Rather": [
+    {
+      "id": "Would You Rather-0",
+      "text": "Would you rather start every day early or finish every day late, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-1",
+      "text": "Would you rather cook every meal or never cook again, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-2",
+      "text": "Would you rather live near the sea or near the mountains, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-3",
+      "text": "Would you rather travel by train or by car for a long trip, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-4",
+      "text": "Would you rather have more free time or more energy, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-5",
+      "text": "Would you rather give up coffee or desserts for a year, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-6",
+      "text": "Would you rather always be ten minutes early or ten minutes late, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-7",
+      "text": "Would you rather explore a new city or relax in nature, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-8",
+      "text": "Would you rather learn to sing or dance well, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-9",
+      "text": "Would you rather work in a quiet room or a busy café, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-10",
+      "text": "Would you rather own fewer excellent things or many useful things, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-11",
+      "text": "Would you rather repeat your favorite holiday or try a new destination, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-12",
+      "text": "Would you rather communicate only by voice messages or only by text, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-13",
+      "text": "Would you rather have breakfast for dinner or dinner for breakfast, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-14",
+      "text": "Would you rather spend a free evening alone or with a group, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Would You Rather-15",
+      "text": "Would you rather master one difficult skill or become competent at five, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-16",
+      "text": "Would you rather remember everything you read or every conversation you have, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-17",
+      "text": "Would you rather lead a small team or support a great leader, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-18",
+      "text": "Would you rather receive honest criticism immediately or thoughtful feedback later, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-19",
+      "text": "Would you rather live without recommendations or without online reviews, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-20",
+      "text": "Would you rather revisit one day from your past or preview one day from your future, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-21",
+      "text": "Would you rather have a job with variety or one with predictable routines, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-22",
+      "text": "Would you rather be known for creativity or reliability, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-23",
+      "text": "Would you rather plan an event or arrive as a guest, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-24",
+      "text": "Would you rather speak every language imperfectly or one foreign language perfectly, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-25",
+      "text": "Would you rather solve a practical problem or understand a difficult idea, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-26",
+      "text": "Would you rather have unlimited books or unlimited travel tickets, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-27",
+      "text": "Would you rather change your surroundings or your habits first, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-28",
+      "text": "Would you rather work four long days or five shorter days, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-29",
+      "text": "Would you rather ask for help early or solve problems independently, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-30",
+      "text": "Would you rather host a meaningful dinner or attend a large celebration, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-31",
+      "text": "Would you rather lose access to maps or translation apps while traveling, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-32",
+      "text": "Would you rather make decisions quickly or have extra time but fewer choices, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-33",
+      "text": "Would you rather learn through formal lessons or personal projects, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-34",
+      "text": "Would you rather live in a place that changes rapidly or one that stays familiar, and why?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Would You Rather-35",
+      "text": "Would you rather know the full consequences of every decision or preserve the freedom of uncertainty, and why?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Would You Rather-36",
+      "text": "Would you rather be respected by people who misunderstand you or understood by people who disagree with you, and why?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Would You Rather-37",
+      "text": "Would you rather guarantee a modest success or risk failure for an exceptional outcome, and why?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Would You Rather-38",
+      "text": "Would you rather remove one painful memory or keep every experience that shaped you, and why?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Would You Rather-39",
+      "text": "Would you rather live in a society that values fairness or one that values freedom more highly, and why?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Would You Rather-40",
+      "text": "Would you rather create work that reaches millions briefly or influences a few people deeply, and why?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Would You Rather-41",
+      "text": "Would you rather always detect dishonesty or always understand the reason behind it, and why?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Would You Rather-42",
+      "text": "Would you rather preserve a valuable tradition unchanged or adapt it so more people can share it, and why?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Would You Rather-43",
+      "text": "Would you rather have privacy without convenience or convenience without much privacy, and why?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Would You Rather-44",
+      "text": "Would you rather make an unpopular ethical choice or a popular practical compromise, and why?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Would You Rather-45",
+      "text": "Would you rather know your strongest bias or your greatest untapped ability, and why?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Would You Rather-46",
+      "text": "Would you rather have influence without recognition or recognition without influence, and why?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Would You Rather-47",
+      "text": "Would you rather correct every false belief about you or stop caring about others’ judgments, and why?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Would You Rather-48",
+      "text": "Would you rather prevent one large future problem or solve many smaller present problems, and why?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Would You Rather-49",
+      "text": "Would you rather live with complete certainty or endless possibility, and why?",
+      "difficulty": "advanced"
+    }
+  ],
+  "Storytelling": [
+    {
+      "id": "Storytelling-0",
+      "text": "Tell us about a meal you still remember clearly.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-1",
+      "text": "Describe a day when the weather changed your plans.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-2",
+      "text": "Tell a story about finding something you thought was lost.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-3",
+      "text": "Describe your first day in a new place.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-4",
+      "text": "Tell us about a time a small surprise improved your day.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-5",
+      "text": "Describe a journey you enjoyed more than expected.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-6",
+      "text": "Tell a story about learning to use something new.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-7",
+      "text": "Describe a celebration that had a warm atmosphere.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-8",
+      "text": "Tell us about an animal you remember meeting.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-9",
+      "text": "Describe a time you helped someone with a simple problem.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-10",
+      "text": "Tell a story about a gift that had special meaning.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-11",
+      "text": "Describe a place you discovered by accident.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-12",
+      "text": "Tell us about a day when everything felt easy.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-13",
+      "text": "Describe a funny mistake with a happy ending.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-14",
+      "text": "Tell a story about a song connected to a memory.",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Storytelling-15",
+      "text": "Tell us about a plan that became better after it changed.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-16",
+      "text": "Describe a conversation that started awkwardly but ended well.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-17",
+      "text": "Tell a story about making a choice with limited information.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-18",
+      "text": "Describe a time a stranger showed unexpected kindness.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-19",
+      "text": "Tell us about an object that has traveled with you for years.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-20",
+      "text": "Create a story that begins with a message sent to the wrong person.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-21",
+      "text": "Describe a moment when you noticed a familiar place differently.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-22",
+      "text": "Tell a story about working with someone whose style differed from yours.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-23",
+      "text": "Create a tale about a café that appears only once a year.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-24",
+      "text": "Describe an occasion when preparation mattered less than improvisation.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-25",
+      "text": "Tell us about a tradition that changed meaning as you grew older.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-26",
+      "text": "Create a story involving a suitcase, a photograph, and an unexpected invitation.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-27",
+      "text": "Describe a time when patience produced a better result.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-28",
+      "text": "Tell a story about a misunderstanding caused by technology.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-29",
+      "text": "Create a character who has an unusual but useful talent.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-30",
+      "text": "Describe a moment when a group solved a problem together.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-31",
+      "text": "Tell us about a time you returned somewhere after a long absence.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-32",
+      "text": "Create a story in which an ordinary object becomes extremely valuable.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-33",
+      "text": "Describe a decision that seemed small but changed the rest of the day.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-34",
+      "text": "Tell a story about discovering that your first impression was wrong.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Storytelling-35",
+      "text": "Tell a story from two viewpoints that interpret the same event differently.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Storytelling-36",
+      "text": "Create a tale in which the apparent failure becomes the real success.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Storytelling-37",
+      "text": "Describe an experience whose meaning changed only years later.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Storytelling-38",
+      "text": "Tell a story where the most important character never appears directly.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Storytelling-39",
+      "text": "Create a narrative about a community deciding whether to preserve a secret.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Storytelling-40",
+      "text": "Describe a moment when silence communicated more than an explanation could.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Storytelling-41",
+      "text": "Tell a story in which a reliable narrator discovers an unreliable memory.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Storytelling-42",
+      "text": "Create a future legend based on an ordinary object from today.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Storytelling-43",
+      "text": "Describe a choice between protecting a relationship and revealing an uncomfortable truth.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Storytelling-44",
+      "text": "Tell a story whose ending changes how the opening should be understood.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Storytelling-45",
+      "text": "Create a character who achieves a goal and then questions why it mattered.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Storytelling-46",
+      "text": "Describe an encounter between two people who share no language but solve a problem together.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Storytelling-47",
+      "text": "Tell a story about a tradition surviving through unexpected adaptation.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Storytelling-48",
+      "text": "Create a narrative where the setting gradually becomes a character of its own.",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Storytelling-49",
+      "text": "Describe a reunion in which both people have remembered the past differently.",
+      "difficulty": "advanced"
+    }
+  ],
+  "Culture & Traditions": [
+    {
+      "id": "Culture & Traditions-0",
+      "text": "What celebration do you look forward to each year?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-1",
+      "text": "Which traditional food do you enjoy sharing?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-2",
+      "text": "How do people usually welcome guests where you live?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-3",
+      "text": "What local craft or art form interests you?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-4",
+      "text": "Which family custom makes you feel connected to others?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-5",
+      "text": "What music is often heard at celebrations in your community?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-6",
+      "text": "How do people mark the beginning of a new year in a culture you know?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-7",
+      "text": "What traditional clothing or design do you find beautiful?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-8",
+      "text": "Which seasonal event brings people together where you live?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-9",
+      "text": "How are important birthdays usually celebrated in your community?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-10",
+      "text": "What polite phrase is useful for visitors to learn?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-11",
+      "text": "Which local place helps tell the story of your area?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-12",
+      "text": "What custom would you enjoy explaining to a visitor?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-13",
+      "text": "How do people show respect to older generations in a culture you know?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-14",
+      "text": "What tradition involving food has a pleasant memory for you?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Culture & Traditions-15",
+      "text": "How has a celebration you know changed over the years?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-16",
+      "text": "What can visitors do to participate in a tradition respectfully?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-17",
+      "text": "How do stories help communities preserve their identity?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-18",
+      "text": "Which custom from another culture would fit naturally into your life?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-19",
+      "text": "How can people share traditions without turning them into stereotypes?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-20",
+      "text": "What role do public spaces play in cultural life?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-21",
+      "text": "How does migration influence family traditions across generations?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-22",
+      "text": "What makes a tradition feel alive rather than performed?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-23",
+      "text": "How do language and humor express cultural identity?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-24",
+      "text": "Which everyday custom might surprise someone from another country?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-25",
+      "text": "How can schools introduce local culture while remaining globally inclusive?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-26",
+      "text": "What happens when members of one family value traditions differently?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-27",
+      "text": "How has technology changed the way cultural events are shared?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-28",
+      "text": "What can old recipes reveal about a community’s history?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-29",
+      "text": "How do cities balance modern development with cultural heritage?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-30",
+      "text": "Which traditions are easier to maintain away from their place of origin?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-31",
+      "text": "How can cultural exchange be mutual rather than one-sided?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-32",
+      "text": "What role does music play in passing identity between generations?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-33",
+      "text": "How do people create new traditions in a diverse community?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-34",
+      "text": "What is gained when a local tradition becomes internationally popular?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Culture & Traditions-35",
+      "text": "Who should decide whether a contested tradition ought to change?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Culture & Traditions-36",
+      "text": "How can cultural preservation avoid freezing a community in the past?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Culture & Traditions-37",
+      "text": "When does appreciation of another culture become careless appropriation?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Culture & Traditions-38",
+      "text": "Can a tradition remain authentic after its original meaning has faded?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Culture & Traditions-39",
+      "text": "How does commercial attention reshape cultural practices?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Culture & Traditions-40",
+      "text": "What responsibilities do museums have toward the communities represented in their collections?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Culture & Traditions-41",
+      "text": "How can a society honor shared heritage while recognizing conflicting memories?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Culture & Traditions-42",
+      "text": "Is cultural identity strengthened or limited by clear boundaries?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Culture & Traditions-43",
+      "text": "What is lost when a minority language disappears from daily use?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Culture & Traditions-44",
+      "text": "How should communities balance individual freedom with collective customs?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Culture & Traditions-45",
+      "text": "Can invented traditions become as meaningful as ancient ones?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Culture & Traditions-46",
+      "text": "How does translating a cultural work alter its relationship with new audiences?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Culture & Traditions-47",
+      "text": "When can protecting heritage unintentionally exclude present-day residents?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Culture & Traditions-48",
+      "text": "How do global platforms influence which cultures become visible?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Culture & Traditions-49",
+      "text": "What makes cross-cultural dialogue transformative rather than merely informative?",
+      "difficulty": "advanced"
+    }
+  ],
+  "Music": [
+    {
+      "id": "Music-0",
+      "text": "What song have you listened to recently?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-1",
+      "text": "When do you most enjoy listening to music?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-2",
+      "text": "Which instrument would you like to try?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-3",
+      "text": "What music helps you relax?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-4",
+      "text": "Which singer or band did you first enjoy as a teenager?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-5",
+      "text": "How do you discover new songs?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-6",
+      "text": "What kind of music suits a long journey?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-7",
+      "text": "Which song makes you want to move?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-8",
+      "text": "Do you prefer live music or recordings, and why?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-9",
+      "text": "What song would you choose for a celebration?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-10",
+      "text": "How does music affect your mood?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-11",
+      "text": "Which music style would you like to understand better?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-12",
+      "text": "What is a good song for starting the day?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-13",
+      "text": "Where is your favorite place to listen to music?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-14",
+      "text": "What piece of music reminds you of home?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Music-15",
+      "text": "Tell us about a concert or performance with a memorable atmosphere.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-16",
+      "text": "How has your music taste changed over time?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-17",
+      "text": "What makes a song remain interesting after many listens?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-18",
+      "text": "How do lyrics change your connection to a song?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-19",
+      "text": "Which artist successfully changed their style?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-20",
+      "text": "How does the setting affect a live performance?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-21",
+      "text": "What makes a cover version feel original?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-22",
+      "text": "How can music connect people who do not share a language?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-23",
+      "text": "Which soundtrack improved a film, game, or series?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-24",
+      "text": "How do playlists influence the way people discover artists?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-25",
+      "text": "What role does music play in your concentration?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-26",
+      "text": "Which older music deserves a new audience?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-27",
+      "text": "How does learning an instrument change the way someone listens?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-28",
+      "text": "What makes a simple melody powerful?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-29",
+      "text": "How do friends influence one another’s musical taste?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-30",
+      "text": "What is the difference between music you admire and music you enjoy?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-31",
+      "text": "How can one song become connected to a whole period of life?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-32",
+      "text": "Which music trend do you expect to return?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-33",
+      "text": "What makes a small performance feel more personal than a large one?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-34",
+      "text": "How would you introduce your favorite genre to a skeptical listener?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Music-35",
+      "text": "How has streaming changed the artistic decisions musicians make?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Music-36",
+      "text": "Can music communicate a clear idea without words?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Music-37",
+      "text": "What is lost when listeners treat music mainly as background sound?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Music-38",
+      "text": "How should credit be shared when a song is created collaboratively?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Music-39",
+      "text": "When does influence become imitation in music?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Music-40",
+      "text": "How does technology expand creativity while also encouraging sameness?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Music-41",
+      "text": "Should an artist’s behavior affect how audiences respond to their work?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Music-42",
+      "text": "How does music contribute to collective memory?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Music-43",
+      "text": "Can technical skill ever make a performance feel less emotionally direct?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Music-44",
+      "text": "What determines whether experimental music becomes influential or forgotten?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Music-45",
+      "text": "How do economic pressures shape which musical voices get heard?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Music-46",
+      "text": "Why do certain songs become symbols for experiences beyond their original meaning?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Music-47",
+      "text": "How does silence function as part of music?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Music-48",
+      "text": "Can an algorithm understand musical taste, or only predict behavior?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Music-49",
+      "text": "What gives a musical tradition continuity when its instruments and audiences change?",
+      "difficulty": "advanced"
+    }
+  ],
+  "Health & Lifestyle": [
+    {
+      "id": "Health & Lifestyle-0",
+      "text": "What activity helps you feel refreshed?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-1",
+      "text": "How do you like to spend time outdoors?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-2",
+      "text": "What does a balanced day look like for you?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-3",
+      "text": "Which simple meal helps you feel energized?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-4",
+      "text": "How do you relax before going to sleep?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-5",
+      "text": "What kind of movement do you enjoy?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-6",
+      "text": "How do you take a useful break from screens?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-7",
+      "text": "Which part of your daily routine supports your wellbeing?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-8",
+      "text": "What helps you drink enough water during the day?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-9",
+      "text": "How do you make time for rest on a busy week?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-10",
+      "text": "What is your favorite way to get fresh air?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-11",
+      "text": "Which healthy habit is easiest for you to maintain?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-12",
+      "text": "What helps you create a calm home environment?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-13",
+      "text": "How do you notice that you need a break?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-14",
+      "text": "What enjoyable activity helps you manage everyday stress?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Health & Lifestyle-15",
+      "text": "How can people make healthy choices more convenient?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-16",
+      "text": "What makes a wellbeing goal realistic rather than temporary?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-17",
+      "text": "How do social plans influence daily routines?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-18",
+      "text": "What helps you maintain energy without filling every hour with activity?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-19",
+      "text": "How can workplaces support healthy breaks?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-20",
+      "text": "What role does enjoyment play in staying active?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-21",
+      "text": "How do you balance useful routines with flexibility?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-22",
+      "text": "Why can rest feel difficult even when it is clearly needed?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-23",
+      "text": "How does spending time in nature affect your state of mind?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-24",
+      "text": "What makes advice about healthy living practical and respectful?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-25",
+      "text": "How can friends encourage wellbeing without creating pressure?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-26",
+      "text": "What environmental changes make a good habit easier?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-27",
+      "text": "How do food traditions and personal wellbeing fit together?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-28",
+      "text": "What helps people recover their routine after travel or a busy period?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-29",
+      "text": "How can a city make active lifestyles more accessible?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-30",
+      "text": "What is the value of having unplanned time?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-31",
+      "text": "How do you decide which wellness trends are worth trying?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-32",
+      "text": "What does listening to your body mean in everyday life?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-33",
+      "text": "How can people discuss wellbeing without comparing themselves constantly?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-34",
+      "text": "Which daily choice has a larger effect than people often expect?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Health & Lifestyle-35",
+      "text": "How does modern culture turn wellbeing into another form of productivity?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Health & Lifestyle-36",
+      "text": "What should communities do to make healthy choices available to more people?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Health & Lifestyle-37",
+      "text": "When can personal health advice ignore the realities of someone’s circumstances?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Health & Lifestyle-38",
+      "text": "How should society balance individual responsibility with supportive environments?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Health & Lifestyle-39",
+      "text": "Why can the pursuit of an ideal lifestyle undermine actual wellbeing?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Health & Lifestyle-40",
+      "text": "How does advertising shape ideas about what a healthy person looks like?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Health & Lifestyle-41",
+      "text": "What is the difference between comfort that restores us and comfort that limits us?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Health & Lifestyle-42",
+      "text": "How can public spaces influence both physical and social wellbeing?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Health & Lifestyle-43",
+      "text": "Why might people trust personal stories more than general health guidance?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Health & Lifestyle-44",
+      "text": "How should employers respect the boundary between supporting wellbeing and monitoring workers?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Health & Lifestyle-45",
+      "text": "Can technology help people understand their habits without making them overly self-conscious?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Health & Lifestyle-46",
+      "text": "How do cultural values influence attitudes toward rest?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Health & Lifestyle-47",
+      "text": "What would a society designed around sustainable wellbeing prioritize differently?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Health & Lifestyle-48",
+      "text": "How can people accept natural limitations without giving up on positive change?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Health & Lifestyle-49",
+      "text": "When does a lifestyle choice become part of identity, and what problems can that create?",
+      "difficulty": "advanced"
+    }
+  ],
+  "Education & Learning": [
+    {
+      "id": "Education & Learning-0",
+      "text": "What subject did you enjoy learning at school?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-1",
+      "text": "Where do you like to study or practice a skill?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-2",
+      "text": "What is something useful you learned recently?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-3",
+      "text": "Who explains difficult ideas clearly to you?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-4",
+      "text": "How do you remember new words?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-5",
+      "text": "Which practical skill should everyone learn?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-6",
+      "text": "What makes a lesson enjoyable?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-7",
+      "text": "How do you practice after learning something new?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-8",
+      "text": "Which topic would you like to understand better?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-9",
+      "text": "What helps you concentrate while learning?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-10",
+      "text": "How do you ask for help when you are confused?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-11",
+      "text": "What can people learn from making mistakes?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-12",
+      "text": "Which educational video or podcast have you enjoyed?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-13",
+      "text": "How do you know that you have learned something well?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-14",
+      "text": "What skill is more fun to learn with other people?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Education & Learning-15",
+      "text": "How does teaching something improve your own understanding?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-16",
+      "text": "What makes feedback useful to a learner?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-17",
+      "text": "How can adults stay curious after formal education ends?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-18",
+      "text": "Tell us about a difficult skill that became easier with practice.",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-19",
+      "text": "What is the best balance between theory and practical experience?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-20",
+      "text": "How can learners use mistakes without becoming discouraged?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-21",
+      "text": "What makes a group discussion educational?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-22",
+      "text": "How should teachers respond when students learn at different speeds?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-23",
+      "text": "What are the advantages of learning outside a classroom?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-24",
+      "text": "How can someone judge the quality of an online course?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-25",
+      "text": "What study habit works well for one person but not another?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-26",
+      "text": "How does curiosity change the experience of a difficult subject?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-27",
+      "text": "What role should memorization play in education?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-28",
+      "text": "How can projects make abstract knowledge more meaningful?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-29",
+      "text": "What helps people continue when progress is hard to notice?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-30",
+      "text": "How can schools prepare learners for jobs that do not yet exist?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-31",
+      "text": "What have you learned from someone much younger or older than you?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-32",
+      "text": "How do deadlines help or harm learning?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-33",
+      "text": "Which is more motivating: visible progress or an inspiring goal?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-34",
+      "text": "How can language learners create more opportunities to speak?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Education & Learning-35",
+      "text": "Should education primarily prepare people for work or for participation in society?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Education & Learning-36",
+      "text": "How can assessment measure understanding without narrowing what is taught?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Education & Learning-37",
+      "text": "What knowledge should remain essential when information is instantly available?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Education & Learning-38",
+      "text": "How does unequal access to time affect educational opportunity?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Education & Learning-39",
+      "text": "Can personalized learning weaken the shared experience of education?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Education & Learning-40",
+      "text": "How should educators respond when established knowledge changes quickly?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Education & Learning-41",
+      "text": "What is the hidden curriculum that institutions teach through their rules and culture?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Education & Learning-42",
+      "text": "How can education encourage independent thought without dismissing expertise?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Education & Learning-43",
+      "text": "When does simplifying an idea make it accessible, and when does it make it misleading?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Education & Learning-44",
+      "text": "How might artificial intelligence change the meaning of academic effort?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Education & Learning-45",
+      "text": "What responsibilities do learners have within a learning community?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Education & Learning-46",
+      "text": "How can schools value different forms of intelligence without lowering expectations?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Education & Learning-47",
+      "text": "Is deep specialization compatible with understanding complex global problems?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Education & Learning-48",
+      "text": "How should societies recognize learning that happens outside formal institutions?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Education & Learning-49",
+      "text": "What makes intellectual humility a strength rather than uncertainty?",
+      "difficulty": "advanced"
+    }
+  ],
+  "Nature & Environment": [
+    {
+      "id": "Nature & Environment-0",
+      "text": "What natural place helps you relax?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-1",
+      "text": "Which season changes your surroundings the most?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-2",
+      "text": "What animal do you enjoy observing?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-3",
+      "text": "How do you spend time outside in your area?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-4",
+      "text": "Which natural sound do you find pleasant?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-5",
+      "text": "What kind of landscape would you like to see?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-6",
+      "text": "How can people create less waste at home?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-7",
+      "text": "What do you enjoy about rainy days?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-8",
+      "text": "Which plant would you like to grow?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-9",
+      "text": "How do parks improve a neighborhood?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-10",
+      "text": "What weather makes you want to go outside?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-11",
+      "text": "Which reusable item is easy to include in daily life?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-12",
+      "text": "What natural feature makes a city more beautiful?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-13",
+      "text": "How do you notice the changing seasons?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-14",
+      "text": "What outdoor activity would you like to try?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Nature & Environment-15",
+      "text": "How can neighborhoods make recycling easier for residents?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-16",
+      "text": "What makes people care about a natural place?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-17",
+      "text": "How should visitors behave in fragile environments?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-18",
+      "text": "What environmental change have you noticed during your lifetime?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-19",
+      "text": "How can cities provide more space for wildlife?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-20",
+      "text": "What makes an environmental habit last beyond initial enthusiasm?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-21",
+      "text": "How can local food choices affect the environment?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-22",
+      "text": "What are the benefits and challenges of living close to nature?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-23",
+      "text": "How should communities balance tourism with protection of natural areas?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-24",
+      "text": "What can schools do to make environmental learning practical?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-25",
+      "text": "How do extreme weather events change everyday planning?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-26",
+      "text": "What role can public transport play in a cleaner city?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-27",
+      "text": "How can businesses reduce waste without making products less affordable?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-28",
+      "text": "Which environmental improvement would make the biggest difference locally?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-29",
+      "text": "How do documentaries influence attitudes toward nature?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-30",
+      "text": "What can individuals learn from traditional ways of using resources?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-31",
+      "text": "How can apartment residents connect more closely with nature?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-32",
+      "text": "Why are some environmental problems easier to discuss than to solve?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-33",
+      "text": "How should a community decide which green project to fund first?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-34",
+      "text": "What does responsible consumption look like in ordinary life?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Nature & Environment-35",
+      "text": "How should the costs of environmental transition be shared fairly?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Nature & Environment-36",
+      "text": "Can economic growth continue without increasing pressure on nature?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Nature & Environment-37",
+      "text": "When do individual environmental choices matter most, and when is systemic change necessary?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Nature & Environment-38",
+      "text": "How should societies value natural places that provide no immediate economic benefit?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Nature & Environment-39",
+      "text": "What obligations do present generations have toward people not yet born?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Nature & Environment-40",
+      "text": "How can environmental communication create urgency without creating helplessness?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Nature & Environment-41",
+      "text": "Should damaged ecosystems be restored to the past or adapted for the future?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Nature & Environment-42",
+      "text": "How might climate adaptation change people’s relationship with home?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Nature & Environment-43",
+      "text": "What makes an environmental policy legitimate when its effects are uneven?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Nature & Environment-44",
+      "text": "How can local knowledge and scientific expertise work together?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Nature & Environment-45",
+      "text": "When can technological solutions distract from changes in consumption?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Nature & Environment-46",
+      "text": "How should uncertainty influence decisions about environmental risk?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Nature & Environment-47",
+      "text": "Can nature have value independent of human needs?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Nature & Environment-48",
+      "text": "How do ideas of convenience shape environmental behavior?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Nature & Environment-49",
+      "text": "What would meaningful international cooperation on shared natural resources require?",
+      "difficulty": "advanced"
+    }
+  ],
+  "Language & Communication": [
+    {
+      "id": "Language & Communication-0",
+      "text": "Which English word do you enjoy saying?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-1",
+      "text": "How do you start a conversation with someone new?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-2",
+      "text": "What helps you understand a fast speaker?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-3",
+      "text": "Which language would you like to hear more often?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-4",
+      "text": "How do gestures help people communicate?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-5",
+      "text": "What topic is easy for you to discuss in English?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-6",
+      "text": "How do you practice speaking when you are alone?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-7",
+      "text": "Which phrase is useful in many situations?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-8",
+      "text": "What makes a voice pleasant to listen to?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-9",
+      "text": "How do you politely ask someone to repeat something?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-10",
+      "text": "Which new word have you used recently?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-11",
+      "text": "What helps you feel confident during a conversation?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-12",
+      "text": "How do you greet friends differently from strangers?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-13",
+      "text": "Which type of message do you prefer to receive?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-14",
+      "text": "What makes instructions easy to follow?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Language & Communication-15",
+      "text": "How does your personality change when you speak another language?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-16",
+      "text": "What makes a story easy to follow in conversation?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-17",
+      "text": "How can someone disagree without sounding disrespectful?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-18",
+      "text": "What do misunderstandings reveal about communication styles?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-19",
+      "text": "How do pauses affect the meaning of a conversation?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-20",
+      "text": "What is the best way to join a group discussion?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-21",
+      "text": "How can speakers explain an unfamiliar idea without using jargon?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-22",
+      "text": "What makes written messages sound warmer?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-23",
+      "text": "How do accents influence first impressions?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-24",
+      "text": "When is direct communication more helpful than polite hints?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-25",
+      "text": "How can a listener encourage someone to continue speaking?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-26",
+      "text": "What role does context play in understanding humor?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-27",
+      "text": "How do voice messages differ from phone calls?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-28",
+      "text": "What makes a compliment feel natural and sincere?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-29",
+      "text": "How can people repair a conversation after saying the wrong thing?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-30",
+      "text": "Which communication skill is most important in teamwork?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-31",
+      "text": "How does translating your thoughts affect what you choose to say?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-32",
+      "text": "What makes a question invite a thoughtful answer?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-33",
+      "text": "How can people communicate clearly when emotions are strong?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-34",
+      "text": "What have you learned by talking with someone from another culture?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Language & Communication-35",
+      "text": "Can language shape which ideas are easier for people to imagine?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Language & Communication-36",
+      "text": "How does indirect communication protect relationships while also creating ambiguity?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Language & Communication-37",
+      "text": "What is lost when efficiency becomes the main goal of communication?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Language & Communication-38",
+      "text": "How should speakers adapt to an audience without becoming inauthentic?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Language & Communication-39",
+      "text": "When does persuasive language become manipulation?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Language & Communication-40",
+      "text": "How do metaphors influence public understanding of complex issues?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Language & Communication-41",
+      "text": "Can two people agree on facts while understanding the same words differently?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Language & Communication-42",
+      "text": "How does social status affect who is heard in a conversation?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Language & Communication-43",
+      "text": "What responsibilities come with speaking on behalf of a group?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Language & Communication-44",
+      "text": "How does constant written communication change expectations about availability?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Language & Communication-45",
+      "text": "Can silence be a complete form of communication?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Language & Communication-46",
+      "text": "How do labels help understanding while also limiting it?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Language & Communication-47",
+      "text": "What makes genuine dialogue possible between strongly different viewpoints?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Language & Communication-48",
+      "text": "How should technology preserve nuance when translating speech?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Language & Communication-49",
+      "text": "Why can a technically clear message still fail to create understanding?",
+      "difficulty": "advanced"
+    }
+  ],
+  "Society & the Future": [
+    {
+      "id": "Society & the Future-0",
+      "text": "What public service makes daily life easier in your area?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-1",
+      "text": "How might homes look different in twenty years?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-2",
+      "text": "Which job would you like to see valued more?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-3",
+      "text": "What makes a neighborhood friendly?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-4",
+      "text": "How can people help newcomers feel welcome?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-5",
+      "text": "Which everyday invention could improve city life?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-6",
+      "text": "What skill will be useful in the future?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-7",
+      "text": "How might people travel differently in twenty years?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-8",
+      "text": "What makes a public space comfortable?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-9",
+      "text": "Which community activity brings different people together?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-10",
+      "text": "How can neighbors share resources?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-11",
+      "text": "What would make your city easier to walk around?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-12",
+      "text": "Which old technology may disappear soon?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-13",
+      "text": "How could future workplaces become more flexible?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-14",
+      "text": "What should every community offer young and older people?",
+      "difficulty": "beginner"
+    },
+    {
+      "id": "Society & the Future-15",
+      "text": "How can cities remain welcoming as they grow?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-16",
+      "text": "What kinds of work may become more important in the future?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-17",
+      "text": "How should communities respond to an aging population?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-18",
+      "text": "What makes people trust a public institution?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-19",
+      "text": "How can technology strengthen local communities rather than isolate people?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-20",
+      "text": "What should cities prioritize when redesigning streets?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-21",
+      "text": "How might remote work change smaller towns?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-22",
+      "text": "What helps different generations learn from one another?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-23",
+      "text": "How can public libraries remain valuable in a digital world?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-24",
+      "text": "What would make volunteering easier for busy adults?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-25",
+      "text": "How should communities prepare for jobs changing more quickly?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-26",
+      "text": "What role should art play in public life?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-27",
+      "text": "How can shared spaces reduce loneliness?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-28",
+      "text": "What makes a new social idea spread?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-29",
+      "text": "How should future schools connect with their communities?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-30",
+      "text": "What can cities do to support independent local businesses?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-31",
+      "text": "How might shorter working weeks affect society?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-32",
+      "text": "What should be considered essential digital access?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-33",
+      "text": "How can communities preserve local identity while welcoming change?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-34",
+      "text": "Which current habit will future generations find surprising?",
+      "difficulty": "intermediate"
+    },
+    {
+      "id": "Society & the Future-35",
+      "text": "How can societies prepare for change without allowing fear to control decisions?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Society & the Future-36",
+      "text": "What should determine whether a new technology becomes part of essential public life?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Society & the Future-37",
+      "text": "How might longer lifespans change ideas about education and career?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Society & the Future-38",
+      "text": "Can a society become more connected digitally while becoming less cohesive socially?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Society & the Future-39",
+      "text": "How should the benefits of automation be distributed?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Society & the Future-40",
+      "text": "What does fairness mean when people begin with very different opportunities?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Society & the Future-41",
+      "text": "How can institutions make long-term decisions when public attention is short-term?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Society & the Future-42",
+      "text": "What forms of community might replace organizations that are losing influence?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Society & the Future-43",
+      "text": "How should societies balance innovation with the stability people need?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Society & the Future-44",
+      "text": "Could universal access to powerful technology reduce inequality or deepen it?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Society & the Future-45",
+      "text": "What would meaningful progress look like beyond economic growth?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Society & the Future-46",
+      "text": "How might future cities protect both anonymity and belonging?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Society & the Future-47",
+      "text": "What social responsibilities accompany the ability to live and work almost anywhere?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Society & the Future-48",
+      "text": "How can societies preserve human dignity when measuring everything through data?",
+      "difficulty": "advanced"
+    },
+    {
+      "id": "Society & the Future-49",
+      "text": "Which present-day assumption about a good life is most likely to change?",
+      "difficulty": "advanced"
+    }
   ]
 }
