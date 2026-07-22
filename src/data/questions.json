@@ -3,502 +3,802 @@
     {
       "id": "Ice Breakers-0",
       "text": "What made you smile this week?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Что заставило вас улыбнуться на этой неделе?"
+      }
     },
     {
       "id": "Ice Breakers-1",
       "text": "What is one small thing that makes your day better?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какая мелочь делает ваш день лучше?"
+      }
     },
     {
       "id": "Ice Breakers-2",
       "text": "What is your favorite way to spend a free evening?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Как вы больше всего любите проводить свободный вечер?"
+      }
     },
     {
       "id": "Ice Breakers-3",
       "text": "What is something most people do not know about you?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Чего большинство людей о вас не знает?"
+      }
     },
     {
       "id": "Ice Breakers-4",
       "text": "What was the best part of your day today?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Что сегодня было самым приятным в вашем дне?"
+      }
     },
     {
       "id": "Ice Breakers-5",
       "text": "Are you more of a morning person or a night person?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Вы скорее жаворонок или сова? Почему?"
+      }
     },
     {
       "id": "Ice Breakers-6",
       "text": "What is one thing you are really good at?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Что вы умеете особенно хорошо?"
+      }
     },
     {
       "id": "Ice Breakers-7",
       "text": "What is your comfort food?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какая еда дарит вам чувство уюта?"
+      }
     },
     {
       "id": "Ice Breakers-8",
       "text": "What app do you use too much?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Каким приложением вы пользуетесь слишком часто?"
+      }
     },
     {
       "id": "Ice Breakers-9",
       "text": "What is one habit you want to build?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какую привычку вы хотите сформировать?"
+      }
     },
     {
       "id": "Ice Breakers-10",
       "text": "What is your favorite place in your city?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какое место в вашем городе вам нравится больше всего?"
+      }
     },
     {
       "id": "Ice Breakers-11",
       "text": "What is one thing you always notice about people?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "На что вы всегда обращаете внимание в людях?"
+      }
     },
     {
       "id": "Ice Breakers-12",
       "text": "What kind of music gives you energy?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какая музыка заряжает вас энергией?"
+      }
     },
     {
       "id": "Ice Breakers-13",
       "text": "What is your favorite season and why?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какое время года вам нравится больше всего и почему?"
+      }
     },
     {
       "id": "Ice Breakers-14",
       "text": "What is one thing you would like to try this year?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Что вам хотелось бы попробовать в этом году?"
+      }
     },
     {
       "id": "Ice Breakers-15",
       "text": "What is your favorite smell?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какой запах вам нравится больше всего?"
+      }
     },
     {
       "id": "Ice Breakers-16",
       "text": "What is a simple thing that always makes you happy?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какая простая вещь всегда радует вас?"
+      }
     },
     {
       "id": "Ice Breakers-17",
       "text": "What is your favorite way to relax?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Как вы больше всего любите отдыхать?"
+      }
     },
     {
       "id": "Ice Breakers-18",
       "text": "What is one thing you are proud of this month?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Чем вы гордитесь в этом месяце?"
+      }
     },
     {
       "id": "Ice Breakers-19",
       "text": "What do you usually do when you have free time?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Чем вы обычно занимаетесь в свободное время?"
+      }
     },
     {
       "id": "Ice Breakers-20",
       "text": "What is your favorite drink?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какой напиток вам нравится больше всего?"
+      }
     },
     {
       "id": "Ice Breakers-21",
       "text": "What is your favorite day of the week?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какой день недели вам нравится больше всего и почему?"
+      }
     },
     {
       "id": "Ice Breakers-22",
       "text": "What is one small goal you have right now?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какая небольшая цель стоит перед вами сейчас?"
+      }
     },
     {
       "id": "Ice Breakers-23",
       "text": "What is something you can talk about for hours?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "О чём вы можете говорить часами?"
+      }
     },
     {
       "id": "Ice Breakers-24",
       "text": "What is your favorite thing about your hometown?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Что вам больше всего нравится в вашем родном городе?"
+      }
     },
     {
       "id": "Ice Breakers-25",
       "text": "What is one thing you want to learn?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Чему вы хотите научиться?"
+      }
     },
     {
       "id": "Ice Breakers-26",
       "text": "What is your favorite memory from school?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Какое школьное воспоминание вам особенно дорого?"
+      }
     },
     {
       "id": "Ice Breakers-27",
       "text": "What is something that gives you energy?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Что придаёт вам энергии?"
+      }
     },
     {
       "id": "Ice Breakers-28",
       "text": "What is one thing you always carry with you?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Что вы всегда носите с собой?"
+      }
     },
     {
       "id": "Ice Breakers-29",
       "text": "What is your favorite way to start the day?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Как вы больше всего любите начинать день?"
+      }
     },
     {
       "id": "Ice Breakers-30",
       "text": "What is a small pleasure you enjoyed recently?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какая маленькая радость недавно доставила вам удовольствие?"
+      }
     },
     {
       "id": "Ice Breakers-31",
       "text": "How do you like to spend a quiet Sunday?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Как вы любите проводить спокойное воскресенье?"
+      }
     },
     {
       "id": "Ice Breakers-32",
       "text": "Which everyday task do you find surprisingly satisfying?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какое повседневное дело неожиданно приносит вам удовольствие?"
+      }
     },
     {
       "id": "Ice Breakers-33",
       "text": "What kind of weather puts you in a good mood?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какая погода поднимает вам настроение?"
+      }
     },
     {
       "id": "Ice Breakers-34",
       "text": "What is a useful item you bought recently?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какую полезную вещь вы недавно купили?"
+      }
     },
     {
       "id": "Ice Breakers-35",
       "text": "How would your closest friends describe your sense of humor?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Как ваши близкие друзья описали бы ваше чувство юмора?"
+      }
     },
     {
       "id": "Ice Breakers-36",
       "text": "Which part of your daily routine would you happily change?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Что в своём распорядке дня вы бы с радостью изменили?"
+      }
     },
     {
       "id": "Ice Breakers-37",
       "text": "Tell us about a recent moment when time passed quickly.",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Расскажите о недавнем моменте, когда время пролетело незаметно."
+      }
     },
     {
       "id": "Ice Breakers-38",
       "text": "What local place would you show to a first-time visitor?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какое местное место вы бы показали человеку, который приехал впервые?"
+      }
     },
     {
       "id": "Ice Breakers-39",
       "text": "Which personal quality has helped you most this year?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какое личное качество больше всего помогло вам в этом году?"
+      }
     },
     {
       "id": "Ice Breakers-40",
       "text": "What activity helps you feel comfortable in a new group?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какое занятие помогает вам чувствовать себя свободнее в новой компании?"
+      }
     },
     {
       "id": "Ice Breakers-41",
       "text": "Which hobby or interest have you grown into over time?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какое увлечение или интерес со временем стал вам близок?"
+      }
     },
     {
       "id": "Ice Breakers-42",
       "text": "What ordinary experience deserves more appreciation?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какой обычный жизненный опыт заслуживает большей признательности?"
+      }
     },
     {
       "id": "Ice Breakers-43",
       "text": "What first impression do people often form about you, and how accurate is it?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Какое первое впечатление люди часто составляют о вас и насколько оно верно?"
+      }
     },
     {
       "id": "Ice Breakers-44",
       "text": "Which social custom would you find hardest to explain to an outsider?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Какой обычай вашего общества было бы труднее всего объяснить иностранцу?"
+      }
     },
     {
       "id": "Ice Breakers-45",
       "text": "How does the way you spend free time reflect your priorities?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Как то, на что вы тратите свободное время, отражает ваши приоритеты?"
+      }
     },
     {
       "id": "Ice Breakers-46",
       "text": "What makes a conversation memorable rather than merely pleasant?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Что делает разговор запоминающимся, а не просто приятным?"
+      }
     },
     {
       "id": "Ice Breakers-47",
       "text": "Which part of your personality appears only when you feel completely comfortable?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Какая сторона вашей личности проявляется только тогда, когда вам совершенно комфортно?"
+      }
     },
     {
       "id": "Ice Breakers-48",
       "text": "How do you decide when to follow a plan and when to be spontaneous?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Как вы решаете, когда следовать плану, а когда действовать спонтанно?"
+      }
     },
     {
       "id": "Ice Breakers-49",
       "text": "What everyday choice reveals more about a person than people realize?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Какой повседневный выбор говорит о человеке больше, чем принято считать?"
+      }
     },
     {
       "id": "Ice Breakers-50",
       "text": "What is a sound that makes you feel at home?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какой звук создаёт у вас ощущение дома?"
+      }
     },
     {
       "id": "Ice Breakers-51",
       "text": "Which small purchase made your week easier?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какая небольшая покупка сделала вашу неделю проще?"
+      }
     },
     {
       "id": "Ice Breakers-52",
       "text": "How do you like to spend an unexpected free hour?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Как вы любите проводить неожиданно освободившийся час?"
+      }
     },
     {
       "id": "Ice Breakers-53",
       "text": "What is your favorite part of your neighborhood?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Что вам больше всего нравится в вашем районе?"
+      }
     },
     {
       "id": "Ice Breakers-54",
       "text": "Which simple skill are you happy to have?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какому простому умению вы рады?"
+      }
     },
     {
       "id": "Ice Breakers-55",
       "text": "What kind of message brightens your day?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какое сообщение делает ваш день светлее?"
+      }
     },
     {
       "id": "Ice Breakers-56",
       "text": "How do you make a room feel comfortable?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Как вы создаёте уют в комнате?"
+      }
     },
     {
       "id": "Ice Breakers-57",
       "text": "What is a pleasant way to end a busy day?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Как приятно завершить насыщенный день?"
+      }
     },
     {
       "id": "Ice Breakers-58",
       "text": "Which everyday object do you use most?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Каким повседневным предметом вы пользуетесь чаще всего?"
+      }
     },
     {
       "id": "Ice Breakers-59",
       "text": "What is something new you noticed this week?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Что нового вы заметили на этой неделе?"
+      }
     },
     {
       "id": "Ice Breakers-60",
       "text": "How do you choose what to wear on a relaxed day?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Как вы выбираете одежду для спокойного дня?"
+      }
     },
     {
       "id": "Ice Breakers-61",
       "text": "Which local shop or café do you enjoy visiting?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "В какой местный магазин или кафе вы любите заходить?"
+      }
     },
     {
       "id": "Ice Breakers-62",
       "text": "What is a snack you often share with others?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Какой едой для перекуса вы часто делитесь с другими?"
+      }
     },
     {
       "id": "Ice Breakers-63",
       "text": "How do you make waiting time more enjoyable?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Как вы делаете ожидание приятнее?"
+      }
     },
     {
       "id": "Ice Breakers-64",
       "text": "What is one thing you like about today?",
-      "difficulty": "beginner"
+      "difficulty": "beginner",
+      "translations": {
+        "ru": "Что вам нравится в сегодняшнем дне?"
+      }
     },
     {
       "id": "Ice Breakers-65",
       "text": "Tell us about a useful recommendation someone gave you recently.",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Расскажите о полезной рекомендации, которую вам недавно дали."
+      }
     },
     {
       "id": "Ice Breakers-66",
       "text": "How does your weekend personality differ from your weekday personality?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Чем вы в выходные отличаетесь от себя в будни?"
+      }
     },
     {
       "id": "Ice Breakers-67",
       "text": "What skill do people often discover you have only after knowing you awhile?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "О каком вашем умении люди обычно узнают только после более близкого знакомства?"
+      }
     },
     {
       "id": "Ice Breakers-68",
       "text": "Describe an ordinary moment that recently felt special.",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Опишите обычный момент, который недавно показался вам особенным."
+      }
     },
     {
       "id": "Ice Breakers-69",
       "text": "Which part of your hometown best matches your personality?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какая часть вашего родного города лучше всего соответствует вашему характеру?"
+      }
     },
     {
       "id": "Ice Breakers-70",
       "text": "How do you decide whether to accept a spontaneous invitation?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Как вы решаете, принять ли неожиданное приглашение?"
+      }
     },
     {
       "id": "Ice Breakers-71",
       "text": "What activity makes it easy for you to lose track of time?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "За каким занятием вы легко теряете счёт времени?"
+      }
     },
     {
       "id": "Ice Breakers-72",
       "text": "Tell us about a recent choice that worked out better than expected.",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Расскажите о недавнем решении, результат которого оказался лучше ожидаемого."
+      }
     },
     {
       "id": "Ice Breakers-73",
       "text": "What kind of compliment do you find most meaningful?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какой комплимент для вас наиболее значим?"
+      }
     },
     {
       "id": "Ice Breakers-74",
       "text": "How have your priorities changed since last year?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Как изменились ваши приоритеты с прошлого года?"
+      }
     },
     {
       "id": "Ice Breakers-75",
       "text": "Which personal rule makes your daily life simpler?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какое личное правило упрощает вашу повседневную жизнь?"
+      }
     },
     {
       "id": "Ice Breakers-76",
       "text": "What is something popular that you only recently began to appreciate?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Что популярное вы начали ценить только недавно?"
+      }
     },
     {
       "id": "Ice Breakers-77",
       "text": "How do you make conversation comfortable for a shy person?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Как вы помогаете застенчивому человеку чувствовать себя свободнее в разговоре?"
+      }
     },
     {
       "id": "Ice Breakers-78",
       "text": "What recent experience gave you a fresh idea?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какой недавний опыт подарил вам новую идею?"
+      }
     },
     {
       "id": "Ice Breakers-79",
       "text": "Which routine would your friends recognize as typically yours?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какую привычку ваши друзья назвали бы типичной для вас?"
+      }
     },
     {
       "id": "Ice Breakers-80",
       "text": "Tell us about a time curiosity led you somewhere interesting.",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Расскажите о случае, когда любопытство привело вас к чему-то интересному."
+      }
     },
     {
       "id": "Ice Breakers-81",
       "text": "What quality helps someone make a strong second impression?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какое качество помогает человеку произвести хорошее второе впечатление?"
+      }
     },
     {
       "id": "Ice Breakers-82",
       "text": "How would you spend a day designed around your current mood?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Как бы вы провели день, полностью соответствующий вашему нынешнему настроению?"
+      }
     },
     {
       "id": "Ice Breakers-83",
       "text": "Which ordinary decision do you enjoy making carefully?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Какое повседневное решение вам нравится принимать обдуманно?"
+      }
     },
     {
       "id": "Ice Breakers-84",
       "text": "What part of meeting new people becomes easier with practice?",
-      "difficulty": "intermediate"
+      "difficulty": "intermediate",
+      "translations": {
+        "ru": "Что во встречах с новыми людьми становится легче с практикой?"
+      }
     },
     {
       "id": "Ice Breakers-85",
       "text": "How do small rituals influence a person’s sense of stability?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Как небольшие ритуалы влияют на ощущение устойчивости в жизни?"
+      }
     },
     {
       "id": "Ice Breakers-86",
       "text": "What makes someone seem familiar even when you have just met?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Почему человек иногда кажется знакомым, хотя вы только что встретились?"
+      }
     },
     {
       "id": "Ice Breakers-87",
       "text": "How much can first impressions reveal about the observer rather than the person observed?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Насколько первое впечатление говорит о наблюдателе, а не о человеке, за которым он наблюдает?"
+      }
     },
     {
       "id": "Ice Breakers-88",
       "text": "When does being adaptable become more valuable than being consistent?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Когда умение приспосабливаться становится важнее последовательности?"
+      }
     },
     {
       "id": "Ice Breakers-89",
       "text": "What does the way people handle minor inconvenience reveal about them?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Что отношение людей к мелким неудобствам может о них рассказать?"
+      }
     },
     {
       "id": "Ice Breakers-90",
       "text": "How can curiosity create connection between people with little in common?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Как любопытство помогает сблизиться людям, у которых мало общего?"
+      }
     },
     {
       "id": "Ice Breakers-91",
       "text": "Which private preference says something meaningful about your values?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Какое личное предпочтение может многое рассказать о ваших ценностях?"
+      }
     },
     {
       "id": "Ice Breakers-92",
       "text": "How does a sense of belonging develop in a new group?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Как в новой группе возникает чувство принадлежности?"
+      }
     },
     {
       "id": "Ice Breakers-93",
       "text": "What makes personal growth visible to others before we notice it ourselves?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Почему окружающие иногда замечают наш личностный рост раньше нас самих?"
+      }
     },
     {
       "id": "Ice Breakers-94",
       "text": "When can an ordinary conversation quietly change someone’s perspective?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Когда обычный разговор может незаметно изменить чью-то точку зрения?"
+      }
     },
     {
       "id": "Ice Breakers-95",
       "text": "How do people decide which parts of themselves to show in a new setting?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Как люди решают, какие стороны себя показывать в новой обстановке?"
+      }
     },
     {
       "id": "Ice Breakers-96",
       "text": "What separates genuine confidence from a confident performance?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Чем настоящая уверенность отличается от её убедительной демонстрации?"
+      }
     },
     {
       "id": "Ice Breakers-97",
       "text": "How can familiarity make us overlook what is interesting in daily life?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Как привычность мешает нам замечать интересное в повседневной жизни?"
+      }
     },
     {
       "id": "Ice Breakers-98",
       "text": "Which social expectation would you like people to question more often?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Какое социальное ожидание людям стоило бы чаще ставить под сомнение?"
+      }
     },
     {
       "id": "Ice Breakers-99",
       "text": "What makes a person’s presence calming without them saying much?",
-      "difficulty": "advanced"
+      "difficulty": "advanced",
+      "translations": {
+        "ru": "Почему рядом с некоторыми людьми спокойно, даже когда они почти ничего не говорят?"
+      }
     }
   ],
   "Travel": [

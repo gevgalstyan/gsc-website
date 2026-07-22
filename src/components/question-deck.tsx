@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Copy, Heart, RotateCcw, Shuffle, Sparkles } from "lucide-react";
+import { ArrowLeft, Copy, Heart, Languages, RotateCcw, Shuffle, Sparkles } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
   categories,
@@ -72,6 +72,7 @@ export function QuestionDeck() {
   const [favorites, setFavorites] = useState<string[]>([]);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [feedback, setFeedback] = useState("");
+  const [showTranslation, setShowTranslation] = useState(false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -110,6 +111,7 @@ export function QuestionDeck() {
 
   function clearCurrentForFilters(nextCategory = category, nextDifficulty = difficulty, onlyFavorites = favoritesOnly) {
     setQuestion(null);
+    setShowTranslation(false);
     setHistory((items) => items.filter((id) => {
       const item = questions.find((candidate) => candidate.id === id);
       return item ? compatible(item, nextCategory, nextDifficulty, onlyFavorites) : false;
@@ -128,6 +130,7 @@ export function QuestionDeck() {
   }
 
   function next() {
+    setShowTranslation(false);
     const favoriteChoices = pool.filter((item) => item.id !== question?.id);
     const available = favoritesOnly
       ? (favoriteChoices.length ? favoriteChoices : pool)
@@ -151,6 +154,7 @@ export function QuestionDeck() {
     const updated = seen.filter((id) => !poolIds.has(id));
     setSeen(updated);
     setQuestion(null);
+    setShowTranslation(false);
     saveProgress(updated);
   }
 
@@ -163,6 +167,7 @@ export function QuestionDeck() {
     if (!previousId) return;
     setHistory(compatibleHistory.slice(0, -1));
     setQuestion(questions.find((item) => item.id === previousId) ?? null);
+    setShowTranslation(false);
     setFeedback("");
   }
 
@@ -175,6 +180,7 @@ export function QuestionDeck() {
     setFeedback(removing ? "Removed from favorites." : "Added to favorites.");
     if (removing && favoritesOnly) {
       setQuestion(null);
+      setShowTranslation(false);
       setHistory((items) => items.filter((id) => id !== question.id));
     }
   }
@@ -248,11 +254,33 @@ export function QuestionDeck() {
           </div>
           <div className="question-copy" aria-live="polite">
             <div>
-              {question && <span className={`level-badge level-${question.difficulty}`}>{difficultyLabels[question.difficulty]}</span>}
-              <p>{question?.text || (favoritesOnly && pool.length === 0
+              {question && (
+                <div className="question-meta-row">
+                  <span className={`level-badge level-${question.difficulty}`}>{difficultyLabels[question.difficulty]}</span>
+                  {question.translations?.ru && (
+                    <button
+                      className="translate-question"
+                      type="button"
+                      onClick={() => setShowTranslation((visible) => !visible)}
+                      aria-expanded={showTranslation}
+                      aria-controls="question-russian-translation"
+                    >
+                      <Languages aria-hidden="true" />
+                      {showTranslation ? "Hide translation" : "Translate"}
+                    </button>
+                  )}
+                </div>
+              )}
+              <p className="question-english">{question?.text || (favoritesOnly && pool.length === 0
                 ? "No favorites match this selection yet. Save a question or adjust the filters."
                 : exhausted ? "You’ve explored every question in this selection. Reset this pool to start again."
                 : "Ready? Draw a question and let the conversation take you somewhere unexpected.")}</p>
+              {question?.translations?.ru && showTranslation && (
+                <div id="question-russian-translation" className="question-translation" lang="ru">
+                  <span>Russian translation</span>
+                  <p>{question.translations.ru}</p>
+                </div>
+              )}
             </div>
           </div>
           <div className="question-actions" aria-label="Question navigation">

@@ -7,6 +7,7 @@ const EXPECTED_CATEGORIES = [
   "Education & Learning", "Nature & Environment", "Language & Communication", "Society & the Future",
 ];
 const PREVIOUS_LIBRARY_HASH = "d4ea3daed63615f35efa150158d0765f86c39276b35c43121de23a49b82fe26f";
+const CURRENT_ENGLISH_LIBRARY_HASH = "dc18d9559a612a6a1f12e095618164a39cb236d29948642ca959ac37253435e2";
 const VALID_LEVELS = new Set(["beginner", "intermediate", "advanced"]);
 const bank = JSON.parse(fs.readFileSync("src/data/questions.json", "utf8"));
 const failures = [];
@@ -47,10 +48,13 @@ for (const question of all) {
   normalizedTexts.set(normalized, question.id);
 }
 
-const previousLibrary = EXPECTED_CATEGORIES.flatMap((category) => bank[category].slice(0, 50).map((question) => ({ ...question, category })));
+const previousLibrary = EXPECTED_CATEGORIES.flatMap((category) => bank[category].slice(0, 50).map(({ id, text, difficulty }) => ({ id, text, difficulty, category })));
 const previousHash = crypto.createHash("sha256").update(JSON.stringify(previousLibrary)).digest("hex");
 assert(previousLibrary.length === 1000, `Expected 1,000 previous questions; found ${previousLibrary.length}`);
 assert(previousHash === PREVIOUS_LIBRARY_HASH, "A previous question ID, category, text, or difficulty changed");
+const currentEnglishLibrary = all.map(({ id, category, text, difficulty }) => ({ id, category, text, difficulty }));
+const currentEnglishHash = crypto.createHash("sha256").update(JSON.stringify(currentEnglishLibrary)).digest("hex");
+assert(currentEnglishHash === CURRENT_ENGLISH_LIBRARY_HASH, "An existing English question ID, category, text, or difficulty changed");
 const longest = [...all].sort((left, right) => right.text.length - left.text.length)[0];
 assert(longest.text.length <= 180, `${longest.id} is excessively long at ${longest.text.length} characters`);
 
@@ -76,6 +80,7 @@ console.log("✓ Every category: 30 beginner, 40 intermediate, 30 advanced");
 console.log("✓ Global levels: 600 beginner, 800 intermediate, 600 advanced");
 console.log(`✓ ${ids.size} unique IDs and ${normalizedTexts.size} unique normalized texts`);
 console.log("✓ All 1,000 previous ID/category/text/difficulty records preserved");
+console.log("✓ All 2,000 English ID/category/text/difficulty records preserved");
 console.log(`✓ Longest question reviewed: ${longest.text.length} characters (${longest.id})`);
 console.log(`Near-duplicate review candidates (token containment ≥ 0.80): ${nearDuplicates.length}`);
 for (const [left, right, similarity] of nearDuplicates) console.log(`  ${similarity.toFixed(2)}  ${left} <> ${right}`);

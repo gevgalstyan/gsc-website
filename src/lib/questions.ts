@@ -30,11 +30,16 @@ export type Difficulty = (typeof difficulties)[number];
 export type CategoryFilter = "all" | Category;
 export type DifficultyFilter = "all" | Difficulty;
 
+export type QuestionTranslations = {
+  ru?: string;
+};
+
 export type Question = {
   id: string;
   category: Category;
   text: string;
   difficulty: Difficulty;
+  translations?: QuestionTranslations;
 };
 
 export const difficultyLabels: Record<Difficulty, string> = {
@@ -48,4 +53,3 @@ export const questionBank = questionData as Record<Category, Array<Omit<Question
 export const questions: Question[] = categories.flatMap((category) =>
   questionBank[category].map((question) => ({ ...question, category })),
 );
-
