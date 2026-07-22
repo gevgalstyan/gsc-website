@@ -80,7 +80,7 @@ export function Header({ onAuth }: { onAuth: () => void }) {
               </Link>
             ))}
           </nav>
-          <button className="button button-primary" onClick={() => { closeMenu(); onAuth(); }}>Login / Register</button>
+          <button className="button button-primary" onClick={() => { closeMenu(); onAuth(); }}>Member access</button>
           <p>English ON. <span>•</span> Sergiev Posad</p>
         </div>
       )}
