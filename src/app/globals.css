@@ -145,3 +145,40 @@ img,svg{max-width:100%}
 @media(max-width:600px){.level-list .favorites-filter{grid-column:1/-1}.question-card{min-height:590px}.question-copy{min-height:260px;padding:14px 0}.question-copy>div{max-height:300px;padding-left:2px;padding-right:2px}.question-copy .question-english{font-size:clamp(25px,8vw,34px);line-height:1.25;max-width:22ch}.question-meta-row{margin-bottom:16px;gap:12px}.translate-question{padding:0 9px}.question-translation{margin-top:16px;padding:14px 10px}.question-translation p{font-size:clamp(16px,5.2vw,20px)}.question-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.question-actions>button{min-height:48px;padding:0 10px}.question-actions .next-question{min-height:52px}.question-progress-row{margin-top:18px;gap:8px}.reset-pool{padding:0 4px;font-size:9px}.question-feedback{margin-top:5px}}
 @media(max-width:350px){.question-card{min-height:610px;padding-left:16px;padding-right:16px}.question-actions>button{font-size:10px}.question-copy .question-english{font-size:25px}}
 .question-actions>button.active svg{fill:currentColor}
+
+/* Flow-based question card: long bilingual content grows the card instead of being clipped. */
+html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(90px + env(safe-area-inset-top))}
+.site-header{padding-top:env(safe-area-inset-top)}
+.question-section{scroll-margin-top:calc(90px + env(safe-area-inset-top))}
+.question-card{position:relative;top:auto;min-width:0;height:auto;min-height:560px}
+.question-card-top{gap:16px;min-width:0}
+.question-copy{display:block;flex:none;width:100%;max-width:780px;min-width:0;min-height:0;margin:0 auto;padding:32px 0 34px;overflow:visible}
+.question-copy>div{width:100%;min-width:0;max-height:none;overflow:visible;padding:0;display:grid;justify-items:center}
+.question-copy .question-english{max-width:24ch;margin-bottom:0;font-size:clamp(28px,3.2vw,48px);line-height:1.22;overflow-wrap:anywhere;text-wrap:balance}
+.question-meta-row{max-width:100%}
+.question-translation p{text-wrap:balance}
+.question-actions{min-width:0}
+.question-actions>button{min-width:0}
+.question-actions>button svg{flex:0 0 16px}
+
+@media(max-width:600px){
+  html{scroll-padding-top:calc(80px + env(safe-area-inset-top))}
+  .question-section{scroll-margin-top:calc(80px + env(safe-area-inset-top));padding-bottom:max(85px,calc(70px + env(safe-area-inset-bottom)))}
+  .question-card{height:auto;min-height:480px;padding-bottom:max(24px,env(safe-area-inset-bottom))}
+  .question-copy{min-height:0;padding:20px 0 26px;overflow:visible}
+  .question-copy>div{max-height:none;overflow:visible;padding:0}
+  .question-copy .question-english{max-width:22ch;font-size:clamp(25px,7.6vw,34px);line-height:1.23}
+  .question-meta-row{margin-bottom:16px;gap:12px}
+  .question-translation{margin-top:18px;padding:15px 10px}
+  .question-translation p{font-size:clamp(17px,5.2vw,20px);line-height:1.42}
+  .question-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .question-actions>button{min-height:48px;padding:0 8px;font-size:10px;white-space:normal}
+  .question-actions .next-question{min-height:52px;padding:0 8px}
+}
+
+@media(max-width:350px){
+  .question-card{min-height:460px;padding-left:16px;padding-right:16px}
+  .question-copy{padding-top:16px}
+  .question-copy .question-english{font-size:clamp(24px,7.8vw,27px)}
+  .question-actions>button{font-size:9.5px}
+}
