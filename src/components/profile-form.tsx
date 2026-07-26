@@ -1,18 +1,165 @@
 "use client";
-import { FormEvent, useState } from "react";
+
+import Image from "next/image";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
+import { Camera, Trash2 } from "lucide-react";
+import { AvatarImageError, prepareAvatarImage } from "@/lib/avatar-image";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
-type Profile = { display_name: string | null; avatar_url: string | null; telegram_username: string | null };
-export function ProfileForm({ userId, initialProfile }: { userId: string; initialProfile: Profile }) {
-  const [status, setStatus] = useState("");
-  const [loading, setLoading] = useState(false);
+const AVATAR_BUCKET = "profile-avatars";
+
+type Profile = {
+  display_name: string | null;
+  avatar_path: string | null;
+  avatar_url: string | null;
+  telegram_username: string | null;
+};
+
+type Notice = { kind: "error" | "success"; text: string } | null;
+
+export function ProfileForm({
+  userId,
+  initialProfile,
+  initialAvatarUrl,
+}: {
+  userId: string;
+  initialProfile: Profile;
+  initialAvatarUrl: string | null;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const previewRef = useRef<string | null>(null);
+  const [avatarPath, setAvatarPath] = useState(initialProfile.avatar_path);
+  const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
+  const [displayName, setDisplayName] = useState(initialProfile.display_name ?? "");
+  const [notice, setNotice] = useState<Notice>(null);
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const busy = saving || uploading;
+
+  useEffect(() => () => {
+    if (previewRef.current) URL.revokeObjectURL(previewRef.current);
+  }, []);
+
+  function replacePreview(url: string | null) {
+    if (previewRef.current) URL.revokeObjectURL(previewRef.current);
+    previewRef.current = url?.startsWith("blob:") ? url : null;
+    setAvatarUrl(url);
+  }
+
+  async function choosePhoto(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+
+    setUploading(true);
+    setNotice(null);
+    try {
+      const blob = await prepareAvatarImage(file);
+      replacePreview(URL.createObjectURL(blob));
+      const client = getSupabaseBrowserClient();
+      if (!client) throw new Error("Profile photos are temporarily unavailable.");
+      const path = `${userId}/avatar.webp`;
+      const { error: uploadError } = await client.storage.from(AVATAR_BUCKET).upload(path, blob, {
+        cacheControl: "0",
+        contentType: "image/webp",
+        upsert: true,
+      });
+      if (uploadError) throw uploadError;
+
+      if (avatarPath !== path) {
+        const { error: profileError } = await client.from("profiles").update({ avatar_path: path }).eq("id", userId);
+        if (profileError) {
+          await client.storage.from(AVATAR_BUCKET).remove([path]);
+          throw profileError;
+        }
+      }
+
+      const { data, error: signedError } = await client.storage.from(AVATAR_BUCKET).createSignedUrl(path, 3600);
+      if (signedError) throw signedError;
+      replacePreview(`${data.signedUrl}&v=${Date.now()}`);
+      setAvatarPath(path);
+      setNotice({ kind: "success", text: "Your profile photo has been updated." });
+    } catch (error) {
+      replacePreview(initialAvatarUrl);
+      setNotice({
+        kind: "error",
+        text: error instanceof AvatarImageError ? error.message : "We couldn’t upload your photo. Please try again.",
+      });
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  async function removePhoto() {
+    if (!avatarPath) return;
+    setUploading(true);
+    setNotice(null);
+    const client = getSupabaseBrowserClient();
+    if (!client) {
+      setUploading(false);
+      setNotice({ kind: "error", text: "Profile photos are temporarily unavailable." });
+      return;
+    }
+
+    const { error: deleteError } = await client.storage.from(AVATAR_BUCKET).remove([avatarPath]);
+    if (deleteError) {
+      setUploading(false);
+      setNotice({ kind: "error", text: "We couldn’t remove your photo. Please try again." });
+      return;
+    }
+    const { error: profileError } = await client.from("profiles").update({ avatar_path: null }).eq("id", userId);
+    setUploading(false);
+    if (profileError) {
+      setNotice({ kind: "error", text: "The photo was removed, but your profile could not be refreshed. Please reload the page." });
+      return;
+    }
+    setAvatarPath(null);
+    replacePreview(initialProfile.avatar_url);
+    setNotice({ kind: "success", text: "Your uploaded photo has been removed." });
+  }
+
   async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); setLoading(true); setStatus("");
+    event.preventDefault();
+    setSaving(true);
+    setNotice(null);
     const data = new FormData(event.currentTarget);
     const clean = (key: string) => String(data.get(key) ?? "").trim() || null;
     const telegram = clean("telegram_username")?.replace(/^@/, "") ?? null;
-    const { error } = await getSupabaseBrowserClient()!.from("profiles").update({ display_name: clean("display_name"), avatar_url: clean("avatar_url"), telegram_username: telegram }).eq("id", userId);
-    setLoading(false); setStatus(error ? error.message : "Profile saved.");
+    const client = getSupabaseBrowserClient();
+    const { error } = client
+      ? await client.from("profiles").update({ display_name: clean("display_name"), telegram_username: telegram }).eq("id", userId)
+      : { error: new Error("Profile updates are temporarily unavailable.") };
+    setSaving(false);
+    setNotice(error ? { kind: "error", text: "We couldn’t save your profile. Please check the fields and try again." } : { kind: "success", text: "Profile saved." });
   }
-  return <form className="account-form" onSubmit={submit} aria-busy={loading}><label>Display name<input name="display_name" defaultValue={initialProfile.display_name ?? ""} maxLength={80} autoComplete="name" /></label><label>Avatar URL<input name="avatar_url" defaultValue={initialProfile.avatar_url ?? ""} type="url" maxLength={2048} placeholder="https://…" /></label><label>Telegram username<input name="telegram_username" defaultValue={initialProfile.telegram_username ?? ""} pattern="@?[A-Za-z0-9_]{5,32}" placeholder="@username" /></label><button className="button button-primary" disabled={loading}>{loading ? "Saving…" : "Save profile"}</button>{status && <p className="form-status" role="status">{status}</p>}</form>;
+
+  const initials = displayName.trim().charAt(0).toUpperCase() || "G";
+
+  return <>
+    <div className="avatar-editor" aria-busy={uploading}>
+      <button className="avatar-picker" type="button" onClick={() => inputRef.current?.click()} disabled={busy} aria-label={avatarUrl ? "Change profile photo" : "Upload profile photo"}>
+        {avatarUrl
+          ? <Image className="profile-avatar" src={avatarUrl} alt="Your profile photo" width={112} height={112} unoptimized />
+          : <span className="profile-avatar profile-placeholder" aria-hidden="true">{initials}</span>}
+        <span className="avatar-camera" aria-hidden="true"><Camera size={18} /></span>
+      </button>
+      <div className="avatar-editor-copy">
+        <strong>Profile photo</strong>
+        <span>JPEG, PNG or WebP. Maximum 5 MB.</span>
+        <div className="avatar-actions">
+          <button className="button button-outline-dark button-compact" type="button" onClick={() => inputRef.current?.click()} disabled={busy}>
+            <Camera size={16} />{uploading ? "Uploading…" : avatarPath || avatarUrl ? "Change photo" : "Upload photo"}
+          </button>
+          {avatarPath && <button className="avatar-remove" type="button" onClick={removePhoto} disabled={busy}><Trash2 size={16} />Remove photo</button>}
+        </div>
+      </div>
+      <input ref={inputRef} className="sr-only" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" onChange={choosePhoto} disabled={busy} aria-label="Choose a profile photo" />
+    </div>
+    <form className="account-form" onSubmit={submit} aria-busy={saving}>
+      <label>Display name<input name="display_name" value={displayName} onChange={(event) => setDisplayName(event.target.value)} maxLength={80} autoComplete="name" disabled={busy} /></label>
+      <label>Telegram username<input name="telegram_username" defaultValue={initialProfile.telegram_username ?? ""} pattern="@?[A-Za-z0-9_]{5,32}" placeholder="@username" disabled={busy} /></label>
+      <button className="button button-primary" disabled={busy}>{saving ? "Saving…" : "Save profile"}</button>
+      {notice && <p className={`form-status ${notice.kind}`} role="status" aria-live="polite">{notice.text}</p>}
+    </form>
+  </>;
 }

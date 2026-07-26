@@ -10,12 +10,12 @@ import { Header } from "@/components/header";
 import { QuestionDeck } from "@/components/question-deck";
 import { meetups, socialLinks } from "@/lib/site-data";
 
-export function HomePage({ initialAuthOpen = false }: { initialAuthOpen?: boolean }) {
+export function HomePage({ initialAuthOpen = false, authenticated = false }: { initialAuthOpen?: boolean; authenticated?: boolean }) {
   const [authOpen, setAuthOpen] = useState(initialAuthOpen);
 
   return (
     <>
-      <Header onAuth={() => setAuthOpen(true)} />
+      <Header onAuth={() => setAuthOpen(true)} authenticated={authenticated} />
       <main>
         <section id="home" className="hero section">
           <div className="hero-copy">
