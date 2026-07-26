@@ -1,87 +1,32 @@
 "use client";
-
-import { Check, LockKeyhole, Send, X } from "lucide-react";
+import { LockKeyhole, X } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { socialLinks } from "@/lib/site-data";
-import { isSupabaseConfigured } from "@/lib/supabase/client";
-
-const MEMBER_ACCOUNTS_ENABLED = false;
-const telegramUrl = socialLinks.find((social) => social.label === "Telegram")?.href ?? "";
+import { useRouter } from "next/navigation";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+type Mode = "login" | "register" | "forgot";
+type Notice = { kind: "error" | "success"; text: string } | null;
+const googleEnabled = process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED === "true";
+const telegramEnabled = process.env.NEXT_PUBLIC_TELEGRAM_AUTH_ENABLED === "true";
 
 export function AuthDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [mode, setMode] = useState<"login" | "register">("login");
-  const [message, setMessage] = useState("");
-  const dialogRef = useRef<HTMLElement>(null);
-  const configured = isSupabaseConfigured();
-
+  const [mode, setMode] = useState<Mode>("login"); const [notice, setNotice] = useState<Notice>(null); const [loading, setLoading] = useState(false);
+  const dialogRef = useRef<HTMLElement>(null); const closeRef = useRef<HTMLButtonElement>(null); const router = useRouter();
+  function close() { setNotice(null); setLoading(false); onClose(); }
   useEffect(() => {
-    if (!open) return;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    dialogRef.current?.querySelector<HTMLElement>("button")?.focus();
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setMessage("");
-        onClose();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [open, onClose]);
-
-  if (!open) return null;
-
-  function close() {
-    setMessage("");
-    onClose();
+    if (!open) return; const previous = document.activeElement as HTMLElement | null; const overflow = document.body.style.overflow; document.body.style.overflow = "hidden"; closeRef.current?.focus();
+    function onKey(event: KeyboardEvent) { if (event.key === "Escape") return close(); if (event.key !== "Tab" || !dialogRef.current) return; const items = dialogRef.current.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),input:not([disabled]),[tabindex]:not([tabindex="-1"])'); if (!items.length) return; const first = items[0], last = items[items.length - 1]; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } }
+    window.addEventListener("keydown", onKey); return () => { document.body.style.overflow = overflow; window.removeEventListener("keydown", onKey); previous?.focus(); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+  function changeMode(next: Mode) { setMode(next); setNotice(null); }
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault(); setNotice(null); setLoading(true); const form = new FormData(event.currentTarget); const email = String(form.get("email") ?? "").trim(); const password = String(form.get("password") ?? ""); const client = getSupabaseBrowserClient()!;
+    if (mode === "forgot") { const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/auth/callback?next=/reset-password` }); setLoading(false); setNotice(error ? { kind: "error", text: error.message } : { kind: "success", text: "If an account exists, a password-reset email is on its way." }); return; }
+    if (password.length < 8) { setLoading(false); setNotice({ kind: "error", text: "Use at least 8 characters for your password." }); return; }
+    if (mode === "register") { const displayName = String(form.get("display_name") ?? "").trim(); const { data, error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: `${location.origin}/auth/callback`, data: { full_name: displayName } } }); setLoading(false); setNotice(error ? { kind: "error", text: error.message } : data.session ? { kind: "success", text: "Account created. Opening your profile…" } : { kind: "success", text: "Check your email to confirm your account." }); if (data.session) setTimeout(() => { close(); router.push("/account"); router.refresh(); }, 500); return; }
+    const { error } = await client.auth.signInWithPassword({ email, password }); setLoading(false); if (error) return setNotice({ kind: "error", text: error.message }); close(); router.push("/account"); router.refresh();
   }
-
-  function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setMessage(configured
-      ? "Supabase is configured. Live authentication will be enabled with the Phase 2 database and callback routes."
-      : "Demo mode: your details were not sent or stored. Connect Supabase to enable accounts.");
-  }
-
-  return (
-    <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && close()}>
-      <section ref={dialogRef} className="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title">
-        <button className="dialog-close" onClick={close} aria-label="Close"><X /></button>
-        <div className="auth-mark"><LockKeyhole /></div>
-        <span className="eyebrow">GSC member space</span>
-        {!MEMBER_ACCOUNTS_ENABLED ? (
-          <div className="auth-coming-soon">
-            <h2 id="auth-title">Member accounts are coming soon</h2>
-            <p className="auth-coming-soon-lead">We’re preparing profiles, attendance tracking, badges and meetup rewards.</p>
-            <p className="muted">For now, join the community through Telegram.</p>
-            <a className="button button-primary auth-telegram-button" href={telegramUrl} target="_blank" rel="noopener noreferrer">
-              <Send aria-hidden="true" /> Join on Telegram
-            </a>
-            <p className="auth-account-note">No account is required yet.</p>
-          </div>
-        ) : (
-          <>
-            <h2 id="auth-title">{mode === "login" ? "Welcome back" : "Join the club"}</h2>
-            <p className="muted">{mode === "login" ? "Continue your speaking journey." : "Create your profile and be first to book."}</p>
-            <div className="auth-tabs" role="tablist">
-              <button role="tab" aria-selected={mode === "login"} className={mode === "login" ? "active" : ""} onClick={() => setMode("login")}>Login</button>
-              <button role="tab" aria-selected={mode === "register"} className={mode === "register" ? "active" : ""} onClick={() => setMode("register")}>Register</button>
-            </div>
-            <form onSubmit={submit}>
-              {mode === "register" && <label>Full name<input name="name" autoComplete="name" placeholder="Your name" required /></label>}
-              <label>Email address<input name="email" type="email" autoComplete="email" placeholder="you@example.com" required /></label>
-              <label>Password<input name="password" type="password" minLength={8} autoComplete={mode === "login" ? "current-password" : "new-password"} placeholder="At least 8 characters" required /></label>
-              <button className="button button-primary" type="submit">{mode === "login" ? "Continue" : "Create demo account"}</button>
-            </form>
-            <button className="google-button" onClick={() => setMessage("Google sign-in will activate after Supabase OAuth is configured.")}>Continue with Google</button>
-            {message && <div className="demo-note" role="status"><Check />{message}</div>}
-            <p className="privacy-note">No credentials are stored in demo mode. By continuing, you agree to our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>
-          </>
-        )}
-      </section>
-    </div>
-  );
+  async function googleLogin() { setLoading(true); setNotice(null); const { error } = await getSupabaseBrowserClient()!.auth.signInWithOAuth({ provider: "google", options: { redirectTo: `${location.origin}/auth/callback` } }); if (error) { setLoading(false); setNotice({ kind: "error", text: error.message }); } }
+  if (!open) return null; const title = mode === "login" ? "Welcome back" : mode === "register" ? "Join the club" : "Reset password";
+  return <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && close()}><section ref={dialogRef} className="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title" aria-describedby="auth-description"><button ref={closeRef} className="dialog-close" onClick={close} aria-label="Close"><X /></button><div className="auth-mark"><LockKeyhole /></div><span className="eyebrow">GSC member space</span><h2 id="auth-title">{title}</h2><p id="auth-description" className="muted">{mode === "forgot" ? "Enter your email and we’ll send a secure reset link." : "Your member profile, protected by Supabase."}</p>{mode !== "forgot" && <div className="auth-tabs" role="tablist" aria-label="Authentication mode"><button type="button" role="tab" aria-selected={mode === "login"} className={mode === "login" ? "active" : ""} onClick={() => changeMode("login")}>Login</button><button type="button" role="tab" aria-selected={mode === "register"} className={mode === "register" ? "active" : ""} onClick={() => changeMode("register")}>Register</button></div>}<form onSubmit={submit} aria-busy={loading}>{mode === "register" && <label>Display name<input name="display_name" autoComplete="name" maxLength={80} required /></label>}<label>Email address<input name="email" type="email" autoComplete="email" required /></label>{mode !== "forgot" && <label>Password<input name="password" type="password" minLength={8} autoComplete={mode === "login" ? "current-password" : "new-password"} required /></label>}<button className="button button-primary" type="submit" disabled={loading}>{loading ? "Please wait…" : mode === "login" ? "Login" : mode === "register" ? "Create account" : "Send reset link"}</button></form>{mode === "login" && <button className="auth-text-button" type="button" onClick={() => changeMode("forgot")}>Forgot password?</button>}{mode === "forgot" && <button className="auth-text-button" type="button" onClick={() => changeMode("login")}>Back to login</button>}{googleEnabled && <button className="google-button" disabled={loading} onClick={googleLogin}>Continue with Google</button>}{telegramEnabled && <button className="google-button" disabled title="Telegram OIDC integration is not yet available">Continue with Telegram</button>}{notice && <div className={`form-status ${notice.kind}`} role="status" aria-live="polite">{notice.text}</div>}<p className="privacy-note">By continuing, you agree to our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p></section></div>;
 }

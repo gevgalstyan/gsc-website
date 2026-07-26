@@ -10,8 +10,8 @@ import { Header } from "@/components/header";
 import { QuestionDeck } from "@/components/question-deck";
 import { meetups, socialLinks } from "@/lib/site-data";
 
-export function HomePage() {
-  const [authOpen, setAuthOpen] = useState(false);
+export function HomePage({ initialAuthOpen = false }: { initialAuthOpen?: boolean }) {
+  const [authOpen, setAuthOpen] = useState(initialAuthOpen);
 
   return (
     <>
