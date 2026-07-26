@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft, Copy, Heart, Languages, RotateCcw, Shuffle, Sparkles } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   categories,
   difficultyLabels,
@@ -11,82 +11,17 @@ import {
   type DifficultyFilter,
   type Question,
 } from "@/lib/questions";
-
-// Storage contract: v3 keeps explored IDs, v2 is read only for migration, and
-// favorites v1 stores a deduplicated ID array. Session history stays in memory.
-const storageKey = "gsc_question_progress_v3";
-const legacyStorageKey = "gsc_seen_questions_v2";
-const favoritesStorageKey = "gsc_question_favorites_v1";
-const validQuestionIds = new Set(questions.map((question) => question.id));
-
-type StoredProgress = {
-  version: 3;
-  seen: string[];
-};
-
-function sanitizeSeen(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-  return [...new Set(value.filter((id): id is string => typeof id === "string" && validQuestionIds.has(id)))];
-}
-
-function readProgress(): string[] {
-  // v3 stores a versioned object. The previous release stored a bare ID array;
-  // valid legacy IDs are migrated without changing the original question IDs.
-  try {
-    const stored = JSON.parse(localStorage.getItem(storageKey) || "null") as Partial<StoredProgress> | null;
-    if (stored?.version === 3) return sanitizeSeen(stored.seen);
-  } catch {
-    // Continue with the legacy format when versioned data is malformed.
-  }
-
-  try {
-    return sanitizeSeen(JSON.parse(localStorage.getItem(legacyStorageKey) || "[]"));
-  } catch {
-    return [];
-  }
-}
-
-function saveProgress(seen: string[]) {
-  const progress: StoredProgress = { version: 3, seen };
-  try {
-    localStorage.setItem(storageKey, JSON.stringify(progress));
-  } catch {
-    // Drawing still works when storage is blocked or unavailable.
-  }
-}
-
-function readFavorites(): string[] {
-  try { return sanitizeSeen(JSON.parse(localStorage.getItem(favoritesStorageKey) || "[]")); } catch { return []; }
-}
-
-function saveFavorites(favorites: string[]) {
-  try { localStorage.setItem(favoritesStorageKey, JSON.stringify(favorites)); } catch { /* Favorites remain available for this session. */ }
-}
+import { useQuestionState } from "@/hooks/use-question-state";
 
 export function QuestionDeck() {
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
-  const [seen, setSeen] = useState<string[]>([]);
   const [question, setQuestion] = useState<Question | null>(null);
   const [history, setHistory] = useState<string[]>([]);
-  const [favorites, setFavorites] = useState<string[]>([]);
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [showTranslation, setShowTranslation] = useState(false);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    const loadStoredQuestions = window.setTimeout(() => {
-      const restored = readProgress();
-      setSeen(restored);
-      const restoredFavorites = readFavorites();
-      setFavorites(restoredFavorites);
-      saveFavorites(restoredFavorites);
-      saveProgress(restored);
-      setReady(true);
-    }, 0);
-    return () => window.clearTimeout(loadStoredQuestions);
-  }, []);
+  const { seen, favorites, ready, syncError, markExplored, setFavorite, resetProgress } = useQuestionState();
 
   const pool = useMemo(
     () => questions.filter((item) =>
@@ -140,22 +75,18 @@ export function QuestionDeck() {
       return;
     }
     const nextQuestion = available[Math.floor(Math.random() * available.length)];
-    const updated = [...seen, nextQuestion.id];
-    setSeen(updated);
     if (question) setHistory((items) => [...items, question.id]);
     setQuestion(nextQuestion);
     setFeedback("");
-    saveProgress(updated);
+    void markExplored(nextQuestion.id);
   }
 
   function reset() {
     if (seenHere > 0 && !window.confirm(`Reset explored progress for ${categoryLabel}, ${difficultyLabel}${favoritesOnly ? ", Favorites" : ""}? Favorites will be kept.`)) return;
     const poolIds = new Set(pool.map((item) => item.id));
-    const updated = seen.filter((id) => !poolIds.has(id));
-    setSeen(updated);
     setQuestion(null);
     setShowTranslation(false);
-    saveProgress(updated);
+    void resetProgress([...poolIds]);
   }
 
   function previous() {
@@ -174,9 +105,7 @@ export function QuestionDeck() {
   function toggleFavorite() {
     if (!question) return;
     const removing = favorites.includes(question.id);
-    const updated = removing ? favorites.filter((id) => id !== question.id) : [...favorites, question.id];
-    setFavorites(updated);
-    saveFavorites(updated);
+    void setFavorite(question.id, removing === false);
     setFeedback(removing ? "Removed from favorites." : "Added to favorites.");
     if (removing && favoritesOnly) {
       setQuestion(null);
@@ -205,7 +134,7 @@ export function QuestionDeck() {
     <section id="questions" className="section question-section">
       <div className="section-heading">
         <div><span className="eyebrow">Never a silent table</span><h2>One question.<br /><em>Endless conversation.</em></h2></div>
-        <p>Choose a category and level, then draw a card. Questions won&apos;t repeat on this device until you reset that pool.</p>
+        <p>Choose a category and level, then draw a card. Questions won&apos;t repeat until you reset that pool.</p>
       </div>
 
       <div className="question-filter-bar">
@@ -296,7 +225,7 @@ export function QuestionDeck() {
             <button className="reset-pool" onClick={reset} disabled={!ready || seenHere === 0}><RotateCcw aria-hidden="true" />Reset explored</button>
           </div>
           <small>{seenHere} explored <i>•</i> {Math.max(0, remaining)} remaining</small>
-          <span className="question-feedback" role="status" aria-live="polite">{feedback}</span>
+          <span className="question-feedback" role="status" aria-live="polite">{syncError || feedback}</span>
         </div>
       </div>
     </section>
