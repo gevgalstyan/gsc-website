@@ -2,19 +2,25 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Award, BookOpen, CalendarCheck, Heart, ShieldCheck } from "lucide-react";
 import { createClient } from "@/lib/supabase/server";
+import { isAllowlistedAdminEmail } from "@/lib/admin";
+
+export const metadata = { robots: { index: false, follow: false } };
 
 export default async function AdminMemberPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
+  if (!supabase) redirect("/?auth=login");
   const { data: claims } = await supabase.auth.getClaims();
   const currentUserId = claims?.claims?.sub;
   if (!currentUserId) redirect("/?auth=login");
+  const email = typeof claims?.claims?.email === "string" ? claims.claims.email : null;
+  if (!isAllowlistedAdminEmail(email)) redirect("/account");
   const { data: role } = await supabase.from("user_roles").select("role").eq("user_id", currentUserId).single();
   if (role?.role !== "admin") redirect("/account");
 
   const [directory, profile, memberRole, attendance, bookings, rewards, special, progress, favorites] = await Promise.all([
     supabase.rpc("admin_member_directory"),
-    supabase.from("profiles").select("id,display_name,telegram_username,created_at").eq("id", id).single(),
+    supabase.from("profiles").select("id,display_name,telegram_username,english_level,created_at").eq("id", id).single(),
     supabase.from("user_roles").select("role").eq("user_id", id).single(),
     supabase.from("attendance").select("id,status,is_paid,paid_amount_minor,paid_currency,recorded_at,meetups(title,starts_at)").eq("user_id", id).order("recorded_at", { ascending: false }),
     supabase.from("meetup_bookings").select("id,status,booked_at,meetups(title,starts_at)").eq("user_id", id).order("booked_at", { ascending: false }),

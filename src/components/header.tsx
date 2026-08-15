@@ -6,7 +6,7 @@ import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { navigation } from "@/lib/site-data";
 
-export function Header({ onAuth, authenticated = false }: { onAuth: () => void; authenticated?: boolean }) {
+export function Header({ onAuth, authenticated = false }: { onAuth?: () => void; authenticated?: boolean }) {
   const [open, setOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
@@ -63,7 +63,7 @@ export function Header({ onAuth, authenticated = false }: { onAuth: () => void; 
           {navigation.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
         </nav>
         <div className="header-actions">
-          {authenticated ? <Link className="button button-small button-outline desktop-auth" href="/account">Dashboard</Link> : <button className="button button-small button-outline desktop-auth" onClick={onAuth}>Member access</button>}
+          {authenticated ? <Link className="button button-small button-outline desktop-auth" href="/account">Dashboard</Link> : onAuth ? <button className="button button-small button-outline desktop-auth" onClick={onAuth}>Member access</button> : <Link className="button button-small button-outline desktop-auth" href="/?auth=login">Member access</Link>}
           <button ref={menuButtonRef} className="menu-button" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open} aria-controls="mobile-navigation"><Menu /></button>
         </div>
       </div>
@@ -80,7 +80,7 @@ export function Header({ onAuth, authenticated = false }: { onAuth: () => void; 
               </Link>
             ))}
           </nav>
-          {authenticated ? <Link className="button button-primary" href="/account" onClick={closeMenu}>Open dashboard</Link> : <button className="button button-primary" onClick={() => { closeMenu(); onAuth(); }}>Member access</button>}
+          {authenticated ? <Link className="button button-primary" href="/account" onClick={closeMenu}>Open dashboard</Link> : onAuth ? <button className="button button-primary" onClick={() => { closeMenu(); onAuth(); }}>Member access</button> : <Link className="button button-primary" href="/?auth=login" onClick={closeMenu}>Member access</Link>}
           <p>English ON. <span>•</span> Sergiev Posad</p>
         </div>
       )}

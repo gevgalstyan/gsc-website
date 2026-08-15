@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { questions } from "@/lib/questions";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
@@ -13,30 +13,30 @@ const validQuestionIds = new Set(questions.map((question) => question.id));
 type StoredProgress = { version: 3; seen: string[] };
 type QuestionStateRow = { question_id: string };
 
-function sanitizeIds(value: unknown): string[] {
+function sanitizeIds(value: unknown, validIds = validQuestionIds): string[] {
   if (!Array.isArray(value)) return [];
-  return [...new Set(value.filter((id): id is string => typeof id === "string" && validQuestionIds.has(id)))];
+  return [...new Set(value.filter((id): id is string => typeof id === "string" && validIds.has(id)))];
 }
 
 function readJson(key: string): unknown {
   try { return JSON.parse(localStorage.getItem(key) || "null"); } catch { return null; }
 }
 
-function readGuestProgress(): string[] {
+function readGuestProgress(validIds = validQuestionIds): string[] {
   const current = readJson(progressKey) as Partial<StoredProgress> | string[] | null;
-  if (Array.isArray(current)) return sanitizeIds(current);
-  if (current?.version === 3) return sanitizeIds(current.seen);
-  return sanitizeIds(readJson(legacyProgressKey));
+  if (Array.isArray(current)) return sanitizeIds(current, validIds);
+  if (current?.version === 3) return sanitizeIds(current.seen, validIds);
+  return sanitizeIds(readJson(legacyProgressKey), validIds);
 }
 
-function readGuestImportProgress(): string[] {
+function readGuestImportProgress(validIds = validQuestionIds): string[] {
   const current = readJson(progressKey) as Partial<StoredProgress> | string[] | null;
-  const currentIds = Array.isArray(current) ? sanitizeIds(current) : sanitizeIds(current?.seen);
-  return sanitizeIds([...currentIds, ...sanitizeIds(readJson(legacyProgressKey))]);
+  const currentIds = Array.isArray(current) ? sanitizeIds(current, validIds) : sanitizeIds(current?.seen, validIds);
+  return sanitizeIds([...currentIds, ...sanitizeIds(readJson(legacyProgressKey), validIds)], validIds);
 }
 
-function readGuestFavorites(): string[] {
-  return sanitizeIds(readJson(favoritesKey));
+function readGuestFavorites(validIds = validQuestionIds): string[] {
+  return sanitizeIds(readJson(favoritesKey), validIds);
 }
 
 function saveGuestProgress(seen: string[]) {
@@ -56,7 +56,7 @@ function clearImportedGuestState(userId: string) {
   } catch { /* A later idempotent merge is safe if storage is unavailable. */ }
 }
 
-export function useQuestionState() {
+export function useQuestionState(extraQuestionIds: string[] = []) {
   const [seen, setSeen] = useState<string[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [accountId, setAccountId] = useState<string | null>(null);
@@ -64,6 +64,7 @@ export function useQuestionState() {
   const [syncError, setSyncError] = useState("");
   const loadSequence = useRef(0);
   const accountIdRef = useRef<string | null>(null);
+  const validIds = useMemo(() => new Set([...validQuestionIds, ...extraQuestionIds]), [extraQuestionIds]);
 
   const loadAccountState = useCallback(async (userId: string) => {
     const client = getSupabaseBrowserClient();
@@ -75,18 +76,18 @@ export function useQuestionState() {
     ]);
     if (progressResult.error || favoritesResult.error) throw new Error("Couldn’t synchronize question progress.");
     if (sequence !== loadSequence.current || accountIdRef.current !== userId) return;
-    setSeen(sanitizeIds((progressResult.data as QuestionStateRow[]).map((row) => row.question_id)));
-    setFavorites(sanitizeIds((favoritesResult.data as QuestionStateRow[]).map((row) => row.question_id)));
+    setSeen(sanitizeIds((progressResult.data as QuestionStateRow[]).map((row) => row.question_id), validIds));
+    setFavorites(sanitizeIds((favoritesResult.data as QuestionStateRow[]).map((row) => row.question_id), validIds));
     setSyncError("");
     setReady(true);
-  }, []);
+  }, [validIds]);
 
   const mergeGuestState = useCallback(async (userId: string) => {
     try { if (localStorage.getItem(`${mergeKeyPrefix}${userId}`) === "complete") return; } catch { /* Continue idempotently. */ }
     const client = getSupabaseBrowserClient();
     if (!client) throw new Error("Account sync is unavailable.");
-    const guestSeen = readGuestImportProgress();
-    const guestFavorites = readGuestFavorites();
+    const guestSeen = readGuestImportProgress(validIds);
+    const guestFavorites = readGuestFavorites(validIds);
     const [progressResult, favoritesResult] = await Promise.all([
       client.from("question_progress").select("question_id").eq("user_id", userId),
       client.from("question_favorites").select("question_id").eq("user_id", userId),
@@ -102,7 +103,7 @@ export function useQuestionState() {
     const results = await Promise.all(insertions);
     if (results.some((result) => result.error && result.error.code !== "23505")) throw new Error("Couldn’t import this device’s question history.");
     clearImportedGuestState(userId);
-  }, []);
+  }, [validIds]);
 
   useEffect(() => {
     const client = getSupabaseBrowserClient();
@@ -113,8 +114,8 @@ export function useQuestionState() {
       ++loadSequence.current;
       accountIdRef.current = null;
       setAccountId(null);
-      const restoredSeen = readGuestProgress();
-      const restoredFavorites = readGuestFavorites();
+      const restoredSeen = readGuestProgress(validIds);
+      const restoredFavorites = readGuestFavorites(validIds);
       setSeen(restoredSeen);
       setFavorites(restoredFavorites);
       saveGuestProgress(restoredSeen);
@@ -160,7 +161,7 @@ export function useQuestionState() {
       invalidatePendingLoads();
       authListener.subscription.unsubscribe();
     };
-  }, [loadAccountState, mergeGuestState]);
+  }, [loadAccountState, mergeGuestState, validIds]);
 
   useEffect(() => {
     const client = getSupabaseBrowserClient();
@@ -195,15 +196,15 @@ export function useQuestionState() {
     if (accountId) return;
     const refreshGuest = (event: StorageEvent) => {
       if (![progressKey, legacyProgressKey, favoritesKey].includes(event.key || "")) return;
-      setSeen(readGuestProgress());
-      setFavorites(readGuestFavorites());
+      setSeen(readGuestProgress(validIds));
+      setFavorites(readGuestFavorites(validIds));
     };
     window.addEventListener("storage", refreshGuest);
     return () => window.removeEventListener("storage", refreshGuest);
-  }, [accountId]);
+  }, [accountId, validIds]);
 
   const markExplored = useCallback(async (questionId: string) => {
-    if (!validQuestionIds.has(questionId) || seen.includes(questionId)) return true;
+    if (!validIds.has(questionId) || seen.includes(questionId)) return true;
     const updated = [...seen, questionId];
     setSeen(updated);
     setSyncError("");
@@ -214,12 +215,12 @@ export function useQuestionState() {
     await loadAccountState(accountId).catch(() => setSeen(seen));
     setSyncError("That question couldn’t be saved. Your account state was restored.");
     return false;
-  }, [accountId, loadAccountState, seen]);
+  }, [accountId, loadAccountState, seen, validIds]);
 
   const setFavorite = useCallback(async (questionId: string, favorite: boolean) => {
-    if (!validQuestionIds.has(questionId)) return false;
+    if (!validIds.has(questionId)) return false;
     const previous = favorites;
-    const updated = favorite ? sanitizeIds([...favorites, questionId]) : favorites.filter((id) => id !== questionId);
+    const updated = favorite ? sanitizeIds([...favorites, questionId], validIds) : favorites.filter((id) => id !== questionId);
     setFavorites(updated);
     setSyncError("");
     if (!accountId) { saveGuestFavorites(updated); return true; }
@@ -231,10 +232,10 @@ export function useQuestionState() {
     await loadAccountState(accountId).catch(() => setFavorites(previous));
     setSyncError("That favorite couldn’t be saved. Your account state was restored.");
     return false;
-  }, [accountId, favorites, loadAccountState]);
+  }, [accountId, favorites, loadAccountState, validIds]);
 
   const resetProgress = useCallback(async (questionIds: string[]) => {
-    const ids = sanitizeIds(questionIds).filter((id) => seen.includes(id));
+    const ids = sanitizeIds(questionIds, validIds).filter((id) => seen.includes(id));
     if (!ids.length) return true;
     const previous = seen;
     const remove = new Set(ids);
@@ -252,7 +253,7 @@ export function useQuestionState() {
       }
     }
     return true;
-  }, [accountId, loadAccountState, seen]);
+  }, [accountId, loadAccountState, seen, validIds]);
 
   return { seen, favorites, ready, syncError, markExplored, setFavorite, resetProgress };
 }

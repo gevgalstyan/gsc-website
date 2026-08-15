@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowLeft, Copy, Heart, Languages, RotateCcw, Shuffle, Sparkles } from "lucide-react";
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import {
   categories,
@@ -13,7 +14,7 @@ import {
 } from "@/lib/questions";
 import { useQuestionState } from "@/hooks/use-question-state";
 
-export function QuestionDeck() {
+export function QuestionDeck({ showPageLink = true, additionalQuestions = [] }: { showPageLink?: boolean; additionalQuestions?: Question[] }) {
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
   const [question, setQuestion] = useState<Question | null>(null);
@@ -21,14 +22,16 @@ export function QuestionDeck() {
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [showTranslation, setShowTranslation] = useState(false);
-  const { seen, favorites, ready, syncError, markExplored, setFavorite, resetProgress } = useQuestionState();
+  const allQuestions = useMemo(() => [...questions, ...additionalQuestions], [additionalQuestions]);
+  const additionalIds = useMemo(() => additionalQuestions.map((item) => item.id), [additionalQuestions]);
+  const { seen, favorites, ready, syncError, markExplored, setFavorite, resetProgress } = useQuestionState(additionalIds);
 
   const pool = useMemo(
-    () => questions.filter((item) =>
+    () => allQuestions.filter((item) =>
       (category === "all" || item.category === category)
       && (difficulty === "all" || item.difficulty === difficulty)
       && (!favoritesOnly || favorites.includes(item.id))),
-    [category, difficulty, favorites, favoritesOnly],
+    [allQuestions, category, difficulty, favorites, favoritesOnly],
   );
   const seenSet = useMemo(() => new Set(seen), [seen]);
   const seenHere = pool.filter((item) => seenSet.has(item.id)).length;
@@ -48,7 +51,7 @@ export function QuestionDeck() {
     setQuestion(null);
     setShowTranslation(false);
     setHistory((items) => items.filter((id) => {
-      const item = questions.find((candidate) => candidate.id === id);
+      const item = allQuestions.find((candidate) => candidate.id === id);
       return item ? compatible(item, nextCategory, nextDifficulty, onlyFavorites) : false;
     }));
     setFeedback("");
@@ -91,13 +94,13 @@ export function QuestionDeck() {
 
   function previous() {
     const compatibleHistory = history.filter((id) => {
-      const item = questions.find((candidate) => candidate.id === id);
+      const item = allQuestions.find((candidate) => candidate.id === id);
       return item ? pool.some((candidate) => candidate.id === item.id) : false;
     });
     const previousId = compatibleHistory.at(-1);
     if (!previousId) return;
     setHistory(compatibleHistory.slice(0, -1));
-    setQuestion(questions.find((item) => item.id === previousId) ?? null);
+    setQuestion(allQuestions.find((item) => item.id === previousId) ?? null);
     setShowTranslation(false);
     setFeedback("");
   }
@@ -134,7 +137,7 @@ export function QuestionDeck() {
     <section id="questions" className="section question-section">
       <div className="section-heading">
         <div><span className="eyebrow">Never a silent table</span><h2>One question.<br /><em>Endless conversation.</em></h2></div>
-        <p>Choose a category and level, then draw a card. Questions won&apos;t repeat until you reset that pool.</p>
+        <p>Choose a category and level, then draw a card. Questions won&apos;t repeat until you reset that pool.{showPageLink && <><br /><Link className="text-link" href="/questions">Explore conversation questions →</Link></>}</p>
       </div>
 
       <div className="question-filter-bar">
@@ -157,9 +160,9 @@ export function QuestionDeck() {
       <div className="category-select-wrap">
         <label htmlFor="question-category">Question category</label>
         <select id="question-category" value={category} onChange={(event) => changeCategory(event.target.value as CategoryFilter)}>
-          <option value="all">All Categories ({difficulty === "all" ? questions.length : questions.filter((item) => item.difficulty === difficulty).length})</option>
+          <option value="all">All Categories ({difficulty === "all" ? allQuestions.length : allQuestions.filter((item) => item.difficulty === difficulty).length})</option>
           {categories.map((item) => (
-            <option key={item} value={item}>{item} ({questions.filter((question) => question.category === item && (difficulty === "all" || question.difficulty === difficulty)).length})</option>
+            <option key={item} value={item}>{item} ({allQuestions.filter((question) => question.category === item && (difficulty === "all" || question.difficulty === difficulty)).length})</option>
           ))}
         </select>
       </div>
@@ -167,11 +170,11 @@ export function QuestionDeck() {
       <div className="question-layout">
         <div className="category-list" aria-label="Question category">
           <button className={category === "all" ? "active" : ""} aria-pressed={category === "all"} onClick={() => changeCategory("all")}>
-            All Categories<span>{difficulty === "all" ? questions.length : questions.filter((item) => item.difficulty === difficulty).length}</span>
+            All Categories<span>{difficulty === "all" ? allQuestions.length : allQuestions.filter((item) => item.difficulty === difficulty).length}</span>
           </button>
           {categories.map((item) => (
             <button key={item} className={category === item ? "active" : ""} aria-pressed={category === item} onClick={() => changeCategory(item)}>
-              {item}<span>{questions.filter((question) => question.category === item && (difficulty === "all" || question.difficulty === difficulty)).length}</span>
+              {item}<span>{allQuestions.filter((question) => question.category === item && (difficulty === "all" || question.difficulty === difficulty)).length}</span>
             </button>
           ))}
         </div>

@@ -1,0 +1,83 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, CalendarDays, Check, Clock3, MapPin, MessageCircle, Ticket, Users } from "lucide-react";
+import { PublicPageShell } from "@/components/public-page-shell";
+import { MeetupBookingButton } from "@/components/meetup-booking-button";
+import { getPublishedMeetups, type PublishedMeetup } from "@/lib/public-content";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = pageMetadata(
+  "English Speaking Meetups in Sergiev Posad",
+  "Find published English conversation meetups from Galstyan’s Speaking Club in Sergiev Posad, with real times, places, capacity, price, and booking status.",
+  "/meetups",
+);
+
+function formatDate(meetup: PublishedMeetup) {
+  const date = new Date(meetup.starts_at);
+  return {
+    date: new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: meetup.timezone }).format(date),
+    time: `${new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "2-digit", timeZone: meetup.timezone }).format(date)}–${new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "2-digit", timeZone: meetup.timezone }).format(new Date(meetup.ends_at))}`,
+  };
+}
+
+function price(meetup: PublishedMeetup) {
+  return new Intl.NumberFormat("ru-RU", { style: "currency", currency: meetup.currency, maximumFractionDigits: 0 }).format(meetup.price_minor / 100);
+}
+
+function bookingState(meetup: PublishedMeetup) {
+  const now = Date.now();
+  if (meetup.confirmed_booking_count >= meetup.capacity) return "Fully booked";
+  if (meetup.booking_closes_at && now > new Date(meetup.booking_closes_at).getTime()) return "Booking closed";
+  if (meetup.booking_opens_at && now < new Date(meetup.booking_opens_at).getTime()) return "Booking opens soon";
+  return "Booking open";
+}
+
+function MeetupCard({ meetup }: { meetup: PublishedMeetup }) {
+  const details = formatDate(meetup);
+  return (
+    <article className="published-meetup-card">
+      <div className="published-meetup-heading">
+        <span className="eyebrow"><i /> Published meetup</span>
+        <strong>{bookingState(meetup)}</strong>
+      </div>
+      <h2>{meetup.title}</h2>
+      <p>{meetup.description || "An English conversation meetup from Galstyan’s Speaking Club."}</p>
+      <dl className="published-meetup-details">
+        <div><CalendarDays /><dt>Date</dt><dd>{details.date}</dd></div>
+        <div><Clock3 /><dt>Time</dt><dd>{details.time} · {meetup.timezone}</dd></div>
+        <div><MapPin /><dt>Location</dt><dd>{meetup.location_name}{meetup.address ? ` · ${meetup.address}` : ""}</dd></div>
+        <div><Users /><dt>Capacity</dt><dd>{Math.max(0, meetup.capacity - meetup.confirmed_booking_count)} of {meetup.capacity} places remaining</dd></div>
+        <div><Ticket /><dt>Price</dt><dd>{price(meetup)}</dd></div>
+      </dl>
+      <p className="published-meetup-note">Book a place with your member account. If you need help before joining, the club is also available on Telegram.</p>
+      <div className="public-actions"><MeetupBookingButton meetupId={meetup.id} /><a className="button button-outline-dark" href="https://t.me/GalstyansSpeakingClub" target="_blank" rel="noreferrer">Ask on Telegram <ArrowRight /></a></div>
+    </article>
+  );
+}
+
+export default async function MeetupsPage() {
+  const meetups = await getPublishedMeetups();
+  return (
+    <PublicPageShell
+      eyebrow="Meetups"
+      title="English conversation meetups in Sergiev Posad"
+      intro="GSC meetups are built for people who want to practice spoken English in a relaxed, social setting. Published events below use the club’s real event records."
+      breadcrumbLabel="Meetups"
+      breadcrumbPath="/meetups"
+    >
+      <section className="section public-section published-meetups-section">
+        {meetups.length ? <div className="published-meetup-list">{meetups.map((meetup) => <MeetupCard key={meetup.id} meetup={meetup} />)}</div> : <div className="public-empty-state"><CalendarDays /><span className="eyebrow">No published events yet</span><h2>Next meetup coming soon.</h2><p>There is no confirmed public meetup to show right now. We will never fill this page with invented dates, venues, prices, or capacity. Join Telegram for the next real announcement.</p><div className="public-actions"><a className="button button-primary" href="https://t.me/GalstyansSpeakingClub" target="_blank" rel="noreferrer">Join Telegram <ArrowRight /></a><Link className="button button-outline-dark" href="/contact">Contact the club <ArrowRight /></Link></div></div>}
+      </section>
+
+      <section className="section public-section public-card-section">
+        <div className="section-heading"><div><span className="eyebrow">What to expect</span><h2>Come ready to <em>speak.</em></h2></div><p>Every published meetup carries its own final details. These are the principles behind the format.</p></div>
+        <div className="public-card-grid public-detail-grid">
+          <article><Users /><h3>Small-group conversation</h3><p>Meetups are designed so that everyone has room to speak, listen, and meet someone new. The exact capacity comes from the published event.</p></article>
+          <article><MessageCircle /><h3>English-first table</h3><p>The club’s stated language rule is English only: use prompts, ask follow-up questions, and keep the conversation moving.</p></article>
+          <article><Check /><h3>Simple booking flow</h3><p>Check the published date, time, place, capacity, price, and booking state. If a booking action is not available, Telegram is the current contact channel.</p></article>
+          <article><MapPin /><h3>Local Sergiev Posad club</h3><p>The club is based in Sergiev Posad. The exact venue is only shown when it is part of a real published meetup record.</p></article>
+        </div>
+      </section>
+    </PublicPageShell>
+  );
+}

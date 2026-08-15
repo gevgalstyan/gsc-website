@@ -1,0 +1,19 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowRight, Award, CalendarCheck, CircleUserRound, Heart, LockKeyhole, Sparkles } from "lucide-react";
+import { PublicPageShell } from "@/components/public-page-shell";
+import { pageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = pageMetadata(
+  "GSC Membership and Loyalty",
+  "See what Galstyan’s Speaking Club member access currently supports: profiles, attendance, question progress, favorites, and qualifying-visit rewards.",
+  "/membership",
+);
+
+export default function MembershipPage() {
+  return <PublicPageShell eyebrow="Membership" title="A member space that keeps your progress close" intro="The current GSC application connects a member profile with question progress, favorites, attendance records, bookings, and loyalty rewards." breadcrumbLabel="Membership" breadcrumbPath="/membership">
+    <section className="section public-section membership-grid-section"><div><span className="eyebrow">Available now in the application</span><h2>Keep the useful parts of GSC <em>together.</em></h2></div><div className="membership-feature-list"><article><CircleUserRound /><div><h3>Profile</h3><p>Manage your display name, profile photo, and Telegram username in the protected member space.</p></div></article><article><CalendarCheck /><div><h3>Bookings and attendance</h3><p>The database supports meetup bookings and club-recorded attendance. Your account can show booking and attendance history when those records exist.</p></div></article><article><Heart /><div><h3>Questions and favorites</h3><p>Explore the full question library, save favorites, and synchronize progress to your account when Supabase member access is configured.</p></div></article><article><Award /><div><h3>Achievements and rewards</h3><p>The member dashboard shows implemented achievements, qualifying attendance, and the available free-meetup reward after six paid qualifying visits.</p></div></article></div></section>
+    <section className="section public-section loyalty-explainer"><div className="loyalty-explainer-copy"><span className="eyebrow">The rule in the database</span><h2>Six qualifying visits. <em>One reward.</em></h2><p>Attendance is only qualifying when the application records the visit as attended and paid. After six qualifying visits, the loyalty system creates a free-meetup reward. The account dashboard shows the progress and any available reward.</p><Link className="button button-primary" href="/?auth=register">Create an account <ArrowRight /></Link></div><div className="loyalty-rule-card"><Sparkles /><strong>Current reward rule</strong><span>6 paid qualifying visits</span><i>↓</i><span>1 free meetup reward</span></div></section>
+    <section className="section public-section membership-status-section"><div className="membership-status-card available"><LockKeyhole /><div><span className="eyebrow">Available now</span><h2>Profile, progress, attendance, and rewards.</h2><p>Member access depends on the configured Supabase environment and enabled authentication providers.</p></div></div><div className="membership-status-card future"><Award /><div><span className="eyebrow">Not currently implemented</span><h2>Bronze, Silver, Gold, and Founding Legend tiers.</h2><p>These named levels are not present in the current database rules or member UI, so they are not presented as live benefits. QR check-in is also not claimed here; attendance is currently recorded by the club/admin flow.</p></div></div></section>
+  </PublicPageShell>;
+}

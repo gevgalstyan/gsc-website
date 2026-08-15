@@ -30,7 +30,7 @@ function canvasBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   });
 }
 
-export async function prepareAvatarImage(file: File): Promise<Blob> {
+export async function prepareAvatarImage(file: File, crop?: { x: number; y: number; zoom: number }): Promise<Blob> {
   const lowerName = file.name.toLowerCase();
   if (file.type === "image/heic" || file.type === "image/heif" || /\.hei[cf]$/.test(lowerName)) {
     throw new AvatarImageError("HEIC photos aren’t supported yet. Please choose a JPEG, PNG, or WebP image.");
@@ -43,7 +43,7 @@ export async function prepareAvatarImage(file: File): Promise<Blob> {
   }
 
   const source = await loadImage(file);
-  const sourceSize = Math.min(source.naturalWidth, source.naturalHeight);
+  const sourceSize = Math.min(source.naturalWidth, source.naturalHeight) / (crop?.zoom ?? 1);
   if (!sourceSize) throw new AvatarImageError("That image has no usable pixels.");
 
   const outputSize = Math.min(sourceSize, MAX_DIMENSION);
@@ -53,8 +53,10 @@ export async function prepareAvatarImage(file: File): Promise<Blob> {
   const context = canvas.getContext("2d");
   if (!context) throw new AvatarImageError("This browser couldn’t prepare the photo.");
 
-  const sourceX = Math.max(0, (source.naturalWidth - sourceSize) / 2);
-  const sourceY = Math.max(0, (source.naturalHeight - sourceSize) / 2);
+  const maxX = Math.max(0, source.naturalWidth - sourceSize);
+  const maxY = Math.max(0, source.naturalHeight - sourceSize);
+  const sourceX = Math.min(maxX, Math.max(0, maxX / 2 + (crop?.x ?? 0) * maxX / 2));
+  const sourceY = Math.min(maxY, Math.max(0, maxY / 2 + (crop?.y ?? 0) * maxY / 2));
   context.imageSmoothingEnabled = true;
   context.imageSmoothingQuality = "high";
   context.drawImage(source, sourceX, sourceY, sourceSize, sourceSize, 0, 0, outputSize, outputSize);

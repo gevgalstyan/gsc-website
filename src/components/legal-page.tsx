@@ -1,8 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { Breadcrumbs } from "@/components/breadcrumbs";
 import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
 
-export function LegalPage({ title, updated, children }: { title: string; updated: string; children: React.ReactNode }) {
-  return <><header className="legal-header"><Link className="wordmark" href="/"><Image src="/gsc-logo.jpg" alt="GSC logo" width={44} height={44} /><span><b>Galstyan&apos;s</b><small>Speaking Club</small></span></Link><Link href="/"><ArrowLeft /> Back home</Link></header><main className="legal-main"><span className="eyebrow">Legal</span><h1>{title}</h1><p className="legal-updated">Last updated: {updated}</p><article>{children}</article></main><Footer /></>;
+export function LegalPage({ title, path, updated, children }: { title: string; path: string; updated: string; children: React.ReactNode }) {
+  return <><Header /><main className="legal-main"><Breadcrumbs label={title} path={path} /><span className="eyebrow">Legal</span><h1>{title}</h1><p className="legal-updated">Last updated: {updated}</p><article>{children}</article><Link className="button button-outline-dark legal-back-link" href="/">Back to GSC</Link></main><Footer /></>;
 }

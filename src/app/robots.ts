@@ -1,2 +1,11 @@
 import type { MetadataRoute } from "next";
-export default function robots(): MetadataRoute.Robots { return { rules: { userAgent: "*", allow: "/" }, sitemap: "https://www.galstyansspeakingclub.ru/sitemap.xml" }; }
+import { SITE_URL } from "@/lib/seo";
+
+export default function robots(): MetadataRoute.Robots {
+  return {
+    rules: [
+      { userAgent: "*", allow: "/", disallow: ["/account", "/admin", "/reset-password", "/auth/", "/api/"] },
+    ],
+    sitemap: `${SITE_URL}/sitemap.xml`,
+  };
+}

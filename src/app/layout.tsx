@@ -1,27 +1,28 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope, Playfair_Display } from "next/font/google";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
 import "./globals.css";
 
 const manrope = Manrope({ subsets: ["latin", "cyrillic"], variable: "--font-sans", display: "swap" });
 const playfair = Playfair_Display({ subsets: ["latin", "cyrillic"], variable: "--font-display", style: ["normal", "italic"], display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://galstyansspeakingclub.ru"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "Galstyan’s Speaking Club | English Speaking Club in Sergiev Posad",
-    template: "%s | Galstyan’s Speaking Club",
+    default: "English Speaking Club in Sergiev Posad | Galstyan’s Speaking Club",
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "Practice English, meet new people and build confidence through friendly speaking meetups in Sergiev Posad.",
+  applicationName: SITE_NAME,
+  description: SITE_DESCRIPTION,
   alternates: {
-    canonical: "https://galstyansspeakingclub.ru",
+    canonical: "/",
   },
+  icons: { icon: "/gsc-logo.jpg", apple: "/gsc-logo.jpg" },
   openGraph: {
-    title: "Galstyan’s Speaking Club | English Speaking Club in Sergiev Posad",
-    description:
-      "Practice English, meet new people and build confidence through friendly speaking meetups in Sergiev Posad.",
-    url: "https://galstyansspeakingclub.ru",
-    siteName: "Galstyan’s Speaking Club",
+    title: "English Speaking Club in Sergiev Posad | Galstyan’s Speaking Club",
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
     type: "website",
     locale: "en_US",
     images: [
@@ -36,9 +37,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Galstyan’s Speaking Club | English Speaking Club in Sergiev Posad",
-    description:
-      "Practice English, meet new people and build confidence through friendly speaking meetups in Sergiev Posad.",
+    title: "English Speaking Club in Sergiev Posad | Galstyan’s Speaking Club",
+    description: SITE_DESCRIPTION,
     images: [
       {
         url: "https://galstyansspeakingclub.ru/social-preview.jpg",

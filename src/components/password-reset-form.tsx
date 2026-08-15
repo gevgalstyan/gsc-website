@@ -14,7 +14,9 @@ export function PasswordResetForm() {
     if (password.length < 8) return setStatus({ kind: "error", message: "Use at least 8 characters." });
     if (password !== confirmation) return setStatus({ kind: "error", message: "Passwords do not match." });
     setStatus({ kind: "loading" });
-    const { error } = await getSupabaseBrowserClient()!.auth.updateUser({ password });
+    const client = getSupabaseBrowserClient();
+    if (!client) return setStatus({ kind: "error", message: "Password reset is temporarily unavailable." });
+    const { error } = await client.auth.updateUser({ password });
     if (error) return setStatus({ kind: "error", message: error.message });
     setStatus({ kind: "success", message: "Password updated. Opening your account…" });
     setTimeout(() => router.replace("/account"), 700);
