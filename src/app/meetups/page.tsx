@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowRight, CalendarDays, Check, Clock3, MapPin, MessageCircle, Ticket, Users } from "lucide-react";
 import { PublicPageShell } from "@/components/public-page-shell";
 import { MeetupBookingButton } from "@/components/meetup-booking-button";
+import type { MeetupBookingState } from "@/components/meetup-booking-button";
 import { getPublishedMeetups, type PublishedMeetup } from "@/lib/public-content";
 import { pageMetadata } from "@/lib/seo";
 
@@ -11,6 +12,7 @@ export const metadata: Metadata = pageMetadata(
   "Find published English conversation meetups from Galstyan’s Speaking Club in Sergiev Posad, with real times, places, capacity, price, and booking status.",
   "/meetups",
 );
+export const dynamic = "force-dynamic";
 
 function formatDate(meetup: PublishedMeetup) {
   const date = new Date(meetup.starts_at);
@@ -24,21 +26,23 @@ function price(meetup: PublishedMeetup) {
   return new Intl.NumberFormat("ru-RU", { style: "currency", currency: meetup.currency, maximumFractionDigits: 0 }).format(meetup.price_minor / 100);
 }
 
-function bookingState(meetup: PublishedMeetup) {
+function bookingState(meetup: PublishedMeetup): { state: MeetupBookingState; label: string } {
   const now = Date.now();
-  if (meetup.confirmed_booking_count >= meetup.capacity) return "Fully booked";
-  if (meetup.booking_closes_at && now > new Date(meetup.booking_closes_at).getTime()) return "Booking closed";
-  if (meetup.booking_opens_at && now < new Date(meetup.booking_opens_at).getTime()) return "Booking opens soon";
-  return "Booking open";
+  if (meetup.member_booking_status === "confirmed") return { state: "open", label: "Booked ✓" };
+  if (meetup.confirmed_booking_count >= meetup.capacity) return { state: "full", label: "Fully booked" };
+  if (meetup.booking_closes_at && now >= new Date(meetup.booking_closes_at).getTime()) return { state: "closed", label: "Booking closed" };
+  if (meetup.booking_opens_at && now < new Date(meetup.booking_opens_at).getTime()) return { state: "not_open", label: "Booking opens soon" };
+  return { state: "open", label: "Booking open" };
 }
 
 function MeetupCard({ meetup }: { meetup: PublishedMeetup }) {
   const details = formatDate(meetup);
+  const booking = bookingState(meetup);
   return (
     <article className="published-meetup-card">
       <div className="published-meetup-heading">
         <span className="eyebrow"><i /> Published meetup</span>
-        <strong>{bookingState(meetup)}</strong>
+        <strong>{booking.label}</strong>
       </div>
       <h2>{meetup.title}</h2>
       <p>{meetup.description || "An English conversation meetup from Galstyan’s Speaking Club."}</p>
@@ -50,7 +54,7 @@ function MeetupCard({ meetup }: { meetup: PublishedMeetup }) {
         <div><Ticket /><dt>Price</dt><dd>{price(meetup)}</dd></div>
       </dl>
       <p className="published-meetup-note">Book a place with your member account. If you need help before joining, the club is also available on Telegram.</p>
-      <div className="public-actions"><MeetupBookingButton meetupId={meetup.id} /><a className="button button-outline-dark" href="https://t.me/GalstyansSpeakingClub" target="_blank" rel="noreferrer">Ask on Telegram <ArrowRight /></a></div>
+      <div className="public-actions"><MeetupBookingButton meetupId={meetup.id} initialBooked={meetup.member_booking_status === "confirmed"} bookingState={booking.state} /><a className="button button-outline-dark" href="https://t.me/GalstyansSpeakingClub" target="_blank" rel="noreferrer">Ask on Telegram <ArrowRight /></a></div>
     </article>
   );
 }

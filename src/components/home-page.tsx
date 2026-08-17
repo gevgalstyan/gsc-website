@@ -10,6 +10,7 @@ import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { QuestionDeck } from "@/components/question-deck";
 import type { PublishedMeetup } from "@/lib/public-content";
+import type { MeetupBookingState } from "@/components/meetup-booking-button";
 import { socialLinks } from "@/lib/site-data";
 
 function meetupDate(meetup: PublishedMeetup) {
@@ -24,12 +25,13 @@ function meetupPrice(meetup: PublishedMeetup) {
   return new Intl.NumberFormat("ru-RU", { style: "currency", currency: meetup.currency, maximumFractionDigits: 0 }).format(meetup.price_minor / 100);
 }
 
-function bookingState(meetup: PublishedMeetup) {
+function bookingState(meetup: PublishedMeetup): { state: MeetupBookingState; label: string } {
   const now = Date.now();
-  if (meetup.confirmed_booking_count >= meetup.capacity) return "Fully booked";
-  if (meetup.booking_closes_at && now > new Date(meetup.booking_closes_at).getTime()) return "Booking closed";
-  if (meetup.booking_opens_at && now < new Date(meetup.booking_opens_at).getTime()) return "Booking opens soon";
-  return "Booking open";
+  if (meetup.member_booking_status === "confirmed") return { state: "open", label: "Booked ✓" };
+  if (meetup.confirmed_booking_count >= meetup.capacity) return { state: "full", label: "Fully booked" };
+  if (meetup.booking_closes_at && now >= new Date(meetup.booking_closes_at).getTime()) return { state: "closed", label: "Booking closed" };
+  if (meetup.booking_opens_at && now < new Date(meetup.booking_opens_at).getTime()) return { state: "not_open", label: "Booking opens soon" };
+  return { state: "open", label: "Booking open" };
 }
 
 export function HomePage({ initialAuthOpen = false, authenticated = false, meetups = [], content = {} }: { initialAuthOpen?: boolean; authenticated?: boolean; meetups?: PublishedMeetup[]; content?: Record<string, string> }) {
@@ -45,7 +47,7 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
             <h1>English<br /><em>Speaking Club</em><small> in Sergiev Posad</small></h1>
             <p className="hero-lead">{content["homepage.hero.lead"] || "A friendly English conversation club in Sergiev Posad. Practice spoken English with real people."}</p>
             <div className="hero-buttons">
-              <Link className="button button-primary" href="/contact">Join the club <ArrowRight /></Link>
+              <Link className="button button-primary" href={authenticated ? "/account" : "/contact"}>{authenticated ? "Open your dashboard" : "Join the club"} <ArrowRight /></Link>
               <Link className="button button-quiet" href="/meetups">Explore meetups <ArrowDown /></Link>
             </div>
             <div className="hero-proof">
@@ -87,9 +89,10 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
           {meetups.length ? <div className="meetup-grid">
             {meetups.slice(0, 3).map((meetup, index) => {
               const date = meetupDate(meetup);
+              const booking = bookingState(meetup);
               return <article className={`meetup-card ${index === 0 ? "featured" : ""}`} key={meetup.id}>
                 <div className="meetup-date"><b>{date.day}</b><span>{date.time}</span></div>
-                <span className="status"><i />{bookingState(meetup)}</span>
+                <span className="status"><i />{booking.label}</span>
                 <div className="meetup-icon">{index === 0 ? <MessageCircle /> : index === 1 ? <Coffee /> : <Star />}</div>
                 <h3>{meetup.title}</h3><p>{meetup.description || "An English conversation meetup from Galstyan’s Speaking Club."}</p>
                 <ul><li><MapPin />{meetup.location_name}</li><li><Users />{Math.max(0, meetup.capacity - meetup.confirmed_booking_count)} places left</li><li><Ticket />{meetupPrice(meetup)}</li></ul>
@@ -113,7 +116,7 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
 
         <section id="loyalty" className="section loyalty-section">
           <div className="loyalty-card">
-            <div className="loyalty-copy"><span className="eyebrow">Keep showing up</span><h2>Six visits.<br />One free <em>meetup.</em></h2><p>Every conversation counts. Members can track qualifying attendance and unlock a free meetup after six paid visits.</p><div className="loyalty-actions"><button className="button button-primary" onClick={() => setAuthOpen(true)}>Create your profile <ArrowRight /></button><Link className="button button-outline-dark" href="/membership">How membership works <ArrowRight /></Link></div></div>
+            <div className="loyalty-copy"><span className="eyebrow">Keep showing up</span><h2>Six visits.<br />One free <em>meetup.</em></h2><p>Every conversation counts. Members can track qualifying attendance and unlock a free meetup after six paid visits.</p><div className="loyalty-actions">{authenticated ? <Link className="button button-primary" href="/account#rewards">View your progress <ArrowRight /></Link> : <button className="button button-primary" onClick={() => setAuthOpen(true)}>Create your profile <ArrowRight /></button>}<Link className="button button-outline-dark" href="/membership">How membership works <ArrowRight /></Link></div></div>
             <div className="stamp-card"><div className="stamp-head"><div><BadgeCheck /><span><b>GSC Member</b><small>Loyalty card</small></span></div><strong>English ON.</strong></div><div className="stamps">{[1,2,3,4,5,6].map((n) => <span key={n}>{n}</span>)}<span className="reward"><Star />FREE</span></div><div className="stamp-foot"><span>6 visits</span><i /><span>1 free meetup</span></div></div>
           </div>
         </section>

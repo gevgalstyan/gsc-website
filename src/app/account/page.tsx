@@ -9,6 +9,7 @@ import { categories, difficulties, questions } from "@/lib/questions";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = { robots: { index: false, follow: false } };
+export const dynamic = "force-dynamic";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
@@ -24,7 +25,7 @@ export default async function AccountPage() {
   const [profileResult, roleResult, attendanceResult, bookingsResult, rewardsResult, specialResult, progressResult, favoritesResult, notificationsResult] = await Promise.all([
     supabase.from("profiles").select("display_name,avatar_path,avatar_url,telegram_username,english_level,created_at").eq("id", userId).single(),
     supabase.from("user_roles").select("role").eq("user_id", userId).single(),
-    supabase.from("attendance").select("id,meetup_id,status,is_paid,paid_amount_minor,paid_currency,recorded_at,meetups(title,starts_at,location_name)").eq("user_id", userId).order("recorded_at", { ascending: false }),
+    supabase.from("attendance").select("id,meetup_id,booking_id,status,is_paid,payment_status,paid_amount_minor,paid_currency,recorded_at,meetups(title,starts_at,location_name)").eq("user_id", userId).order("recorded_at", { ascending: false }),
     supabase.from("meetup_bookings").select("id,status,booked_at,meetups(id,title,starts_at,location_name,status)").eq("user_id", userId).order("booked_at", { ascending: false }),
     supabase.from("loyalty_rewards").select("id,status,earned_at,redeemed_at,reward_sequence").eq("user_id", userId).order("earned_at", { ascending: false }),
     supabase.from("special_rewards").select("id,name,reason,description,status,issued_at,expires_at").eq("user_id", userId).order("issued_at", { ascending: false }),
@@ -47,11 +48,15 @@ export default async function AccountPage() {
   const favoriteCount = favoritesResult.data?.length ?? 0;
   const attended = attendance.filter((row) => row.status === "attended");
   const paidVisits = attended.filter((row) => row.is_paid).length;
-  const loyaltyRemainder = paidVisits % 6;
-  const visitsUntilReward = loyaltyRemainder === 0 && paidVisits > 0 ? 0 : 6 - loyaltyRemainder;
   const availableRewards = rewards.filter((row) => row.status === "available");
+  const redeemedRewards = rewards.filter((row) => row.status === "redeemed");
+  const rewardAvailable = availableRewards.length > 0;
+  const loyaltyRemainder = rewardAvailable ? 6 : paidVisits % 6;
+  const visitsUntilReward = rewardAvailable ? 0 : 6 - loyaltyRemainder;
   const availableSpecial = specialRewards.filter((row) => row.status === "available");
-  const upcomingBooking = bookings.find((row) => row.status === "confirmed" && row.meetup);
+  const upcomingBooking = bookings
+    .filter((row) => row.status === "confirmed" && row.meetup)
+    .sort((a, b) => new Date(a.meetup!.starts_at).getTime() - new Date(b.meetup!.starts_at).getTime())[0];
   const completeFields = [profile.display_name, profile.avatar_path || profile.avatar_url, profile.telegram_username].filter(Boolean).length;
   const completion = Math.round(completeFields / 3 * 100);
   const exploredQuestions = questions.filter((question) => exploredIds.has(question.id));
@@ -69,8 +74,7 @@ export default async function AccountPage() {
   return <main className="dashboard-shell">
     <header className="dashboard-topbar">
       <Link className="dashboard-brand" href="/">GSC <span>Member space</span></Link>
-      <nav aria-label="Member navigation"><Link href="/#questions">Questions</Link><Link href="/meetups">Meetups</Link><Link href="/#community">Community</Link><NotificationBell initialNotifications={notificationsResult.data ?? []} />{roleResult.data?.role === "admin" && <Link href="/admin">Admin</Link>}</nav>
-      <form action="/auth/signout" method="post"><button className="dashboard-logout">Logout</button></form>
+      <nav aria-label="Member navigation"><Link href="/#questions">Questions</Link><Link href="/meetups">Meetups</Link><Link href="/#community">Community</Link><NotificationBell initialNotifications={notificationsResult.data ?? []} />{roleResult.data?.role === "admin" && <Link href="/admin">Admin</Link>}<details className="dashboard-account-menu"><summary>Account</summary><div><Link href="#settings">Settings</Link><form action="/auth/signout" method="post"><button type="submit">Log out</button></form></div></details></nav>
     </header>
 
     <div className="dashboard-content">
@@ -89,7 +93,7 @@ export default async function AccountPage() {
       </section>
 
       <div className="dashboard-grid">
-        <section className="dashboard-card loyalty-dashboard-card"><div className="card-heading"><div><p className="dashboard-kicker">Loyalty journey</p><h2>Your next free meetup</h2></div><Award /></div><div className="loyalty-number"><strong>{loyaltyRemainder || (paidVisits ? 6 : 0)}</strong><span>/ 6</span></div><div className="loyalty-dots">{[1,2,3,4,5,6].map((step) => <i className={step <= loyaltyRemainder || (loyaltyRemainder === 0 && paidVisits > 0) ? "done" : ""} key={step}>{step}</i>)}</div><p>{visitsUntilReward === 0 ? "Free meetup earned — your reward is ready." : `${loyaltyRemainder} of 6 qualifying visits — ${visitsUntilReward} ${visitsUntilReward === 1 ? "visit" : "visits"} until your free meetup.`}</p></section>
+        <section id="rewards" className="dashboard-card loyalty-dashboard-card"><div className="card-heading"><div><p className="dashboard-kicker">Loyalty journey</p><h2>Your next free meetup</h2></div><Award /></div><div className="loyalty-number"><strong>{loyaltyRemainder}</strong><span>/ 6</span></div><div className="loyalty-dots">{[1,2,3,4,5,6].map((step) => <i className={step <= loyaltyRemainder ? "done" : ""} key={step}>{step}</i>)}</div><p>{visitsUntilReward === 0 ? "FREE MEETUP AVAILABLE — redeem it at your next visit." : `${loyaltyRemainder} of 6 paid attended meetups — ${visitsUntilReward} ${visitsUntilReward === 1 ? "visit" : "visits"} until your free meetup.`}</p><small>{redeemedRewards.length ? `${redeemedRewards.length} reward${redeemedRewards.length === 1 ? "" : "s"} redeemed.` : "Only admin-confirmed paid attendance counts."}</small></section>
 
         <section className="dashboard-card"><div className="card-heading"><div><p className="dashboard-kicker">Next up</p><h2>Upcoming meetup</h2></div><CalendarDays /></div>{upcomingBooking?.meetup ? <div className="upcoming-meetup"><strong>{upcomingBooking.meetup.title}</strong><p>{formatDate(upcomingBooking.meetup.starts_at)} · {upcomingBooking.meetup.location_name}</p><span>Booking confirmed</span><MeetupBookingButton meetupId={upcomingBooking.meetup.id} initialBooked /></div> : <div className="dashboard-empty"><CalendarDays /><p>No upcoming booking yet.</p><Link href="/meetups">Explore meetups</Link></div>}</section>
 
@@ -97,11 +101,11 @@ export default async function AccountPage() {
 
         <section className="dashboard-card"><div className="card-heading"><div><p className="dashboard-kicker">Milestones</p><h2>Achievements</h2></div><Trophy /></div>{achievements.length ? <div className="achievement-list">{achievements.map(([title, copy]) => <div key={title}><CheckCircle2 /><span><strong>{title}</strong><small>{copy}</small></span></div>)}</div> : <div className="dashboard-empty"><Trophy /><p>Your first achievement is just ahead.</p></div>}</section>
 
-        <section className="dashboard-card dashboard-card-wide"><div className="card-heading"><div><p className="dashboard-kicker">Your history</p><h2>Attendance & bookings</h2></div><History /></div>{attendance.length || bookings.length ? <div className="history-list">{attendance.slice(0, 6).map((row) => <div key={row.id}><span className={`history-mark ${row.status}`} /><div><strong>{row.meetup?.title ?? "Speaking club meetup"}</strong><p>{formatDate(row.recorded_at)} · {row.status.replace("_", " ")}</p></div><b>{row.is_paid ? `${((row.paid_amount_minor ?? 0) / 100).toLocaleString()} ${row.paid_currency ?? "RUB"}` : "Not qualifying"}</b></div>)}</div> : <div className="dashboard-empty"><History /><p>Your attendance and booking history will appear here.</p></div>}</section>
+        <section id="attendance" className="dashboard-card dashboard-card-wide"><div className="card-heading"><div><p className="dashboard-kicker">Your history</p><h2>Attendance & bookings</h2></div><History /></div>{attendance.length || bookings.length ? <div className="history-list">{attendance.slice(0, 6).map((row) => <div key={row.id}><span className={`history-mark ${row.status}`} /><div><strong>{row.meetup?.title ?? "Speaking club meetup"}</strong><p>{formatDate(row.recorded_at)} · {row.status.replace("_", " ")}</p></div><b>{row.payment_status === "free_reward" ? "FREE reward" : row.is_paid ? `${((row.paid_amount_minor ?? 0) / 100).toLocaleString()} ${row.paid_currency ?? "RUB"}` : "Unpaid"}</b></div>)}</div> : <div className="dashboard-empty"><History /><p>Your attendance and booking history will appear here.</p></div>}</section>
 
-        <section className="dashboard-card dashboard-card-wide"><div className="card-heading"><div><p className="dashboard-kicker">Your bookings</p><h2>Upcoming and past reservations</h2></div><TicketCheck /></div>{bookings.length ? <div className="history-list">{bookings.slice(0, 8).map((row) => <div key={row.id}><span className={`history-mark ${row.status}`} /><div><strong>{row.meetup?.title ?? "Speaking club meetup"}</strong><p>{row.meetup?.starts_at ? formatDate(row.meetup.starts_at) : "Meetup details unavailable"} · {row.status}</p></div>{row.status === "confirmed" && row.meetup?.id && <MeetupBookingButton meetupId={row.meetup.id} initialBooked />}</div>)}</div> : <div className="dashboard-empty"><TicketCheck /><p>You have no bookings yet.</p><Link href="/meetups">Find a meetup</Link></div>}</section>
+        <section id="bookings" className="dashboard-card dashboard-card-wide"><div className="card-heading"><div><p className="dashboard-kicker">Your bookings</p><h2>Upcoming and past reservations</h2></div><TicketCheck /></div>{bookings.length ? <div className="history-list">{bookings.slice(0, 8).map((row) => <div key={row.id}><span className={`history-mark ${row.status}`} /><div><strong>{row.meetup?.title ?? "Speaking club meetup"}</strong><p>{row.meetup?.starts_at ? formatDate(row.meetup.starts_at) : "Meetup details unavailable"} · {row.status}</p></div>{row.status === "confirmed" && row.meetup?.id && <MeetupBookingButton meetupId={row.meetup.id} initialBooked />}</div>)}</div> : <div className="dashboard-empty"><TicketCheck /><p>You have no bookings yet.</p><Link href="/meetups">Find a meetup</Link></div>}</section>
 
-        <section className="dashboard-card dashboard-card-wide"><details className="settings-panel"><summary><span><Settings />Account settings</span><small>Photo, display name and Telegram</small></summary><ProfileForm userId={userId} initialProfile={profile} initialAvatarUrl={avatarUrl} /></details></section>
+        <section id="settings" className="dashboard-card dashboard-card-wide"><details className="settings-panel"><summary><span><Settings />Account settings</span><small>Photo, display name and Telegram</small></summary><ProfileForm userId={userId} initialProfile={profile} initialAvatarUrl={avatarUrl} /></details></section>
       </div>
     </div>
   </main>;

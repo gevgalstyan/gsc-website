@@ -1,0 +1,31 @@
+.profile-control{position:relative;color:#fff}
+.profile-trigger{display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:4px 10px 4px 4px;background:transparent;color:#fff;font-size:11px;font-weight:800}
+.profile-trigger img,.profile-trigger>span{display:grid;width:32px;height:32px;place-items:center;border-radius:50%;background:var(--orange);color:#fff;object-fit:cover}
+.profile-trigger b{max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.profile-menu{position:absolute;right:0;top:calc(100% + 10px);display:grid;min-width:190px;padding:8px;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:#101d2c;box-shadow:0 18px 45px rgba(0,0,0,.28)}
+.profile-menu a,.profile-menu button{display:block;width:100%;padding:10px 11px;border:0;border-radius:9px;background:transparent;color:#fff;text-align:left;font-size:11px;font-weight:750}
+.profile-menu a:hover,.profile-menu button:hover{background:rgba(255,255,255,.1)}
+.profile-menu form{margin:4px 0 0;border-top:1px solid rgba(255,255,255,.1);padding-top:4px}
+.mobile-profile-link{display:flex;align-items:center;gap:8px;color:#fff;font-size:14px;font-weight:800}
+.mobile-drawer form{margin-top:8px}
+.admin-header-actions{display:flex;align-items:center;gap:10px}
+.admin-header-actions>button{min-height:42px;padding:0 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);font-size:10px;font-weight:800}
+.admin-header-actions>.notification-wrap{color:var(--ink)}
+.admin-header-actions>.notification-wrap .notification-trigger{border-color:var(--line);color:var(--ink);background:#fff}
+.admin-header-actions>span{display:flex;align-items:center;gap:8px;padding:10px 13px;border-radius:999px;background:#e8f4eb;color:#245f38;font-size:10px;font-weight:850}
+.admin-participant-list{display:grid;gap:10px;margin-top:14px}
+.admin-participant{display:grid;grid-template-columns:auto minmax(130px,1fr) minmax(250px,1.5fr);align-items:center;gap:10px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fafaf8}
+.admin-participant>img,.admin-participant>.member-mini-avatar{width:42px;height:42px}
+.participant-identity{display:grid;gap:3px;min-width:0}
+.participant-identity strong,.participant-identity small,.participant-identity span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.participant-identity small,.participant-identity span{color:var(--muted);font-size:10px}
+.participant-controls{display:grid;grid-template-columns:1fr 1fr .8fr .55fr auto;gap:5px;align-items:center}
+.participant-controls select,.participant-controls input{min-width:0;min-height:34px;padding:5px;border:1px solid var(--line);border-radius:7px;background:#fff;font-size:10px}
+.participant-controls button{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:34px;padding:0 8px;border:0;border-radius:7px;background:var(--orange);color:#fff;font-size:10px;font-weight:800}
+.dashboard-account-menu{position:relative}
+.dashboard-account-menu summary{cursor:pointer;list-style:none;font-size:12px;font-weight:800}
+.dashboard-account-menu summary::-webkit-details-marker{display:none}
+.dashboard-account-menu>div{position:absolute;right:0;top:calc(100% + 8px);display:grid;min-width:130px;padding:7px;border:1px solid var(--line);border-radius:11px;background:#fff;box-shadow:0 15px 35px rgba(20,28,42,.15)}
+.dashboard-account-menu a,.dashboard-account-menu button{padding:9px;border:0;background:transparent;color:var(--ink);text-align:left;font-size:11px;font-weight:800}
+.dashboard-account-menu a:hover,.dashboard-account-menu button:hover{background:#f3f2ee;border-radius:7px}
+@media(max-width:900px){.profile-control{display:none}.admin-header-actions{flex-wrap:wrap;justify-content:flex-end}.admin-header-actions>span{font-size:9px}.participant-controls{grid-template-columns:1fr 1fr}.participant-controls input{min-width:0}.participant-controls button{grid-column:1/-1}.admin-participant{grid-template-columns:auto 1fr}.participant-controls{grid-column:1/-1}.dashboard-account-menu{margin-left:auto}}

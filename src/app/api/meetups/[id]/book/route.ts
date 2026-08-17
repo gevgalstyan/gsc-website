@@ -18,8 +18,17 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
 
   if (error) {
     const message = error.message.toLowerCase();
-    const status = message.includes("capacity") ? 409 : message.includes("duplicate") || error.code === "23505" ? 409 : 400;
-    return NextResponse.json({ error: status === 409 ? "This meetup is full or you already have a booking." : "This meetup could not be booked." }, { status });
+    const status = message.includes("capacity") || message.includes("already") || error.code === "23505" ? 409 : 400;
+    const friendly = message.includes("not open")
+      ? "This meetup is not open for booking."
+      : message.includes("not opened")
+        ? "Booking has not opened yet."
+        : message.includes("closed")
+          ? "Booking for this meetup is closed."
+          : status === 409
+            ? "This meetup is full or you already have a booking."
+            : "This meetup could not be booked.";
+    return NextResponse.json({ error: friendly }, { status });
   }
   return NextResponse.json({ booking: data }, { status: 201 });
 }

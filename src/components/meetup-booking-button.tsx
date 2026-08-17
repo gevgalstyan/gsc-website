@@ -2,12 +2,24 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowRight, LoaderCircle, TicketCheck } from "lucide-react";
 
-export function MeetupBookingButton({ meetupId, initialBooked = false }: { meetupId: string; initialBooked?: boolean }) {
+export type MeetupBookingState = "open" | "full" | "not_open" | "closed";
+
+export function MeetupBookingButton({
+  meetupId,
+  initialBooked = false,
+  bookingState = "open",
+}: {
+  meetupId: string;
+  initialBooked?: boolean;
+  bookingState?: MeetupBookingState;
+}) {
   const [booked, setBooked] = useState(initialBooked);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
+  const router = useRouter();
 
   async function toggleBooking() {
     setBusy(true);
@@ -25,6 +37,7 @@ export function MeetupBookingButton({ meetupId, initialBooked = false }: { meetu
       } else {
         setBooked(!booked);
         setNotice(booked ? "Booking cancelled." : "Your place is booked.");
+        router.refresh();
       }
     } catch {
       setNotice("The booking service is temporarily unavailable.");
@@ -33,5 +46,14 @@ export function MeetupBookingButton({ meetupId, initialBooked = false }: { meetu
     }
   }
 
-  return <div className="booking-action"><button className="button button-primary" type="button" onClick={toggleBooking} disabled={busy}>{busy ? <LoaderCircle className="spin" /> : booked ? <TicketCheck /> : <ArrowRight />}{busy ? "Updating…" : booked ? "Cancel booking" : "Book your place"}</button>{notice && <p className="form-status" role="status" aria-live="polite">{notice}{notice.startsWith("Please log in") && <> <Link href="/?auth=login">Log in</Link></>}</p>}</div>;
+  const stateLabel = bookingState === "full"
+    ? "Fully booked"
+    : bookingState === "not_open"
+      ? "Booking opens soon"
+      : bookingState === "closed"
+        ? "Booking closed"
+        : "Book your place";
+  const blocked = !booked && bookingState !== "open";
+
+  return <div className="booking-action"><button className="button button-primary" type="button" onClick={toggleBooking} disabled={busy || blocked}>{busy ? <LoaderCircle className="spin" /> : booked ? <TicketCheck /> : <ArrowRight />}{busy ? "Updating…" : booked ? "Booked ✓ · Cancel" : stateLabel}</button>{notice && <p className="form-status" role="status" aria-live="polite">{notice}{notice.startsWith("Please log in") && <> <Link href="/?auth=login">Log in</Link></>}</p>}</div>;
 }

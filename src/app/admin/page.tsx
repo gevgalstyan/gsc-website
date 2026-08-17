@@ -4,6 +4,7 @@ import { isAllowlistedAdminEmail } from "@/lib/admin";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata = { robots: { index: false, follow: false } };
+export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
   const supabase = await createClient();
@@ -16,13 +17,13 @@ export default async function AdminPage() {
   const { data: role } = await supabase.from("user_roles").select("role").eq("user_id", userId).single();
   if (role?.role !== "admin") redirect("/account");
 
-  const [directory, profiles, roles, meetups, bookings, attendance, loyalty, special, progress, favorites, audit, managedQuestions, content] = await Promise.all([
+  const [directory, profiles, roles, meetups, bookings, attendance, loyalty, special, progress, favorites, audit, managedQuestions, content, notifications] = await Promise.all([
     supabase.rpc("admin_member_directory"),
     supabase.from("profiles").select("id,display_name,avatar_path,avatar_url,telegram_username,english_level,created_at").order("created_at", { ascending: false }),
     supabase.from("user_roles").select("user_id,role,updated_at"),
     supabase.from("meetups").select("*").order("starts_at", { ascending: false }),
     supabase.from("meetup_bookings").select("id,meetup_id,user_id,status,booked_at").order("booked_at", { ascending: false }),
-    supabase.from("attendance").select("id,meetup_id,user_id,status,is_paid,paid_amount_minor,paid_currency,recorded_at").order("recorded_at", { ascending: false }),
+    supabase.from("attendance").select("id,meetup_id,user_id,booking_id,status,is_paid,payment_status,paid_amount_minor,paid_currency,recorded_at").order("recorded_at", { ascending: false }),
     supabase.from("loyalty_rewards").select("id,user_id,status,earned_at,reward_sequence"),
     supabase.from("special_rewards").select("id,user_id,name,reason,description,status,issued_at,expires_at").order("issued_at", { ascending: false }),
     supabase.from("question_progress").select("user_id,question_id"),
@@ -30,6 +31,7 @@ export default async function AdminPage() {
     supabase.from("admin_audit_log").select("id,actor_user_id,action,target_table,target_id,details,created_at").order("created_at", { ascending: false }).limit(100),
     supabase.from("managed_questions").select("id,prompt,translation,category,difficulty,is_published").order("created_at", { ascending: false }),
     supabase.from("site_content").select("key,value,is_public,updated_at").order("updated_at", { ascending: false }),
+    supabase.from("notifications").select("id,title,body,read_at,created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(20),
   ]);
 
   const profileRows = profiles.data ?? [];
@@ -44,6 +46,6 @@ export default async function AdminPage() {
     directory: directory.data ?? [], profiles: profileRows, roles: roles.data ?? [],
     meetups: meetups.data ?? [], bookings: bookings.data ?? [], attendance: attendance.data ?? [],
     loyalty: loyalty.data ?? [], special: special.data ?? [], progress: progress.data ?? [],
-    favorites: favorites.data ?? [], audit: audit.data ?? [], signedAvatars, managedQuestions: managedQuestions.data ?? [], content: content.data ?? [],
+    favorites: favorites.data ?? [], audit: audit.data ?? [], signedAvatars, managedQuestions: managedQuestions.data ?? [], content: content.data ?? [], notifications: notifications.data ?? [],
   }} />;
 }

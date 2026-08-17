@@ -2,39 +2,64 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Activity, Award, BookOpen, CalendarDays, Check, ChevronRight, ClipboardCheck, Copy, LayoutDashboard, Pencil, Plus, Search, ShieldCheck, Sparkles, Star, TicketCheck, Trash2, Users } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { NotificationBell } from "@/components/notification-bell";
 
 type DirectoryRow = { user_id: string; email: string | null; email_verified: boolean; joined_at: string; last_sign_in_at: string | null };
 type ProfileRow = { id: string; display_name: string | null; avatar_path: string | null; avatar_url: string | null; telegram_username: string | null; english_level: string | null; created_at: string };
 type RoleRow = { user_id: string; role: string; updated_at: string };
 type MeetupRow = { id: string; title: string; description: string; starts_at: string; ends_at: string; timezone: string; location_name: string; address: string | null; capacity: number; price_minor: number; currency: string; status: string; is_public: boolean; booking_opens_at: string | null; booking_closes_at: string | null; confirmed_booking_count: number; category?: string; image_url?: string | null };
-type BookingRow = { id: string; meetup_id: string; user_id: string; status: string; booked_at: string };
-type AttendanceRow = { id: string; meetup_id: string; user_id: string; status: string; is_paid: boolean; paid_amount_minor: number | null; paid_currency: string | null; recorded_at: string };
+type BookingRow = { id: string; meetup_id: string; user_id: string; status: string; booked_at: string; cancelled_at?: string | null };
+type AttendanceRow = { id: string; meetup_id: string; user_id: string; booking_id: string | null; status: string; is_paid: boolean; payment_status: string; paid_amount_minor: number | null; paid_currency: string | null; recorded_at: string };
 type RewardRow = { id: string; user_id: string; status: string; earned_at: string; reward_sequence: number };
 type SpecialRow = { id: string; user_id: string; name: string; reason: string; description: string | null; status: string; issued_at: string; expires_at: string | null };
 type QuestionRow = { user_id: string; question_id: string };
 type AuditRow = { id: string; actor_user_id: string | null; action: string; target_table: string; target_id: string | null; created_at: string };
 type ManagedQuestion = { id: string; prompt: string; translation: string | null; category: string; difficulty: string; is_published: boolean };
 type ContentRow = { key: string; value: string; is_public: boolean; updated_at: string };
-type AdminData = { currentUserId: string; directory: DirectoryRow[]; profiles: ProfileRow[]; roles: RoleRow[]; meetups: MeetupRow[]; bookings: BookingRow[]; attendance: AttendanceRow[]; loyalty: RewardRow[]; special: SpecialRow[]; progress: QuestionRow[]; favorites: QuestionRow[]; audit: AuditRow[]; signedAvatars: Record<string, string>; managedQuestions: ManagedQuestion[]; content: ContentRow[] };
+type NotificationRow = { id: string; title: string; body: string; read_at: string | null; created_at: string };
+type AdminData = { currentUserId: string; directory: DirectoryRow[]; profiles: ProfileRow[]; roles: RoleRow[]; meetups: MeetupRow[]; bookings: BookingRow[]; attendance: AttendanceRow[]; loyalty: RewardRow[]; special: SpecialRow[]; progress: QuestionRow[]; favorites: QuestionRow[]; audit: AuditRow[]; signedAvatars: Record<string, string>; managedQuestions: ManagedQuestion[]; content: ContentRow[]; notifications: NotificationRow[] };
 
 const emptyMeetup = { id: "", title: "", description: "", starts_at: "", ends_at: "", timezone: "Europe/Moscow", location_name: "", address: "", capacity: "12", price: "500", currency: "RUB", category: "Conversation", image_url: "", status: "draft", booking_opens_at: "", booking_closes_at: "" };
 
 export function AdminDashboard({ initial }: { initial: AdminData }) {
+  const router = useRouter();
   const [tab, setTab] = useState("overview");
   const [search, setSearch] = useState("");
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const [meetups, setMeetups] = useState(initial.meetups);
+  const [bookings, setBookings] = useState(initial.bookings);
   const [attendance, setAttendance] = useState(initial.attendance);
+  const [notifications, setNotifications] = useState(initial.notifications);
   const [special, setSpecial] = useState(initial.special);
   const [roles, setRoles] = useState(initial.roles);
   const [managedQuestions, setManagedQuestions] = useState(initial.managedQuestions);
   const [content, setContent] = useState(initial.content);
   const [meetupForm, setMeetupForm] = useState(emptyMeetup);
   const [now] = useState(() => Date.now());
+
+  useEffect(() => {
+    const refreshLiveData = async () => {
+      const client = getSupabaseBrowserClient();
+      if (!client) return;
+      const [meetupResult, bookingResult, attendanceResult, notificationResult] = await Promise.all([
+        client.from("meetups").select("*").order("starts_at", { ascending: false }),
+        client.from("meetup_bookings").select("id,meetup_id,user_id,status,booked_at,cancelled_at").order("booked_at", { ascending: false }),
+        client.from("attendance").select("id,meetup_id,user_id,booking_id,status,is_paid,payment_status,paid_amount_minor,paid_currency,recorded_at").order("recorded_at", { ascending: false }),
+        client.from("notifications").select("id,title,body,read_at,created_at").eq("user_id", initial.currentUserId).order("created_at", { ascending: false }).limit(20),
+      ]);
+      if (meetupResult.data) setMeetups(meetupResult.data);
+      if (bookingResult.data) setBookings(bookingResult.data);
+      if (attendanceResult.data) setAttendance(attendanceResult.data);
+      if (notificationResult.data) setNotifications(notificationResult.data);
+    };
+    const interval = window.setInterval(() => void refreshLiveData(), 15000);
+    return () => window.clearInterval(interval);
+  }, [initial.currentUserId]);
 
   const members = useMemo(() => initial.directory.map((auth) => ({
     ...auth,
@@ -62,6 +87,7 @@ export function AdminDashboard({ initial }: { initial: AdminData }) {
     setBusy(false);
     if (!result || result.error) return message("The meetup could not be saved. Check the dates and fields.");
     setMeetups((rows) => meetupForm.id ? rows.map((row) => row.id === result.data.id ? result.data : row) : [result.data, ...rows]);
+    router.refresh();
     setMeetupForm(emptyMeetup); message("Meetup saved.");
   }
 
@@ -69,7 +95,7 @@ export function AdminDashboard({ initial }: { initial: AdminData }) {
     setBusy(true); const client = getSupabaseBrowserClient();
     const { data, error } = await client!.from("meetups").update({ status, is_public: status !== "draft" }).eq("id", id).select().single();
     setBusy(false); if (error) return message("Meetup status could not be changed.");
-    setMeetups((rows) => rows.map((row) => row.id === id ? data : row)); message(`Meetup marked ${status}.`);
+    setMeetups((rows) => rows.map((row) => row.id === id ? data : row)); router.refresh(); message(`Meetup marked ${status}.`);
   }
 
   async function deleteMeetup(id: string) {
@@ -80,6 +106,7 @@ export function AdminDashboard({ initial }: { initial: AdminData }) {
     setBusy(false);
     if (error) return message("This meetup could not be deleted. Cancel it if it has booking history.");
     setMeetups((rows) => rows.filter((row) => row.id !== id));
+    router.refresh();
     message("Meetup deleted.");
   }
 
@@ -91,19 +118,20 @@ export function AdminDashboard({ initial }: { initial: AdminData }) {
   async function recordAttendance(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); const data = new FormData(event.currentTarget); const client = getSupabaseBrowserClient();
     const paid = data.get("is_paid") === "on";
-    const payload = { meetup_id: String(data.get("meetup_id")), user_id: String(data.get("user_id")), status: String(data.get("status")), is_paid: paid, paid_amount_minor: paid ? Math.round(Number(data.get("amount") || 0) * 100) : null, paid_currency: paid ? String(data.get("currency") || "RUB").toUpperCase() : null };
+    const paymentStatus = String(data.get("payment_status") || "unpaid");
+    const payload = { meetup_id: String(data.get("meetup_id")), user_id: String(data.get("user_id")), booking_id: String(data.get("booking_id") || "") || null, status: String(data.get("status")), payment_status: paymentStatus, is_paid: paid, paid_amount_minor: paymentStatus === "paid" ? Math.round(Number(data.get("amount") || 0) * 100) : null, paid_currency: paymentStatus === "paid" ? String(data.get("currency") || "RUB").toUpperCase() : null };
     const { data: row, error } = await client!.from("attendance").upsert(payload, { onConflict: "meetup_id,user_id" }).select().single();
     setBusy(false); if (error) return message("Attendance could not be recorded.");
-    setAttendance((rows) => [row, ...rows.filter((item) => item.id !== row.id)]); message("Attendance and payment record saved.");
+    setAttendance((rows) => [row, ...rows.filter((item) => item.id !== row.id)]); router.refresh(); message("Attendance and payment record saved.");
   }
 
   async function bulkCheckIn(meetupId: string) {
-    const booked = initial.bookings.filter((row) => row.meetup_id === meetupId && row.status === "confirmed");
+    const booked = bookings.filter((row) => row.meetup_id === meetupId && row.status === "confirmed");
     if (!booked.length || !window.confirm(`Mark ${booked.length} confirmed members as attended? Payment remains unrecorded.`)) return;
     setBusy(true); const client = getSupabaseBrowserClient();
-    const { data, error } = await client!.from("attendance").upsert(booked.map((row) => ({ meetup_id: meetupId, user_id: row.user_id, booking_id: row.id, status: "attended", is_paid: false })), { onConflict: "meetup_id,user_id" }).select();
+    const { data, error } = await client!.from("attendance").upsert(booked.map((row) => ({ meetup_id: meetupId, user_id: row.user_id, booking_id: row.id, status: "attended", payment_status: "unpaid", is_paid: false })), { onConflict: "meetup_id,user_id" }).select();
     setBusy(false); if (error) return message("Bulk check-in could not be completed.");
-    setAttendance((rows) => [...(data ?? []), ...rows.filter((row) => !data?.some((item) => item.id === row.id))]); message("Bulk check-in completed.");
+    setAttendance((rows) => [...(data ?? []), ...rows.filter((row) => !data?.some((item) => item.id === row.id))]); router.refresh(); message("Bulk check-in completed.");
   }
 
   async function issueSpecial(event: FormEvent<HTMLFormElement>) {
@@ -148,15 +176,15 @@ export function AdminDashboard({ initial }: { initial: AdminData }) {
 
   return <main className="admin-shell">
     <aside className="admin-sidebar"><Link className="admin-logo" href="/">GSC <small>Administration</small></Link><nav aria-label="Admin sections">{[["overview",LayoutDashboard,"Overview"],["members",Users,"Members"],["meetups",CalendarDays,"Meetups"],["attendance",ClipboardCheck,"Attendance"],["questions",BookOpen,"Questions"],["content",Pencil,"Content"],["rewards",Award,"Rewards"],["audit",Activity,"Audit history"]].map(([id,Icon,label]) => <button key={id as string} className={tab === id ? "active" : ""} onClick={() => setTab(id as string)}><Icon size={18} />{label as string}</button>)}</nav><Link className="admin-member-link" href="/account">Member dashboard <ChevronRight /></Link></aside>
-    <section className="admin-main"><header className="admin-header"><div><p className="dashboard-kicker">Protected workspace</p><h1>{tab === "overview" ? "Club overview" : tab.charAt(0).toUpperCase() + tab.slice(1)}</h1></div><span><ShieldCheck />Admin verified</span></header>{notice && <div className="admin-notice" role="status">{notice}</div>}
+    <section className="admin-main"><header className="admin-header"><div><p className="dashboard-kicker">Protected workspace</p><h1>{tab === "overview" ? "Club overview" : tab.charAt(0).toUpperCase() + tab.slice(1)}</h1></div><div className="admin-header-actions"><NotificationBell key={notifications.map((item) => `${item.id}:${item.read_at ?? ""}`).join("|")} initialNotifications={notifications} /><button type="button" onClick={() => router.refresh()} disabled={busy}>Refresh data</button><span><ShieldCheck />Admin verified</span></div></header>{notice && <div className="admin-notice" role="status">{notice}</div>}
 
-      {tab === "overview" && <><div className="admin-stat-grid"><article><Users /><strong>{members.length}</strong><span>Total members</span></article><article><CalendarDays /><strong>{upcoming.length}</strong><span>Upcoming meetups</span></article><article><TicketCheck /><strong>{initial.bookings.filter((row) => row.status === "confirmed").length}</strong><span>Current bookings</span></article><article><ClipboardCheck /><strong>{attendance.filter((row) => new Date(row.recorded_at).getMonth() === new Date().getMonth()).length}</strong><span>Attendance this month</span></article><article><Star /><strong>{attendance.filter((row) => row.status === "attended" && row.is_paid).length}</strong><span>Paid visits</span></article><article><Award /><strong>{closeToReward}</strong><span>Close to reward</span></article><article><Sparkles /><strong>{initial.loyalty.filter((row) => row.status === "available").length + special.filter((row) => row.status === "available").length}</strong><span>Unredeemed rewards</span></article><article><Activity /><strong>{initial.progress.length}</strong><span>Questions explored</span></article></div><section className="admin-panel"><div className="admin-panel-heading"><div><p className="dashboard-kicker">Live picture</p><h2>Recent members</h2></div><button onClick={() => setTab("members")}>View all</button></div><MemberCards members={members.slice(0, 5)} avatars={initial.signedAvatars} onRole={changeRole} busy={busy} /></section></>}
+      {tab === "overview" && <><div className="admin-stat-grid"><article><Users /><strong>{members.length}</strong><span>Total members</span></article><article><CalendarDays /><strong>{upcoming.length}</strong><span>Upcoming meetups</span></article><article><TicketCheck /><strong>{bookings.filter((row) => row.status === "confirmed").length}</strong><span>Current bookings</span></article><article><ClipboardCheck /><strong>{attendance.filter((row) => new Date(row.recorded_at).getMonth() === new Date().getMonth()).length}</strong><span>Attendance this month</span></article><article><Star /><strong>{attendance.filter((row) => row.status === "attended" && row.is_paid).length}</strong><span>Paid visits</span></article><article><Award /><strong>{closeToReward}</strong><span>Close to reward</span></article><article><Sparkles /><strong>{initial.loyalty.filter((row) => row.status === "available").length + special.filter((row) => row.status === "available").length}</strong><span>Unredeemed rewards</span></article><article><Activity /><strong>{initial.progress.length}</strong><span>Questions explored</span></article></div><section className="admin-panel"><div className="admin-panel-heading"><div><p className="dashboard-kicker">Live picture</p><h2>Recent members</h2></div><button onClick={() => setTab("members")}>View all</button></div><MemberCards members={members.slice(0, 5)} avatars={initial.signedAvatars} onRole={changeRole} busy={busy} /></section></>}
 
       {tab === "members" && <section className="admin-panel"><div className="admin-panel-heading"><div><p className="dashboard-kicker">Member management</p><h2>{filteredMembers.length} members</h2></div><label className="admin-search"><Search /><span className="sr-only">Search members</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Name, email or Telegram" /></label></div><MemberCards members={filteredMembers} avatars={initial.signedAvatars} onRole={changeRole} busy={busy} /></section>}
 
-      {tab === "meetups" && <div className="admin-two-column"><section className="admin-panel"><div className="admin-panel-heading"><div><p className="dashboard-kicker">Schedule</p><h2>Manage meetups</h2></div></div><div className="admin-meetup-list">{meetups.map((meetup) => <article key={meetup.id}><div><span className={`admin-status ${meetup.status}`}>{meetup.status}</span><h3>{meetup.title}</h3><p>{new Date(meetup.starts_at).toLocaleString()} · {meetup.location_name}</p><small>{meetup.confirmed_booking_count}/{meetup.capacity} confirmed · {meetup.category ?? "Conversation"}</small><details><summary>Participants</summary>{initial.bookings.filter((booking) => booking.meetup_id === meetup.id && booking.status === "confirmed").map((booking) => <p key={booking.id}>{members.find((member) => member.user_id === booking.user_id)?.profile?.display_name ?? members.find((member) => member.user_id === booking.user_id)?.email ?? "Member"}</p>)}</details></div><div><button aria-label={`Edit ${meetup.title}`} onClick={() => setMeetupForm({ id: meetup.id, title: meetup.title, description: meetup.description, starts_at: meetup.starts_at.slice(0,16), ends_at: meetup.ends_at.slice(0,16), timezone: meetup.timezone, location_name: meetup.location_name, address: meetup.address ?? "", capacity: String(meetup.capacity), price: String(meetup.price_minor / 100), currency: meetup.currency, category: meetup.category ?? "Conversation", image_url: meetup.image_url ?? "", status: meetup.status, booking_opens_at: meetup.booking_opens_at?.slice(0,16) ?? "", booking_closes_at: meetup.booking_closes_at?.slice(0,16) ?? "" })}><Pencil /></button><button aria-label={`Duplicate ${meetup.title}`} onClick={() => duplicateMeetup(meetup)}><Copy /></button><button aria-label={`Delete ${meetup.title}`} onClick={() => deleteMeetup(meetup.id)} disabled={busy}><Trash2 /></button>{meetup.status === "draft" && <button onClick={() => setMeetupStatus(meetup.id,"published")}>Publish</button>}{meetup.status === "published" && <><button onClick={() => setMeetupStatus(meetup.id,"completed")}>Complete</button><button onClick={() => setMeetupStatus(meetup.id,"cancelled")}>Cancel</button></>}</div></article>)}</div></section><MeetupForm value={meetupForm} setValue={setMeetupForm} onSubmit={saveMeetup} busy={busy} /></div>}
+      {tab === "meetups" && <div className="admin-two-column"><section className="admin-panel"><div className="admin-panel-heading"><div><p className="dashboard-kicker">Schedule</p><h2>Manage meetups</h2></div></div><div className="admin-meetup-list">{meetups.map((meetup) => <article key={meetup.id}><div><span className={`admin-status ${meetup.status}`}>{meetup.status}</span><h3>{meetup.title}</h3><p>{new Date(meetup.starts_at).toLocaleString()} · {meetup.location_name}</p><small>{meetup.confirmed_booking_count}/{meetup.capacity} confirmed · {meetup.category ?? "Conversation"} · {meetup.price_minor / 100} {meetup.currency}</small><details><summary>Participants ({bookings.filter((booking) => booking.meetup_id === meetup.id && booking.status === "confirmed").length})</summary><ParticipantList meetup={meetup} bookings={bookings} attendance={attendance} members={members} avatars={initial.signedAvatars} onSubmit={recordAttendance} busy={busy} /></details></div><div><button aria-label={`Edit ${meetup.title}`} onClick={() => setMeetupForm({ id: meetup.id, title: meetup.title, description: meetup.description, starts_at: meetup.starts_at.slice(0,16), ends_at: meetup.ends_at.slice(0,16), timezone: meetup.timezone, location_name: meetup.location_name, address: meetup.address ?? "", capacity: String(meetup.capacity), price: String(meetup.price_minor / 100), currency: meetup.currency, category: meetup.category ?? "Conversation", image_url: meetup.image_url ?? "", status: meetup.status, booking_opens_at: meetup.booking_opens_at?.slice(0,16) ?? "", booking_closes_at: meetup.booking_closes_at?.slice(0,16) ?? "" })}><Pencil /></button><button aria-label={`Duplicate ${meetup.title}`} onClick={() => duplicateMeetup(meetup)}><Copy /></button><button aria-label={`Delete ${meetup.title}`} onClick={() => deleteMeetup(meetup.id)} disabled={busy}><Trash2 /></button>{meetup.status === "draft" && <button onClick={() => setMeetupStatus(meetup.id,"published")}>Publish</button>}{meetup.status === "published" && <><button onClick={() => setMeetupStatus(meetup.id,"completed")}>Complete</button><button onClick={() => setMeetupStatus(meetup.id,"cancelled")}>Cancel</button></>}</div></article>)}</div></section><MeetupForm value={meetupForm} setValue={setMeetupForm} onSubmit={saveMeetup} busy={busy} /></div>}
 
-      {tab === "attendance" && <div className="admin-two-column"><section className="admin-panel"><div className="admin-panel-heading"><div><p className="dashboard-kicker">Manual records</p><h2>Check in a member</h2></div></div><form className="admin-form" onSubmit={recordAttendance}><label>Meetup<select name="meetup_id" required>{meetups.map((row) => <option key={row.id} value={row.id}>{row.title}</option>)}</select></label><label>Member<select name="user_id" required>{members.map((row) => <option key={row.user_id} value={row.user_id}>{row.profile?.display_name || row.email}</option>)}</select></label><label>Attendance<select name="status"><option value="attended">Attended</option><option value="no_show">Absent / no-show</option><option value="excused">Excused</option></select></label><label className="admin-checkbox"><input type="checkbox" name="is_paid" />Paid qualifying visit</label><div className="admin-form-row"><label>Amount<input name="amount" type="number" min="0" step="0.01" defaultValue="500" /></label><label>Currency<input name="currency" defaultValue="RUB" pattern="[A-Z]{3}" /></label></div><button className="button button-primary" disabled={busy}>Save record</button></form></section><section className="admin-panel"><div className="admin-panel-heading"><div><p className="dashboard-kicker">Safe bulk action</p><h2>Booked members</h2></div></div>{meetups.map((meetup) => { const count = initial.bookings.filter((row) => row.meetup_id === meetup.id && row.status === "confirmed").length; return count ? <div className="bulk-row" key={meetup.id}><span><strong>{meetup.title}</strong><small>{count} confirmed</small></span><button onClick={() => bulkCheckIn(meetup.id)} disabled={busy}><Check />Check in all</button></div> : null; })}</section></div>}
+      {tab === "attendance" && <div className="admin-two-column"><section className="admin-panel"><div className="admin-panel-heading"><div><p className="dashboard-kicker">Manual records</p><h2>Check in a member</h2></div></div><form className="admin-form" onSubmit={recordAttendance}><label>Meetup<select name="meetup_id" required>{meetups.map((row) => <option key={row.id} value={row.id}>{row.title}</option>)}</select></label><label>Member<select name="user_id" required>{members.map((row) => <option key={row.user_id} value={row.user_id}>{row.profile?.display_name || row.email}</option>)}</select></label><label>Booking (optional)<select name="booking_id"><option value="">Walk-in / no booking</option>{bookings.filter((row) => row.status === "confirmed").map((row) => <option key={row.id} value={row.id}>{members.find((member) => member.user_id === row.user_id)?.profile?.display_name || row.user_id.slice(0, 8)}</option>)}</select></label><label>Attendance<select name="status"><option value="attended">Attended</option><option value="no_show">Absent / no-show</option><option value="excused">Excused</option></select></label><label>Payment<select name="payment_status"><option value="unpaid">Unpaid</option><option value="paid">Paid</option><option value="free_reward">Free loyalty reward</option></select></label><div className="admin-form-row"><label>Amount<input name="amount" type="number" min="0" step="0.01" defaultValue="500" /></label><label>Currency<input name="currency" defaultValue="RUB" pattern="[A-Z]{3}" /></label></div><button className="button button-primary" disabled={busy}>Save attendance</button></form></section><section className="admin-panel"><div className="admin-panel-heading"><div><p className="dashboard-kicker">Safe bulk action</p><h2>Booked members</h2></div></div>{meetups.map((meetup) => { const count = bookings.filter((row) => row.meetup_id === meetup.id && row.status === "confirmed").length; return count ? <div className="bulk-row" key={meetup.id}><span><strong>{meetup.title}</strong><small>{count} confirmed</small></span><button onClick={() => bulkCheckIn(meetup.id)} disabled={busy}><Check />Check in all</button></div> : null; })}</section></div>}
       {tab === "questions" && <div className="admin-two-column"><section className="admin-panel"><div className="admin-panel-heading"><div><p className="dashboard-kicker">Question CMS</p><h2>Add a speaking prompt</h2></div></div><form className="admin-form" onSubmit={saveManagedQuestion}><label>Question<textarea name="prompt" required maxLength={1000} /></label><label>Translation<textarea name="translation" maxLength={1000} /></label><div className="admin-form-row"><label>Category<input name="category" defaultValue="Conversation" required /></label><label>Difficulty<select name="difficulty"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></label></div><button className="button button-primary" disabled={busy}><Plus />Add question</button></form></section><section className="admin-panel"><div className="admin-panel-heading"><div><p className="dashboard-kicker">Managed additions</p><h2>{managedQuestions.length} questions</h2></div></div><div className="audit-list">{managedQuestions.length ? managedQuestions.map((row) => <div key={row.id}><span>{row.difficulty}</span><strong>{row.prompt}</strong><p>{row.category} · <button onClick={() => deleteManagedQuestion(row.id)} disabled={busy}>Delete</button></p></div>) : <p className="admin-empty">No administrator-added questions yet. The authored library remains available to members.</p>}</div></section></div>}
 
       {tab === "content" && <div className="admin-two-column"><section className="admin-panel"><div className="admin-panel-heading"><div><p className="dashboard-kicker">Content CMS</p><h2>Save a public content value</h2></div></div><form className="admin-form" onSubmit={saveContent}><label>Key<input name="key" placeholder="homepage.hero.title" required /></label><label>Value<textarea name="value" maxLength={20000} required /></label><button className="button button-primary" disabled={busy}>Save content</button></form><p className="admin-empty">Only values explicitly wired into a public page are rendered. Existing authored copy remains the fallback when a value is absent.</p></section><section className="admin-panel"><div className="admin-panel-heading"><div><p className="dashboard-kicker">Saved values</p><h2>{content.length} content records</h2></div></div><div className="audit-list">{content.length ? content.map((row) => <div key={row.key}><span>{row.key}</span><strong>{row.value.slice(0, 140)}</strong><p>{new Date(row.updated_at).toLocaleString()}</p></div>) : <p className="admin-empty">No editable content has been stored.</p>}</div></section></div>}
@@ -171,6 +199,32 @@ export function AdminDashboard({ initial }: { initial: AdminData }) {
 type MemberSummary = DirectoryRow & { profile?: ProfileRow; role: string; visits: number; paid: number; questions: number; favorites: number };
 function MemberCards({ members, avatars, onRole, busy }: { members: MemberSummary[]; avatars: Record<string,string>; onRole: (id:string,role:string)=>void; busy:boolean }) {
   return <div className="admin-member-list">{members.map((member) => { const avatar = avatars[member.user_id] ?? member.profile?.avatar_url; return <article key={member.user_id}>{avatar ? <Image src={avatar} alt="" width={52} height={52} unoptimized /> : <span className="member-mini-avatar">{member.profile?.display_name?.[0]?.toUpperCase() ?? "G"}</span>}<div className="member-primary"><strong>{member.profile?.display_name || "Unnamed member"}</strong><p>{member.email}{member.email_verified && <ShieldCheck />}</p><small>{member.profile?.telegram_username ? `@${member.profile.telegram_username}` : "No Telegram username"}</small></div><div className="member-metrics"><span><b>{member.visits}</b> visits</span><span><b>{member.paid}</b> paid</span><span><b>{member.questions}</b> questions</span><span><b>{member.favorites}</b> favorites</span></div><div className="member-role"><span className={`admin-status ${member.role}`}>{member.role}</span><button onClick={() => onRole(member.user_id, member.role === "admin" ? "member" : "admin")} disabled={busy}>{member.role === "admin" ? "Make member" : "Make admin"}</button><Link href={`/admin/members/${member.user_id}`}>Details <ChevronRight /></Link></div></article>; })}</div>;
+}
+
+function ParticipantList({ meetup, bookings, attendance, members, avatars, onSubmit, busy }: { meetup: MeetupRow; bookings: BookingRow[]; attendance: AttendanceRow[]; members: MemberSummary[]; avatars: Record<string, string>; onSubmit: (event: FormEvent<HTMLFormElement>) => void; busy: boolean }) {
+  const rows = bookings.filter((booking) => booking.meetup_id === meetup.id);
+  if (!rows.length) return <p className="admin-empty">No bookings yet. New bookings will appear here automatically.</p>;
+
+  return <div className="admin-participant-list">{rows.map((booking) => {
+    const member = members.find((item) => item.user_id === booking.user_id);
+    const record = attendance.find((item) => item.meetup_id === meetup.id && item.user_id === booking.user_id);
+    const avatar = avatars[booking.user_id] ?? member?.profile?.avatar_url;
+    const paymentStatus = record?.payment_status ?? (record?.is_paid ? "paid" : "unpaid");
+    return <article className="admin-participant" key={booking.id}>
+      {avatar ? <Image src={avatar} alt="" width={42} height={42} unoptimized /> : <span className="member-mini-avatar">{member?.profile?.display_name?.[0]?.toUpperCase() ?? "G"}</span>}
+      <div className="participant-identity"><strong>{member?.profile?.display_name || "Unnamed member"}</strong><small>{member?.email ?? "Email unavailable"}</small><span>Booking: {booking.status} · Attendance: {record?.status ?? "not recorded"} · Payment: {paymentStatus}</span></div>
+      <form className="participant-controls" onSubmit={onSubmit}>
+        <input type="hidden" name="meetup_id" value={meetup.id} />
+        <input type="hidden" name="user_id" value={booking.user_id} />
+        <input type="hidden" name="booking_id" value={booking.id} />
+        <select name="status" defaultValue={record?.status ?? "attended"} aria-label={`Attendance status for ${member?.profile?.display_name ?? "member"}`}><option value="attended">Attended</option><option value="no_show">No-show</option><option value="excused">Excused</option></select>
+        <select name="payment_status" defaultValue={paymentStatus} aria-label={`Payment status for ${member?.profile?.display_name ?? "member"}`}><option value="paid">Paid</option><option value="unpaid">Unpaid</option><option value="free_reward">Free reward</option></select>
+        <input name="amount" type="number" min="0" step="0.01" defaultValue={record?.paid_amount_minor ? record.paid_amount_minor / 100 : meetup.price_minor / 100} aria-label="Paid amount" />
+        <input name="currency" defaultValue={record?.paid_currency ?? meetup.currency} maxLength={3} aria-label="Paid currency" />
+        <button type="submit" disabled={busy}><Check size={14} />Save</button>
+      </form>
+    </article>;
+  })}</div>;
 }
 
 function MeetupForm({ value, setValue, onSubmit, busy }: { value: typeof emptyMeetup; setValue: (value: typeof emptyMeetup)=>void; onSubmit:(event:FormEvent<HTMLFormElement>)=>void; busy:boolean }) {
