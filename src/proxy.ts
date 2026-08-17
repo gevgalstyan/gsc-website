@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 
-export async function proxy(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const hostname = request.headers.get("host")?.split(":")[0];
   if (hostname === "www.galstyansspeakingclub.ru") {
     const canonicalUrl = request.nextUrl.clone();
