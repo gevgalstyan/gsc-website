@@ -114,7 +114,7 @@ export function Header({ onAuth, authenticated = false }: { onAuth?: () => void;
     <header className="site-header">
       <div className="header-inner">
         <Link className="wordmark" href="/#home" aria-label="GSC home">
-          <Image src="/gsc-logo.jpg" alt="Galstyan's Speaking Club logo" width={48} height={48} priority />
+          <Image src="/gsc-logo.jpg" alt="Galstyan's Speaking Club logo" width={48} height={48} loading="eager" />
           <span><b>Galstyan&apos;s</b><small>Speaking Club</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
