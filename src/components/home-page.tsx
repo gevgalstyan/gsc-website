@@ -45,6 +45,13 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
   const [publicDataAttempt, setPublicDataAttempt] = useState(0);
 
   useEffect(() => {
+    const authParam = new URLSearchParams(window.location.search).get("auth");
+    if (!authParam) return;
+    const openTimer = window.setTimeout(() => setAuthOpen(true), 0);
+    return () => window.clearTimeout(openTimer);
+  }, []);
+
+  useEffect(() => {
     const client = getSupabaseBrowserClient();
     if (!client) return;
     let active = true;

@@ -13,11 +13,10 @@ const faqSchema = {
   })),
 };
 
-export default async function Page({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  const params = await searchParams;
+export default function Page() {
   return (
     <>
-      <HomePage initialAuthOpen={typeof params.auth === "string"} deferPublicData />
+      <HomePage deferPublicData />
       <StructuredData data={organizationSchema} />
       <StructuredData data={websiteSchema} />
       <StructuredData data={faqSchema} />
