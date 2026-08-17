@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { fetchWithTimeout } from "@/lib/supabase/fetch";
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
@@ -11,6 +12,7 @@ export async function updateSession(request: NextRequest) {
     url,
     key,
     {
+      global: { fetch: fetchWithTimeout },
       cookies: {
         getAll: () => request.cookies.getAll(),
         setAll(cookiesToSet) {
@@ -21,6 +23,10 @@ export async function updateSession(request: NextRequest) {
       },
     },
   );
-  await supabase.auth.getClaims();
+  try {
+    await supabase.auth.getClaims();
+  } catch {
+    // Public navigation must remain usable when auth is temporarily offline.
+  }
   return response;
 }

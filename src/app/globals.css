@@ -156,6 +156,71 @@ img,svg{max-width:100%}
 @media(max-width:1024px){.admin-stat-grid{grid-template-columns:repeat(2,1fr)}.admin-member-list>article{grid-template-columns:auto 1fr auto}.member-metrics{grid-column:2/4;width:100%}.admin-two-column{grid-template-columns:1fr}.dashboard-stat-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:768px){.dashboard-topbar{flex-wrap:wrap;gap:10px}.dashboard-topbar nav{order:3;width:100%;justify-content:space-between;overflow-x:auto}.member-welcome{align-items:flex-start;flex-direction:column}.profile-completion{width:100%}.dashboard-grid{grid-template-columns:1fr}.dashboard-card-wide{grid-column:auto}.admin-shell{display:block}.admin-sidebar{position:sticky;z-index:20;display:block;width:100%;height:auto;padding:10px 12px;overflow-x:auto}.admin-logo{display:none}.admin-sidebar nav{display:flex;width:max-content}.admin-sidebar nav button{min-height:44px;white-space:nowrap}.admin-member-link{display:none}.admin-main{padding:22px 14px 60px}.admin-header{align-items:flex-start}.admin-header>span{white-space:nowrap}.admin-member-list>article{grid-template-columns:auto minmax(0,1fr)}.member-metrics{grid-column:1/3}.member-role{grid-column:1/3;display:flex;align-items:center;justify-content:space-between;width:100%}.admin-search{min-width:0;width:100%}.admin-panel-heading{align-items:flex-start;flex-direction:column}.admin-two-column{grid-template-columns:1fr}}
 @media(max-width:430px){.dashboard-topbar{padding:10px 12px}.dashboard-brand{font-size:23px}.dashboard-topbar nav{gap:17px}.member-identity{align-items:flex-start;flex-direction:column}.member-identity h1{overflow-wrap:anywhere}.dashboard-stat-grid,.admin-stat-grid{grid-template-columns:1fr 1fr}.dashboard-stat-grid article{padding:15px}.question-breakdown{grid-template-columns:1fr}.history-list>div{grid-template-columns:auto 1fr}.history-list b{grid-column:2}.settings-panel summary{align-items:flex-start;flex-direction:column}.admin-header{flex-direction:column}.admin-stat-grid article{padding:14px}.member-metrics{grid-template-columns:repeat(2,1fr)}.admin-form-row,.admin-form-row:has(label:nth-child(3)){grid-template-columns:1fr}.admin-meetup-list article{align-items:flex-start;flex-direction:column}.admin-meetup-list article>div:last-child{justify-content:flex-start}.audit-list>div{grid-template-columns:70px 1fr}.admin-detail-shell>header{align-items:flex-start;flex-direction:column}}
+
+/* Mobile rhythm: keep the editorial type pairing intact while giving each
+   family its own line box and enough width to wrap safely. */
+html, body { min-height: 100%; }
+body { min-height: 100svh; font-synthesis: none; }
+h1, h2, h3 { text-wrap: balance; }
+h1 em, h2 em { vertical-align: baseline; }
+.site-header { padding-top: env(safe-area-inset-top); }
+.header-inner { padding-left: max(clamp(18px, 5vw, 76px), env(safe-area-inset-left)); padding-right: max(clamp(18px, 5vw, 76px), env(safe-area-inset-right)); }
+.mobile-drawer { height: 100dvh; min-height: 100svh; padding-top: max(20px, env(safe-area-inset-top)); padding-right: max(22px, env(safe-area-inset-right)); padding-bottom: max(22px, env(safe-area-inset-bottom)); padding-left: max(22px, env(safe-area-inset-left)); }
+.modal-backdrop { padding-top: max(20px, env(safe-area-inset-top)); padding-right: max(20px, env(safe-area-inset-right)); padding-bottom: max(20px, env(safe-area-inset-bottom)); padding-left: max(20px, env(safe-area-inset-left)); }
+
+@media (max-width: 600px) {
+  .header-inner { height: 68px; gap: 12px; }
+  .wordmark { gap: 9px; }
+  .wordmark img { width: 44px; height: 44px; }
+  .wordmark b { font-size: 12px; }
+  .wordmark small { margin-top: 3px; font-size: 9px; }
+  .header-actions { flex: 0 0 auto; }
+  .menu-button { width: 44px; height: 44px; }
+  .hero { padding-top: calc(115px + env(safe-area-inset-top)); padding-bottom: 82px; }
+  .hero-copy { width: 100%; }
+  .hero h1 { max-width: 100%; margin: 34px auto 30px; font-size: clamp(49px, 15.5vw, 88px); line-height: .9; letter-spacing: -.065em; }
+  .hero h1 em { display: block; margin: 5px 0 0; line-height: .92; }
+  .hero h1 small { margin: 14px 0 0; font-size: clamp(16px, 4.9vw, 22px); line-height: 1.18; letter-spacing: -.025em; }
+  .hero-lead { max-width: 32rem; margin-right: auto; margin-left: auto; font-size: clamp(17px, 4.7vw, 20px); line-height: 1.42; }
+  .hero-buttons { width: min(100%, 23rem); margin-right: auto; margin-left: auto; }
+  .hero-buttons .button { width: 100%; }
+  .hero-proof { gap: 14px; margin-top: 34px; text-align: left; }
+  .hero-visual { width: 100%; margin-top: 68px; }
+  .hero-visual > img { width: min(82vw, 420px); }
+  .floating-card { max-width: 44%; padding: 9px 10px; font-size: 10px; }
+  .floating-card svg { width: 17px; }
+  .card-location { left: 1%; bottom: 9%; }
+  .card-price { right: 1%; top: 6%; }
+  .section-heading h2, .manifesto h2, .community-copy h2, .loyalty-copy h2, .contact-copy h2 { font-size: clamp(38px, 10.5vw, 62px); line-height: .98; letter-spacing: -.05em; }
+  .section-heading { margin-bottom: 42px; }
+  .section-heading > p { line-height: 1.6; }
+  .manifesto { padding-top: 78px; padding-bottom: 78px; }
+  .question-section, .meetups-section, .community-section, .loyalty-section, .how-section, .contact-section { scroll-margin-top: calc(78px + env(safe-area-inset-top)); }
+  .question-card { min-width: 0; }
+}
+
+@media (max-width: 350px) {
+  .wordmark small { letter-spacing: .08em; }
+  .hero h1 { font-size: clamp(46px, 14.8vw, 72px); }
+  .hero-visual { margin-top: 56px; }
+  .floating-card { max-width: 42%; font-size: 9px; }
+}
+
+@supports not (height: 100dvh) {
+  .mobile-drawer { height: 100vh; }
+}
+
+@media (min-width: 901px) {
+  .hero h1 { font-size: clamp(72px, 7.5vw, 112px); }
+  .hero h1 em { margin-left: 4%; font-size: .85em; white-space: nowrap; }
+  .hero h1 small { margin-left: 4%; }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+  .hero h1 { font-size: clamp(64px, 12vw, 100px); line-height: .9; }
+  .hero h1 em { display: block; margin: 4px 0 0; white-space: nowrap; }
+  .hero h1 small { margin: 14px 0 0; }
+}
 .question-actions>button.active svg{fill:currentColor}
 
 /* Flow-based question card: long bilingual content grows the card instead of being clipped. */

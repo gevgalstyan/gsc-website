@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
 import { questions } from "@/lib/questions";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
@@ -148,11 +149,13 @@ export function useQuestionState(extraQuestionIds: string[] = []) {
       return;
     }
 
-    client.auth.getUser().then(({ data }) => {
+    client.auth.getUser().then(({ data }: { data: { user: User | null } }) => {
       if (!active) return;
       if (data.user) void loadUser(data.user.id); else loadGuest();
+    }).catch(() => {
+      if (active) loadGuest();
     });
-    const { data: authListener } = client.auth.onAuthStateChange((_event, session) => {
+    const { data: authListener } = client.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
       if (!active) return;
       if (session?.user) void loadUser(session.user.id); else loadGuest();
     });
@@ -173,15 +176,17 @@ export function useQuestionState(extraQuestionIds: string[] = []) {
     window.addEventListener("focus", refresh);
     window.addEventListener("online", refresh);
     document.addEventListener("visibilitychange", onVisibility);
-    void client.auth.getSession().then(async ({ data }) => {
+    void client.auth.getSession().then(async ({ data }: { data: { session: Session | null } }) => {
       if (!active || !data.session) return;
       await client.realtime.setAuth(data.session.access_token);
       if (!active) return;
       channel = client.channel(`question-state:${accountId}`, { config: { private: true } })
         .on("broadcast", { event: "question_state_changed" }, refresh)
-        .subscribe((status) => {
+        .subscribe((status: string) => {
           if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") setSyncError("Live sync is reconnecting. Your progress will refresh automatically.");
         });
+    }).catch(() => {
+      if (active) setSyncError("Live sync is temporarily unavailable. Your progress will refresh automatically.");
     });
     return () => {
       active = false;

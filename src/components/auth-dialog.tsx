@@ -23,11 +23,13 @@ export function AuthDialog({ open, onClose }: { open: boolean; onClose: () => vo
     const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
     if (!url || !key) return;
     const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 2500);
     fetch(`${url}/auth/v1/settings`, { headers: { apikey: key }, cache: "no-store", signal: controller.signal })
       .then((response) => response.ok ? response.json() : Promise.reject())
       .then((settings: { external?: { google?: boolean } }) => setGoogleEnabled(settings.external?.google === true))
-      .catch(() => setGoogleEnabled(false));
-    return () => controller.abort();
+      .catch(() => setGoogleEnabled(false))
+      .finally(() => window.clearTimeout(timeout));
+    return () => { controller.abort(); window.clearTimeout(timeout); };
   }, [open]);
   function changeMode(next: Mode) { setMode(next); setNotice(null); }
   async function submit(event: FormEvent<HTMLFormElement>) {

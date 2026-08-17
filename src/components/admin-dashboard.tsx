@@ -131,7 +131,7 @@ export function AdminDashboard({ initial }: { initial: AdminData }) {
     setBusy(true); const client = getSupabaseBrowserClient();
     const { data, error } = await client!.from("attendance").upsert(booked.map((row) => ({ meetup_id: meetupId, user_id: row.user_id, booking_id: row.id, status: "attended", payment_status: "unpaid", is_paid: false })), { onConflict: "meetup_id,user_id" }).select();
     setBusy(false); if (error) return message("Bulk check-in could not be completed.");
-    setAttendance((rows) => [...(data ?? []), ...rows.filter((row) => !data?.some((item) => item.id === row.id))]); router.refresh(); message("Bulk check-in completed.");
+    setAttendance((rows) => [...(data ?? []), ...rows.filter((row) => !data?.some((item: { id: string }) => item.id === row.id))]); router.refresh(); message("Bulk check-in completed.");
   }
 
   async function issueSpecial(event: FormEvent<HTMLFormElement>) {

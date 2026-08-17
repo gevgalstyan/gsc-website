@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   },
 };
 
-export const viewport: Viewport = { themeColor: "#07101c", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#07101c", width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="en" className={`${manrope.variable} ${playfair.variable}`} data-scroll-behavior="smooth"><body>{children}</body></html>;

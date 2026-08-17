@@ -3,7 +3,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, ArrowRight, BadgeCheck, CalendarDays, Check, Clock3, Coffee, MapPin, MessageCircle, Star, Ticket, Users } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { AuthDialog } from "@/components/auth-dialog";
 import { FaqSection } from "@/components/faq-section";
 import { Footer } from "@/components/footer";
@@ -12,6 +13,7 @@ import { QuestionDeck } from "@/components/question-deck";
 import type { PublishedMeetup } from "@/lib/public-content";
 import type { MeetupBookingState } from "@/components/meetup-booking-button";
 import { socialLinks } from "@/lib/site-data";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 function meetupDate(meetup: PublishedMeetup) {
   const date = new Date(meetup.starts_at);
@@ -34,8 +36,49 @@ function bookingState(meetup: PublishedMeetup): { state: MeetupBookingState; lab
   return { state: "open", label: "Booking open" };
 }
 
-export function HomePage({ initialAuthOpen = false, authenticated = false, meetups = [], content = {} }: { initialAuthOpen?: boolean; authenticated?: boolean; meetups?: PublishedMeetup[]; content?: Record<string, string> }) {
+export function HomePage({ initialAuthOpen = false, authenticated = false, meetups = [], content = {}, deferPublicData = false }: { initialAuthOpen?: boolean; authenticated?: boolean; meetups?: PublishedMeetup[]; content?: Record<string, string>; deferPublicData?: boolean }) {
   const [authOpen, setAuthOpen] = useState(initialAuthOpen);
+  const [isAuthenticated, setIsAuthenticated] = useState(authenticated);
+  const [publicMeetups, setPublicMeetups] = useState(meetups);
+  const [publicContent, setPublicContent] = useState(content);
+  const [publicDataState, setPublicDataState] = useState<"loading" | "ready" | "error">(deferPublicData ? "loading" : "ready");
+  const [publicDataAttempt, setPublicDataAttempt] = useState(0);
+
+  useEffect(() => {
+    const client = getSupabaseBrowserClient();
+    if (!client) return;
+    let active = true;
+
+    client.auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
+      if (active) setIsAuthenticated(Boolean(data.session?.user));
+    }).catch(() => undefined);
+    const { data: authState } = client.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
+      if (active) setIsAuthenticated(Boolean(session?.user));
+    });
+    return () => { active = false; authState.subscription.unsubscribe(); };
+  }, []);
+
+  useEffect(() => {
+    if (!deferPublicData) return;
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 2800);
+    fetch("/api/public-content", { signal: controller.signal, cache: "force-cache" })
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Public content request failed")))
+      .then((data: { meetups?: PublishedMeetup[]; content?: Record<string, string> }) => {
+        setPublicMeetups(data.meetups ?? []);
+        setPublicContent(data.content ?? {});
+        setPublicDataState("ready");
+      })
+      .catch(() => setPublicDataState("error"))
+      .finally(() => window.clearTimeout(timeout));
+
+    return () => { controller.abort(); window.clearTimeout(timeout); };
+  }, [deferPublicData, publicDataAttempt]);
+
+  function retryPublicData() {
+    setPublicDataState("loading");
+    setPublicDataAttempt((attempt) => attempt + 1);
+  }
 
   return (
     <>
@@ -45,9 +88,9 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
           <div className="hero-copy">
             <span className="eyebrow"><i /> Sergiev Posad · English speaking community</span>
             <h1>English<br /><em>Speaking Club</em><small> in Sergiev Posad</small></h1>
-            <p className="hero-lead">{content["homepage.hero.lead"] || "A friendly English conversation club in Sergiev Posad. Practice spoken English with real people."}</p>
+            <p className="hero-lead">{publicContent["homepage.hero.lead"] || "A friendly English conversation club in Sergiev Posad. Practice spoken English with real people."}</p>
             <div className="hero-buttons">
-              <Link className="button button-primary" href={authenticated ? "/account" : "/contact"}>{authenticated ? "Open your dashboard" : "Join the club"} <ArrowRight /></Link>
+              <Link className="button button-primary" href={isAuthenticated ? "/account" : "/contact"}>{isAuthenticated ? "Open your dashboard" : "Join the club"} <ArrowRight /></Link>
               <Link className="button button-quiet" href="/meetups">Explore meetups <ArrowDown /></Link>
             </div>
             <div className="hero-proof">
@@ -86,8 +129,8 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
             <div><span className="eyebrow">Come say hello</span><h2>English conversation<br /><em>meetups.</em></h2></div>
             <p>Meetups are designed for spoken-English practice in Sergiev Posad. Only published events appear here, with the details supplied by the club.</p>
           </div>
-          {meetups.length ? <div className="meetup-grid">
-            {meetups.slice(0, 3).map((meetup, index) => {
+          {publicMeetups.length ? <div className="meetup-grid">
+            {publicMeetups.slice(0, 3).map((meetup, index) => {
               const date = meetupDate(meetup);
               const booking = bookingState(meetup);
               return <article className={`meetup-card ${index === 0 ? "featured" : ""}`} key={meetup.id}>
@@ -99,7 +142,7 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
                 <Link className="button button-card" href="/meetups">See meetup details <ArrowRight /></Link>
               </article>;
             })}
-          </div> : <div className="meetup-empty"><CalendarDays /><div><h3>Next meetup coming soon.</h3><p>No published meetup is available yet. Join Telegram for the first real date, venue, and booking details.</p><a className="text-link" href={socialLinks[0].href} target="_blank" rel="noreferrer">Join the announcement channel <ArrowRight /></a></div></div>}
+          </div> : <div className="meetup-empty"><CalendarDays /><div><h3>{publicDataState === "loading" ? "Loading upcoming meetups…" : publicDataState === "error" ? "Meetups are taking a moment." : "Next meetup coming soon."}</h3><p>{publicDataState === "error" ? "Couldn’t load this section. Try again, or join Telegram for announcements." : "No published meetup is available yet. Join Telegram for the first real date, venue, and booking details."}</p>{publicDataState === "error" ? <button className="text-link" type="button" onClick={retryPublicData}>Try again <ArrowRight /></button> : <a className="text-link" href={socialLinks[0].href} target="_blank" rel="noreferrer">Join the announcement channel <ArrowRight /></a>}</div></div>}
           <p className="meetup-note"><CalendarDays /> Want to see every published event? <Link href="/meetups">Open the meetups page.</Link></p>
         </section>
 
@@ -116,7 +159,7 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
 
         <section id="loyalty" className="section loyalty-section">
           <div className="loyalty-card">
-            <div className="loyalty-copy"><span className="eyebrow">Keep showing up</span><h2>Six visits.<br />One free <em>meetup.</em></h2><p>Every conversation counts. Members can track qualifying attendance and unlock a free meetup after six paid visits.</p><div className="loyalty-actions">{authenticated ? <Link className="button button-primary" href="/account#rewards">View your progress <ArrowRight /></Link> : <button className="button button-primary" onClick={() => setAuthOpen(true)}>Create your profile <ArrowRight /></button>}<Link className="button button-outline-dark" href="/membership">How membership works <ArrowRight /></Link></div></div>
+            <div className="loyalty-copy"><span className="eyebrow">Keep showing up</span><h2>Six visits.<br />One free <em>meetup.</em></h2><p>Every conversation counts. Members can track qualifying attendance and unlock a free meetup after six paid visits.</p><div className="loyalty-actions">{isAuthenticated ? <Link className="button button-primary" href="/account#rewards">View your progress <ArrowRight /></Link> : <button className="button button-primary" onClick={() => setAuthOpen(true)}>Create your profile <ArrowRight /></button>}<Link className="button button-outline-dark" href="/membership">How membership works <ArrowRight /></Link></div></div>
             <div className="stamp-card"><div className="stamp-head"><div><BadgeCheck /><span><b>GSC Member</b><small>Loyalty card</small></span></div><strong>English ON.</strong></div><div className="stamps">{[1,2,3,4,5,6].map((n) => <span key={n}>{n}</span>)}<span className="reward"><Star />FREE</span></div><div className="stamp-foot"><span>6 visits</span><i /><span>1 free meetup</span></div></div>
           </div>
         </section>

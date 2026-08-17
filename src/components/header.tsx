@@ -22,14 +22,14 @@ export function Header({ onAuth, authenticated = false }: { onAuth?: () => void;
     let mounted = true;
 
     async function loadProfile() {
-      const { data } = await client.auth.getClaims();
-      const claims = data?.claims as Record<string, unknown> | undefined;
-      const userId = typeof claims?.sub === "string" ? claims.sub : null;
+      const { data } = await client.auth.getSession();
+      const user = data.session?.user;
+      const userId = user?.id ?? null;
       if (!userId || !mounted) {
         if (mounted) setIsAuthenticated(false);
         return;
       }
-      const metadata = claims?.user_metadata as Record<string, unknown> | undefined;
+      const metadata = user.user_metadata as Record<string, unknown> | undefined;
       const { data: profileRow } = await client.from("profiles").select("display_name,avatar_url").eq("id", userId).maybeSingle();
       if (!mounted) return;
       const name = typeof profileRow?.display_name === "string" && profileRow.display_name.trim()
@@ -44,8 +44,8 @@ export function Header({ onAuth, authenticated = false }: { onAuth?: () => void;
       setIsAuthenticated(true);
     }
 
-    void loadProfile();
-    const { data: authState } = client.auth.onAuthStateChange(() => { void loadProfile(); });
+    void loadProfile().catch(() => undefined);
+    const { data: authState } = client.auth.onAuthStateChange(() => { void loadProfile().catch(() => undefined); });
     return () => { mounted = false; authState.subscription.unsubscribe(); };
   }, []);
 

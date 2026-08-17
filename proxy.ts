@@ -10,7 +10,15 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(canonicalUrl, 308);
   }
 
-  return updateSession(request);
+  const pathname = request.nextUrl.pathname;
+  const needsSession = pathname.startsWith("/account")
+    || pathname.startsWith("/admin")
+    || pathname.startsWith("/auth/")
+    || pathname.startsWith("/api/meetups/");
+
+  // Public pages do not need an auth refresh. Keeping this network request out
+  // of the public path prevents a slow auth service from blanking the site.
+  return needsSession ? updateSession(request) : NextResponse.next();
 }
 
 export const config = {

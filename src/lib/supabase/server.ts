@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { fetchWithTimeout } from "@/lib/supabase/fetch";
 
 export async function createClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -11,6 +12,7 @@ export async function createClient() {
     url,
     key,
     {
+      global: { fetch: fetchWithTimeout },
       cookies: {
         getAll: () => cookieStore.getAll(),
         setAll(cookiesToSet) {
