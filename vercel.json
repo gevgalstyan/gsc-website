@@ -3,12 +3,14 @@
   "framework": "nextjs",
   "env": {
     "NEXT_PUBLIC_SUPABASE_URL": "https://vmvsxxtaqtvaotrooafq.supabase.co",
-    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_LEnh4oxd15-H9WbrUxlttQ_M046BB5u"
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_LEnh4oxd15-H9WbrUxlttQ_M046BB5u",
+    "NEXT_PUBLIC_GOOGLE_AUTH_ENABLED": "true"
   },
   "build": {
     "env": {
       "NEXT_PUBLIC_SUPABASE_URL": "https://vmvsxxtaqtvaotrooafq.supabase.co",
-      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_LEnh4oxd15-H9WbrUxlttQ_M046BB5u"
+      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_LEnh4oxd15-H9WbrUxlttQ_M046BB5u",
+      "NEXT_PUBLIC_GOOGLE_AUTH_ENABLED": "true"
     }
   }
 }
