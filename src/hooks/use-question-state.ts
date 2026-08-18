@@ -10,6 +10,7 @@ const legacyProgressKey = "gsc_seen_questions_v2";
 const favoritesKey = "gsc_question_favorites_v1";
 const mergeKeyPrefix = "gsc_question_account_merge_v1:";
 const validQuestionIds = new Set(questions.map((question) => question.id));
+const emptyQuestionIds: string[] = [];
 
 type StoredProgress = { version: 3; seen: string[] };
 type QuestionStateRow = { question_id: string };
@@ -57,7 +58,7 @@ function clearImportedGuestState(userId: string) {
   } catch { /* A later idempotent merge is safe if storage is unavailable. */ }
 }
 
-export function useQuestionState(extraQuestionIds: string[] = []) {
+export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds) {
   const [seen, setSeen] = useState<string[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   const [accountId, setAccountId] = useState<string | null>(null);

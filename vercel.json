@@ -1,6 +1,14 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "crons": [
-    { "path": "/api/cron/supabase-health", "schedule": "17 6 * * *" }
-  ]
+  "env": {
+    "NEXT_PUBLIC_SUPABASE_URL": "https://vmvsxxtaqtvaotrooafq.supabase.co",
+    "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_LEnh4oxd15-H9WbrUxlttQ_M046BB5u"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_SUPABASE_URL": "https://vmvsxxtaqtvaotrooafq.supabase.co",
+      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY": "sb_publishable_LEnh4oxd15-H9WbrUxlttQ_M046BB5u"
+    }
+  }
 }

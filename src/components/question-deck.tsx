@@ -14,7 +14,9 @@ import {
 } from "@/lib/questions";
 import { useQuestionState } from "@/hooks/use-question-state";
 
-export function QuestionDeck({ showPageLink = true, additionalQuestions = [] }: { showPageLink?: boolean; additionalQuestions?: Question[] }) {
+const EMPTY_QUESTIONS: Question[] = [];
+
+export function QuestionDeck({ showPageLink = true, additionalQuestions = EMPTY_QUESTIONS }: { showPageLink?: boolean; additionalQuestions?: Question[] }) {
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
   const [question, setQuestion] = useState<Question | null>(null);
