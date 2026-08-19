@@ -91,13 +91,14 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
     <>
       <Header onAuth={() => setAuthOpen(true)} authenticated={authenticated} />
       <main>
+        {publicContent["settings.banner_text"] && <aside className="site-banner" role="status">{publicContent["settings.banner_text"]}</aside>}
         <section id="home" className="hero section">
           <div className="hero-copy">
-            <span className="eyebrow"><i /> Sergiev Posad · English speaking community</span>
-            <h1>English<br /><em>Speaking Club</em><small> in Sergiev Posad</small></h1>
-            <p className="hero-lead">{publicContent["homepage.hero.lead"] || "A friendly English conversation club in Sergiev Posad. Practice spoken English with real people."}</p>
+            <span className="eyebrow"><i /> {publicContent["home.hero.eyebrow"] || "Sergiev Posad · English speaking community"}</span>
+            {publicContent["home.hero.title"] === "English Speaking Club in Sergiev Posad" || !publicContent["home.hero.title"] ? <h1>English<br /><em>Speaking Club</em><small> in Sergiev Posad</small></h1> : <h1>{publicContent["home.hero.title"]}</h1>}
+            <p className="hero-lead">{publicContent["home.hero.subtitle"] || publicContent["homepage.hero.lead"] || "A friendly English conversation club in Sergiev Posad. Practice spoken English with real people."}</p>
             <div className="hero-buttons">
-              <Link className="button button-primary" href={isAuthenticated ? "/account" : "/contact"}>{isAuthenticated ? "Open your dashboard" : "Join the club"} <ArrowRight /></Link>
+              <Link className="button button-primary" href={isAuthenticated ? "/account" : publicContent["home.hero.cta_url"] || "/?auth=register"}>{isAuthenticated ? "Open your dashboard" : publicContent["home.hero.cta"] || "Join the club"} <ArrowRight /></Link>
               <Link className="button button-quiet" href="/meetups">Explore meetups <ArrowDown /></Link>
             </div>
             <div className="hero-proof">
@@ -108,7 +109,7 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
           <div className="hero-visual">
             <div className="hero-glow" />
             <div className="orbit orbit-one" /><div className="orbit orbit-two" />
-            <Image src="/gsc-logo.jpg" alt="Galstyan’s Speaking Club logo" width={1254} height={1254} priority sizes="(max-width: 800px) 82vw, 46vw" />
+            <Image src={publicContent["settings.logo"]?.startsWith("https://vmvsxxtaqtvaotrooafq.supabase.co/storage/v1/object/public/site-media/") || publicContent["settings.logo"]?.startsWith("/") ? publicContent["settings.logo"] : "/gsc-logo.jpg"} alt="Galstyan’s Speaking Club logo" width={1254} height={1254} priority sizes="(max-width: 800px) 82vw, 46vw" />
             <div className="floating-card card-location"><MapPin /><span><small>We meet in</small>Sergiev Posad</span></div>
             <div className="floating-card card-price"><MessageCircle /><span><small>At the table</small>English first</span></div>
           </div>
@@ -155,7 +156,7 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
 
         <section id="community" className="section community-section">
           <div className="community-panel">
-            <div className="community-copy"><span className="eyebrow">The GSC way</span><h2>An English-speaking community in <em>Sergiev Posad.</em></h2><p>From the first minute to the last, we speak English only. You&apos;ll discover that fluency grows when the fear of mistakes disappears.</p><a className="button button-light" href={socialLinks[0].href} target="_blank" rel="noreferrer">Join our Telegram <ArrowRight /></a></div>
+            <div className="community-copy"><span className="eyebrow">The GSC way</span><h2>An English-speaking community in <em>Sergiev Posad.</em></h2><p>From the first minute to the last, we speak English only. You&apos;ll discover that fluency grows when the fear of mistakes disappears.</p><a className="button button-light" href={publicContent["settings.telegram_url"] || socialLinks[0].href} target="_blank" rel="noreferrer">Join our Telegram <ArrowRight /></a></div>
             <div className="principles">
               <div><span>01</span><Check /><h3>English only</h3><p>The simplest rule—and the one that changes everything.</p></div>
               <div><span>02</span><Check /><h3>Real connection</h3><p>Interesting people and conversations worth remembering.</p></div>

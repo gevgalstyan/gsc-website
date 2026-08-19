@@ -1,18 +1,20 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Award, CalendarDays, Check, MessageCircle, Users } from "lucide-react";
 import { FaqSection } from "@/components/faq-section";
 import { PublicPageShell } from "@/components/public-page-shell";
-import { pageMetadata } from "@/lib/seo";
+import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
 
-export const metadata: Metadata = pageMetadata("How the English Speaking Club Works", "See how Galstyan’s Speaking Club combines English conversation practice, meetups, questions, and a local community in Sergiev Posad.", "/how-it-works");
+export const revalidate = 60;
 
-export default function HowItWorksPage() {
+export const generateMetadata = () => editablePageMetadata("how-it-works", "How the English Speaking Club Works", "See how Galstyan’s Speaking Club combines English conversation practice, meetups, questions, and a local community in Sergiev Posad.", "/how-it-works");
+
+export default async function HowItWorksPage() {
+  const content = await getPublicContent();
   return (
     <PublicPageShell
       eyebrow="How it works"
-      title="A simple way to practice spoken English"
-      intro="Join the community, choose a published meetup, and turn English on at the table."
+      title={content["how-it-works.hero.title"] || "A simple way to practice spoken English"}
+      intro={content["how-it-works.intro"] || "Join the community, choose a published meetup, and turn English on at the table."}
       breadcrumbLabel="How it works"
       breadcrumbPath="/how-it-works"
     >

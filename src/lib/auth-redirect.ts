@@ -1,0 +1,14 @@
+import { SITE_URL } from "@/lib/seo";
+
+const productionHosts = new Set(["galstyansspeakingclub.ru", "www.galstyansspeakingclub.ru"]);
+
+export function authCallbackUrl(next?: string) {
+  const origin = typeof window !== "undefined" && productionHosts.has(window.location.hostname)
+    ? SITE_URL
+    : typeof window !== "undefined"
+      ? window.location.origin
+      : SITE_URL;
+  const callback = new URL("/auth/callback", origin);
+  if (next?.startsWith("/") && !next.startsWith("//")) callback.searchParams.set("next", next);
+  return callback.toString();
+}

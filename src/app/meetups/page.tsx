@@ -1,17 +1,12 @@
-import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, CalendarDays, Check, Clock3, MapPin, MessageCircle, Ticket, Users } from "lucide-react";
 import { PublicPageShell } from "@/components/public-page-shell";
 import { MeetupBookingButton } from "@/components/meetup-booking-button";
 import type { MeetupBookingState } from "@/components/meetup-booking-button";
 import { getPublishedMeetups, type PublishedMeetup } from "@/lib/public-content";
-import { pageMetadata } from "@/lib/seo";
+import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
 
-export const metadata: Metadata = pageMetadata(
-  "English Speaking Meetups in Sergiev Posad",
-  "Find published English conversation meetups from Galstyan’s Speaking Club in Sergiev Posad, with real times, places, capacity, price, and booking status.",
-  "/meetups",
-);
+export const generateMetadata = () => editablePageMetadata("meetups", "English Speaking Meetups in Sergiev Posad", "Find published English conversation meetups from Galstyan’s Speaking Club in Sergiev Posad, with real times, places, capacity, price, and booking status.", "/meetups");
 export const dynamic = "force-dynamic";
 
 function formatDate(meetup: PublishedMeetup) {
@@ -60,12 +55,12 @@ function MeetupCard({ meetup }: { meetup: PublishedMeetup }) {
 }
 
 export default async function MeetupsPage() {
-  const meetups = await getPublishedMeetups();
+  const [meetups, content] = await Promise.all([getPublishedMeetups(), getPublicContent()]);
   return (
     <PublicPageShell
       eyebrow="Meetups"
       title="English conversation meetups in Sergiev Posad"
-      intro="GSC meetups are built for people who want to practice spoken English in a relaxed, social setting. Published events below use the club’s real event records."
+      intro={content["meetups.intro"] || "GSC meetups are built for people who want to practice spoken English in a relaxed, social setting. Published events below use the club’s real event records."}
       breadcrumbLabel="Meetups"
       breadcrumbPath="/meetups"
     >

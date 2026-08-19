@@ -1,19 +1,24 @@
-import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, MapPin, MessageCircle, Users } from "lucide-react";
 import { PublicPageShell } from "@/components/public-page-shell";
-import { pageMetadata } from "@/lib/seo";
-import { getPublicContent } from "@/lib/site-content";
+import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
 
-export const metadata: Metadata = pageMetadata("About Galstyan’s Speaking Club", "Learn about Galstyan’s Speaking Club, an English-speaking community for real conversation practice in Sergiev Posad, Moscow Region.", "/about");
+export const revalidate = 60;
+
+export const generateMetadata = () => editablePageMetadata("about", "About Galstyan’s Speaking Club", "Learn about Galstyan’s Speaking Club, an English-speaking community for real conversation practice in Sergiev Posad, Moscow Region.", "/about");
 
 export default async function AboutPage() {
   const content = await getPublicContent();
+  const hostName = content["about.host.name"] || "Gevorg Galstyan";
+  const hostLocation = content["about.host.location"] || "I’m from Yerevan, Armenia 🇦🇲 and currently live in Sergiyev Posad.";
+  const hostBio = (content["about.host.bio"] || "I’m Gevorg Galstyan, the host of our meetups.\n\nI’ve been studying English for years, and I genuinely love the whole English-speaking vibe — the people, the conversations, the confidence, the atmosphere.\n\nThat’s exactly why I created Galstyan’s Speaking Club.\n\nCome join us, practice English with real people, meet new friends, and don’t worry about your level.\n\nYou don’t need perfect English to start.\n\nPractice makes perfect.").split(/\n\n+/);
+  const requestedPhoto = content["about.host.photo"] || "/gevorg-galstyan-host.jpg";
+  const hostPhoto = requestedPhoto.startsWith("/") || requestedPhoto.startsWith("https://vmvsxxtaqtvaotrooafq.supabase.co/storage/v1/object/public/site-media/") ? requestedPhoto : "/gevorg-galstyan-host.jpg";
   return (
     <PublicPageShell
       eyebrow="About the club"
-      title="A local English-speaking community in Sergiev Posad"
+      title={content["about.hero.title"] || "A local English-speaking community in Sergiev Posad"}
       intro={content["about.intro"] || "Galstyan’s Speaking Club is a welcoming place to practice spoken English, meet people, and build confidence through real conversation."}
       breadcrumbLabel="About"
       breadcrumbPath="/about"
@@ -34,28 +39,24 @@ export default async function AboutPage() {
         <div className="host-profile">
           <figure className="host-photo-frame">
             <Image
-              src="/gevorg-galstyan-host.jpg"
-              alt="Gevorg Galstyan, host of Galstyan’s Speaking Club"
+              src={hostPhoto}
+              alt={content["about.host.photo_alt"] || "Gevorg Galstyan, host of Galstyan’s Speaking Club"}
               fill
               sizes="(max-width: 900px) calc(100vw - 44px), (max-width: 1440px) 42vw, 560px"
             />
-            <div className="host-photo-caption" aria-hidden="true"><strong>Gevorg Galstyan</strong><span>Club host</span></div>
+            <div className="host-photo-caption" aria-hidden="true"><strong>{hostName}</strong><span>Club host</span></div>
           </figure>
 
           <div className="host-profile-copy">
             <span className="eyebrow">Meet the host</span>
             <h2 id="host-profile-heading">Let’s get to know <em>each other.</em></h2>
             <div className="host-profile-text">
-              <p>I’m Gevorg Galstyan, the host of our meetups.</p>
-              <p>I’m from Yerevan, Armenia 🇦🇲 and currently live in Sergiyev Posad.</p>
-              <p>I’ve been studying English for years, and I genuinely love the whole English-speaking vibe — the people, the conversations, the confidence, the atmosphere.</p>
-              <p>That’s exactly why I created Galstyan’s Speaking Club.</p>
-              <p>Come join us, practice English with real people, meet new friends, and don’t worry about your level.</p>
-              <p>You don’t need perfect English to start.</p>
-              <p className="host-profile-closing">Practice makes perfect.</p>
+              {hostBio[0] && <p>{hostBio[0]}</p>}
+              <p>{hostLocation}</p>
+              {hostBio.slice(1).map((paragraph, index) => <p className={index === hostBio.length - 2 ? "host-profile-closing" : undefined} key={`${index}:${paragraph}`}>{paragraph}</p>)}
             </div>
             <div className="public-actions">
-              <Link className="button button-primary" href="/contact">Join the club <ArrowRight /></Link>
+              <Link className="button button-primary" href={content["about.host.cta_url"] || "/?auth=register"}>{content["about.host.cta"] || "Join the club"} <ArrowRight /></Link>
               <Link className="button button-outline-dark" href="/meetups">Explore meetups <ArrowRight /></Link>
             </div>
           </div>

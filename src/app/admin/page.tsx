@@ -17,7 +17,7 @@ export default async function AdminPage() {
   const { data: role } = await supabase.from("user_roles").select("role").eq("user_id", userId).single();
   if (role?.role !== "admin") redirect("/account");
 
-  const [directory, profiles, roles, meetups, bookings, attendance, loyalty, special, progress, favorites, audit, managedQuestions, content, notifications] = await Promise.all([
+  const [directory, profiles, roles, meetups, bookings, attendance, loyalty, special, progress, favorites, audit, managedQuestions, content, notifications, faq, revisions, media] = await Promise.all([
     supabase.rpc("admin_member_directory"),
     supabase.from("profiles").select("id,display_name,avatar_path,avatar_url,telegram_username,english_level,created_at").order("created_at", { ascending: false }),
     supabase.from("user_roles").select("user_id,role,updated_at"),
@@ -30,8 +30,11 @@ export default async function AdminPage() {
     supabase.from("question_favorites").select("user_id,question_id"),
     supabase.from("admin_audit_log").select("id,actor_user_id,action,target_table,target_id,details,created_at").order("created_at", { ascending: false }).limit(100),
     supabase.from("managed_questions").select("id,prompt,translation,category,difficulty,is_published").order("created_at", { ascending: false }),
-    supabase.from("site_content").select("key,value,is_public,updated_at").order("updated_at", { ascending: false }),
+    supabase.from("site_content").select("key,value,page_slug,section_slug,label,content_type,draft_value,published_value,sort_order,is_enabled,published_is_enabled,updated_at,published_at").order("sort_order"),
     supabase.from("notifications").select("id,title,body,read_at,created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(20),
+    supabase.from("site_faq_items").select("id,draft_question,draft_answer,published_question,published_answer,sort_order,draft_sort_order,published_sort_order,is_enabled,published_is_enabled,updated_at").order("draft_sort_order"),
+    supabase.from("site_content_revisions").select("id,page_slug,action,changed_by,created_at").order("created_at", { ascending: false }).limit(100),
+    supabase.from("media_assets").select("id,storage_path,public_url,alt_text,mime_type,size_bytes,created_at").order("created_at", { ascending: false }),
   ]);
 
   const profileRows = profiles.data ?? [];
@@ -46,6 +49,6 @@ export default async function AdminPage() {
     directory: directory.data ?? [], profiles: profileRows, roles: roles.data ?? [],
     meetups: meetups.data ?? [], bookings: bookings.data ?? [], attendance: attendance.data ?? [],
     loyalty: loyalty.data ?? [], special: special.data ?? [], progress: progress.data ?? [],
-    favorites: favorites.data ?? [], audit: audit.data ?? [], signedAvatars, managedQuestions: managedQuestions.data ?? [], content: content.data ?? [], notifications: notifications.data ?? [],
+    favorites: favorites.data ?? [], audit: audit.data ?? [], signedAvatars, managedQuestions: managedQuestions.data ?? [], content: content.data ?? [], notifications: notifications.data ?? [], faq: faq.data ?? [], revisions: revisions.data ?? [], media: media.data ?? [],
   }} />;
 }
