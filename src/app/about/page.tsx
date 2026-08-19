@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, MapPin, MessageCircle, Users } from "lucide-react";
 import { PublicPageShell } from "@/components/public-page-shell";
@@ -26,6 +27,38 @@ export default async function AboutPage() {
           <p>GSC is for people in Sergiev Posad who want more than a textbook exercise. The club creates a reason to speak: interesting questions, a small group, and a friendly atmosphere where mistakes are part of learning.</p>
           <p>The club is English-first and community-minded. You can come to practice, meet new people, or simply give your English a place in everyday life.</p>
           <Link className="text-link public-inline-link" href="/meetups">See how meetups work <ArrowRight /></Link>
+        </div>
+      </section>
+
+      <section className="section host-profile-section" aria-labelledby="host-profile-heading">
+        <div className="host-profile">
+          <figure className="host-photo-frame">
+            <Image
+              src="/gevorg-galstyan-host.jpg"
+              alt="Gevorg Galstyan, host of Galstyan’s Speaking Club"
+              fill
+              sizes="(max-width: 900px) calc(100vw - 44px), (max-width: 1440px) 42vw, 560px"
+            />
+            <div className="host-photo-caption" aria-hidden="true"><strong>Gevorg Galstyan</strong><span>Club host</span></div>
+          </figure>
+
+          <div className="host-profile-copy">
+            <span className="eyebrow">Meet the host</span>
+            <h2 id="host-profile-heading">Let’s get to know <em>each other.</em></h2>
+            <div className="host-profile-text">
+              <p>I’m Gevorg Galstyan, the host of our meetups.</p>
+              <p>I’m from Yerevan, Armenia 🇦🇲 and currently live in Sergiyev Posad.</p>
+              <p>I’ve been studying English for years, and I genuinely love the whole English-speaking vibe — the people, the conversations, the confidence, the atmosphere.</p>
+              <p>That’s exactly why I created Galstyan’s Speaking Club.</p>
+              <p>Come join us, practice English with real people, meet new friends, and don’t worry about your level.</p>
+              <p>You don’t need perfect English to start.</p>
+              <p className="host-profile-closing">Practice makes perfect.</p>
+            </div>
+            <div className="public-actions">
+              <Link className="button button-primary" href="/contact">Join the club <ArrowRight /></Link>
+              <Link className="button button-outline-dark" href="/meetups">Explore meetups <ArrowRight /></Link>
+            </div>
+          </div>
         </div>
       </section>
 
