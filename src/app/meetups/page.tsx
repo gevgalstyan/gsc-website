@@ -4,6 +4,7 @@ import { PublicPageShell } from "@/components/public-page-shell";
 import { MeetupBookingButton } from "@/components/meetup-booking-button";
 import type { MeetupBookingState } from "@/components/meetup-booking-button";
 import { getPublishedMeetups, type PublishedMeetup } from "@/lib/public-content";
+import { getMeetupBookingState, MEETUP_TIME_ZONE } from "@/lib/meetup-time";
 import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
 
 export const generateMetadata = () => editablePageMetadata("meetups", "English Speaking Meetups in Sergiev Posad", "Find published English conversation meetups from Galstyan’s Speaking Club in Sergiev Posad, with real times, places, capacity, price, and booking status.", "/meetups");
@@ -12,8 +13,8 @@ export const dynamic = "force-dynamic";
 function formatDate(meetup: PublishedMeetup) {
   const date = new Date(meetup.starts_at);
   return {
-    date: new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: meetup.timezone }).format(date),
-    time: `${new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "2-digit", timeZone: meetup.timezone }).format(date)}–${new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "2-digit", timeZone: meetup.timezone }).format(new Date(meetup.ends_at))}`,
+    date: new Intl.DateTimeFormat("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: MEETUP_TIME_ZONE }).format(date),
+    time: `${new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "2-digit", timeZone: MEETUP_TIME_ZONE }).format(date)}–${new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "2-digit", timeZone: MEETUP_TIME_ZONE }).format(new Date(meetup.ends_at))}`,
   };
 }
 
@@ -22,12 +23,9 @@ function price(meetup: PublishedMeetup) {
 }
 
 function bookingState(meetup: PublishedMeetup): { state: MeetupBookingState; label: string } {
-  const now = Date.now();
   if (meetup.member_booking_status === "confirmed") return { state: "open", label: "Booked ✓" };
-  if (meetup.confirmed_booking_count >= meetup.capacity) return { state: "full", label: "Fully booked" };
-  if (meetup.booking_closes_at && now >= new Date(meetup.booking_closes_at).getTime()) return { state: "closed", label: "Booking closed" };
-  if (meetup.booking_opens_at && now < new Date(meetup.booking_opens_at).getTime()) return { state: "not_open", label: "Booking opens soon" };
-  return { state: "open", label: "Booking open" };
+  const state = getMeetupBookingState(meetup);
+  return { state, label: state === "closed" ? "Booking closed" : state === "not_open" ? "Booking opens soon" : state === "full" ? "Meetup full" : "Booking open" };
 }
 
 function MeetupCard({ meetup }: { meetup: PublishedMeetup }) {
@@ -43,7 +41,7 @@ function MeetupCard({ meetup }: { meetup: PublishedMeetup }) {
       <p>{meetup.description || "An English conversation meetup from Galstyan’s Speaking Club."}</p>
       <dl className="published-meetup-details">
         <div><CalendarDays /><dt>Date</dt><dd>{details.date}</dd></div>
-        <div><Clock3 /><dt>Time</dt><dd>{details.time} · {meetup.timezone}</dd></div>
+        <div><Clock3 /><dt>Time</dt><dd>{details.time} · {MEETUP_TIME_ZONE}</dd></div>
         <div><MapPin /><dt>Location</dt><dd>{meetup.location_name}{meetup.address ? ` · ${meetup.address}` : ""}</dd></div>
         <div><Users /><dt>Capacity</dt><dd>{Math.max(0, meetup.capacity - meetup.confirmed_booking_count)} of {meetup.capacity} places remaining</dd></div>
         <div><Ticket /><dt>Price</dt><dd>{price(meetup)}</dd></div>

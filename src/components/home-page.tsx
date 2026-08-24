@@ -12,14 +12,15 @@ import { Header } from "@/components/header";
 import { QuestionDeck } from "@/components/question-deck";
 import type { PublishedMeetup } from "@/lib/public-content";
 import type { MeetupBookingState } from "@/components/meetup-booking-button";
+import { getMeetupBookingState, MEETUP_TIME_ZONE } from "@/lib/meetup-time";
 import { socialLinks } from "@/lib/site-data";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 function meetupDate(meetup: PublishedMeetup) {
   const date = new Date(meetup.starts_at);
   return {
-    day: new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", timeZone: meetup.timezone }).format(date),
-    time: new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "2-digit", timeZone: meetup.timezone }).format(date),
+    day: new Intl.DateTimeFormat("en-GB", { day: "2-digit", month: "short", timeZone: MEETUP_TIME_ZONE }).format(date),
+    time: new Intl.DateTimeFormat("en-GB", { hour: "numeric", minute: "2-digit", timeZone: MEETUP_TIME_ZONE }).format(date),
   };
 }
 
@@ -28,12 +29,9 @@ function meetupPrice(meetup: PublishedMeetup) {
 }
 
 function bookingState(meetup: PublishedMeetup): { state: MeetupBookingState; label: string } {
-  const now = Date.now();
   if (meetup.member_booking_status === "confirmed") return { state: "open", label: "Booked ✓" };
-  if (meetup.confirmed_booking_count >= meetup.capacity) return { state: "full", label: "Fully booked" };
-  if (meetup.booking_closes_at && now >= new Date(meetup.booking_closes_at).getTime()) return { state: "closed", label: "Booking closed" };
-  if (meetup.booking_opens_at && now < new Date(meetup.booking_opens_at).getTime()) return { state: "not_open", label: "Booking opens soon" };
-  return { state: "open", label: "Booking open" };
+  const state = getMeetupBookingState(meetup);
+  return { state, label: state === "closed" ? "Booking closed" : state === "not_open" ? "Booking opens soon" : state === "full" ? "Meetup full" : "Booking open" };
 }
 
 export function HomePage({ initialAuthOpen = false, authenticated = false, meetups = [], content = {}, deferPublicData = false }: { initialAuthOpen?: boolean; authenticated?: boolean; meetups?: PublishedMeetup[]; content?: Record<string, string>; deferPublicData?: boolean }) {
