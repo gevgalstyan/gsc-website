@@ -27,7 +27,7 @@ function emailShell({ preheader, heading, content }) {
             <td align="center" style="background:#07101c;padding:30px 24px 26px">
               <img src="${logoUrl}" width="64" height="64" alt="Galstyan’s Speaking Club" style="display:block;width:64px;height:64px;border:0;border-radius:50%;object-fit:cover">
               <div style="margin-top:14px;font-family:Arial,sans-serif;font-size:18px;font-weight:700;line-height:24px;color:#ffffff">Galstyan’s Speaking Club</div>
-              <div style="margin-top:5px;font-family:Georgia,serif;font-size:14px;font-style:italic;line-height:20px;color:#ff7b47">English ON.</div>
+              <div style="margin-top:5px;font-family:Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:1.4px;line-height:20px;color:#ff7b47">ENGLISH ON.</div>
             </td>
           </tr>
           <tr>
@@ -39,7 +39,8 @@ function emailShell({ preheader, heading, content }) {
           <tr>
             <td align="center" style="padding:22px 24px;background:#f7f2e9;border-top:1px solid #e9e1d5;font-family:Arial,sans-serif;font-size:12px;line-height:19px;color:#6d7480">
               <strong style="color:#07101c">Galstyan’s Speaking Club</strong><br>
-              Sergiev Posad
+              Sergiyev Posad<br>
+              <a href="${siteUrl}" style="color:#6d7480;text-decoration:underline">galstyansspeakingclub.ru</a>
             </td>
           </tr>
         </table>
@@ -52,16 +53,22 @@ function emailShell({ preheader, heading, content }) {
 
 const paragraph = (text) => `<p style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:16px;line-height:26px;color:#394454">${text}</p>`;
 
+function hostBlock() {
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:26px 0"><tr><td style="padding:20px 22px;background:#f7f2e9;border-left:4px solid #ff5a1f;font-family:Arial,sans-serif;color:#394454"><div style="font-size:12px;font-weight:700;letter-spacing:1.2px;line-height:18px;text-transform:uppercase;color:#7a6757">Hosted by</div><div style="margin-top:5px;font-size:17px;font-weight:700;line-height:24px;color:#07101c">Gevorg Galstyan</div><div style="margin-top:3px;font-size:14px;line-height:22px">Yerevan 🇦🇲 → Sergiyev Posad</div><div style="margin-top:12px;font-family:Georgia,serif;font-size:15px;font-style:italic;line-height:22px;color:#07101c">Practice makes perfect.</div></td></tr></table>`;
+}
+
 export const authEmailConfig = {
-  mailer_subjects_confirmation: "Welcome to Galstyan’s Speaking Club — verify your email",
+  mailer_subjects_confirmation: "Welcome to Galstyan’s Speaking Club — confirm your email",
   mailer_templates_confirmation_content: emailShell({
     preheader: "Confirm your email to activate your GSC member profile.",
-    heading: "Welcome 👋",
+    heading: "Welcome to the club 👋",
     content:
-      paragraph("Thanks for creating your account.") +
-      paragraph("Confirm your email address to activate your member profile.") +
+      paragraph("Thanks for joining Galstyan’s Speaking Club.") +
+      paragraph("Confirm your email address to activate your member profile and get access to meetups, attendance history, loyalty progress, and your member account.") +
       actionButton(confirmationLink("signup", "/account"), "Confirm my email") +
-      paragraph("If you didn’t create this account, you can safely ignore this email."),
+      paragraph("We’re a local English-speaking community in Sergiyev Posad where people meet, talk, practice English, and build confidence through real conversations.") +
+      hostBlock() +
+      paragraph("If you did not create this account, you can safely ignore this email."),
   }),
 
   mailer_subjects_recovery: "Reset your Galstyan’s Speaking Club password",
