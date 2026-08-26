@@ -1,3 +1,8 @@
+-- ============================================
+-- MEMBER PROFILE — PRIVATE AVATAR STORAGE
+-- Risk: CRITICAL — storage paths, object access, and RLS policies.
+-- ============================================
+
 -- Private, per-member profile photos. The public profile stores only a stable
 -- object path; short-lived signed URLs are generated when the account loads.
 
@@ -43,6 +48,9 @@ set
   file_size_limit = excluded.file_size_limit,
   allowed_mime_types = excluded.allowed_mime_types;
 
+-- ============================================
+-- STORAGE / MEDIA SECURITY POLICIES
+-- ============================================
 -- The exact object name prevents path traversal and prevents members from
 -- accumulating unrelated files. Upsert requires SELECT, INSERT, and UPDATE.
 create policy profile_avatars_select_own

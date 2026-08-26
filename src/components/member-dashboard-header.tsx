@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Member-space header, account menu, notifications, and section navigation.
+ * The active dashboard section is kept visible on narrow screens.
+ */
+
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -15,6 +20,9 @@ const sections = [
   { href: "#settings", label: "Profile" },
 ];
 
+// ======================================================
+// MEMBER DASHBOARD — RESPONSIVE NAVIGATION
+// ======================================================
 export function MemberDashboardHeader({
   name,
   avatarUrl,

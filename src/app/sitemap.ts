@@ -1,6 +1,11 @@
+/** Generates the public XML sitemap consumed by search engines. */
+
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/seo";
 
+// ======================================================
+// SITEMAP — INDEXABLE PUBLIC ROUTES
+// ======================================================
 const publicPages = [
   { path: "", priority: 1, changeFrequency: "weekly" as const },
   { path: "/about", priority: 0.8, changeFrequency: "monthly" as const },

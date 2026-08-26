@@ -1,3 +1,8 @@
+-- ============================================
+-- MEMBER / ADMIN DASHBOARD DATA AND LOYALTY
+-- Risk: CRITICAL — payment, rewards, roles, audit, grants, and RLS.
+-- ============================================
+
 begin;
 
 -- Payment qualification remains authoritative on attendance rows and is never
@@ -28,6 +33,9 @@ create index attendance_payment_recorded_by_idx
 create index attendance_booking_member_meetup_idx
   on public.attendance (booking_id, user_id, meetup_id);
 
+-- ============================================
+-- ATTENDANCE / PRIVATE ADMIN NOTES
+-- ============================================
 -- Private notes are separated from member-readable attendance and rewards.
 create table public.attendance_admin_notes (
   attendance_id uuid primary key references public.attendance (id) on delete cascade,
@@ -213,6 +221,9 @@ create index loyalty_rewards_attendance_member_idx
 create index loyalty_rewards_booking_member_idx
   on public.loyalty_rewards (redeemed_booking_id, user_id);
 
+-- ============================================
+-- LOYALTY / FREE MEETUP RECONCILIATION
+-- ============================================
 -- Serialize reward calculation per member. Every sixth paid attended visit has
 -- one deterministic reward sequence. Corrections can void only unredeemed
 -- automatic rewards; a correction that would invalidate a redeemed reward fails.
@@ -351,6 +362,9 @@ begin
 end;
 $$;
 
+-- ============================================
+-- ADMIN AUDIT LOG
+-- ============================================
 -- Append-only audit records are written by triggers, never directly by clients.
 create function app_private.audit_admin_change()
 returns trigger
@@ -449,6 +463,9 @@ with check ((select app_private.is_admin()));
 create policy admin_audit_log_admin_read on public.admin_audit_log
 for select to authenticated using ((select app_private.is_admin()));
 
+-- ============================================
+-- SECURITY / ROW LEVEL SECURITY
+-- ============================================
 -- Equivalent combined policies avoid evaluating multiple permissive policies
 -- for the member/admin split on dashboard reads.
 drop policy profiles_read_own on public.profiles;

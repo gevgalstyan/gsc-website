@@ -1,6 +1,14 @@
+/**
+ * Authenticated booking API for creating and cancelling meetup reservations.
+ * Database triggers and RLS remain authoritative for windows, capacity, and ownership.
+ */
+
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+// ======================================================
+// API ROUTES — MEETUP BOOKING
+// ======================================================
 export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();
@@ -33,6 +41,9 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
   return NextResponse.json({ booking: data }, { status: 201 });
 }
 
+// ======================================================
+// API ROUTES — BOOKING CANCELLATION
+// ======================================================
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const supabase = await createClient();

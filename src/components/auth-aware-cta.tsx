@@ -1,8 +1,13 @@
+/** Reusable CTA renderer for logged-out visitors, members, and administrators. */
+
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { resolveAuthCta, type AuthCtaKind } from "@/lib/auth-ui";
 import type { ViewerRole } from "@/lib/viewer";
 
+// ======================================================
+// AUTHENTICATION — SMART CTA SYSTEM
+// ======================================================
 export function AuthAwareCta({
   kind,
   role,

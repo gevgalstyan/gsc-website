@@ -1,3 +1,5 @@
+/** Verifies Supabase email tokens submitted by the branded confirmation page. */
+
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
@@ -11,6 +13,9 @@ const confirmationTypes = new Set<EmailOtpType>([
   "email",
 ]);
 
+// ======================================================
+// EMAIL/PASSWORD AUTH — TOKEN CONFIRMATION
+// ======================================================
 export async function POST(request: Request) {
   const formData = await request.formData();
   const tokenHash = String(formData.get("token_hash") ?? "").trim();

@@ -1,8 +1,13 @@
+/** Shared server-rendered shell for public pages with viewer-aware navigation. */
+
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { Breadcrumbs } from "@/components/breadcrumbs";
 import { getViewer } from "@/lib/viewer";
 
+// ======================================================
+// PUBLIC PAGES — SHARED AUTH-AWARE SHELL
+// ======================================================
 export async function PublicPageShell({
   eyebrow,
   title,

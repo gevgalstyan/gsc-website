@@ -1,3 +1,8 @@
+/** Defense-in-depth email allowlist used alongside the database admin role. */
+
+// ======================================================
+// ADMIN SECURITY — EMAIL ALLOWLIST
+// ======================================================
 export const ADMIN_EMAILS = new Set([
   "galstyanwork@gmail.com",
   "galstyanoff@gmail.com",

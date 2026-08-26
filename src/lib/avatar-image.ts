@@ -1,3 +1,11 @@
+/**
+ * Validates, crops, and compresses member avatars before Supabase Storage upload.
+ * Risk: MEDIUM. Browser compatibility and upload limits are enforced here.
+ */
+
+// ======================================================
+// AVATAR UPLOAD — CLIENT-SIDE IMAGE PREPARATION
+// ======================================================
 const MAX_SOURCE_BYTES = 5 * 1024 * 1024;
 const MAX_DIMENSION = 1024;
 const ACCEPTED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);

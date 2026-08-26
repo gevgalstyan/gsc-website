@@ -1,3 +1,8 @@
+-- ============================================
+-- PLATFORM FLOW — PROFILES, NOTIFICATIONS, CONTENT, QUESTIONS
+-- Risk: CRITICAL — schema additions, auth bootstrap, grants, and RLS.
+-- ============================================
+
 begin;
 
 -- Member profile fields used by the member dashboard and admin directory.
@@ -50,6 +55,9 @@ begin
 end;
 $$;
 
+-- ============================================
+-- NOTIFICATIONS
+-- ============================================
 -- In-app alerts are the reliable notification channel. Email remains optional
 -- and can be layered on later without changing member-visible state.
 create table if not exists public.notifications (
@@ -101,6 +109,9 @@ create trigger meetups_notify_published
 after insert or update of status on public.meetups
 for each row execute function app_private.notify_published_meetup();
 
+-- ============================================
+-- CONTENT EDITOR / MANAGED QUESTIONS
+-- ============================================
 -- Small, editable CMS surface for administrators. Public pages may safely read
 -- only rows marked public; empty tables leave the existing authored copy intact.
 create table if not exists public.site_content (

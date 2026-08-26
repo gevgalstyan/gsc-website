@@ -1,3 +1,8 @@
+-- ============================================
+-- CONTENT SEED — EDITABLE FAQ
+-- Risk: CRITICAL when applied; inserts production database content.
+-- ============================================
+
 begin;
 
 insert into public.site_faq_items

@@ -1,11 +1,16 @@
 "use client";
 
+/** Displays member notifications and persists read state through Supabase. */
+
 import { useEffect, useRef, useState } from "react";
 import { Bell, Check } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type Notification = { id: string; title: string; body: string; read_at: string | null; created_at: string };
 
+// ======================================================
+// NOTIFICATIONS
+// ======================================================
 export function NotificationBell({ initialNotifications }: { initialNotifications: Notification[] }) {
   const [items, setItems] = useState(initialNotifications);
   const [open, setOpen] = useState(false);

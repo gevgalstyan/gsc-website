@@ -1,3 +1,18 @@
+/**
+ * Canonical date and booking-window helpers for meetups.
+ *
+ * Responsibilities:
+ * - Treats admin input as Europe/Moscow wall-clock time
+ * - Converts wall-clock values to UTC instants for Supabase
+ * - Converts stored instants back to admin input values
+ * - Derives booking availability from real instants and capacity
+ *
+ * Risk: HIGH. A timezone conversion here affects every meetup and booking window.
+ */
+
+// ======================================================
+// DATE / TIMEZONE HANDLING — EUROPE/MOSCOW
+// ======================================================
 export const MEETUP_TIME_ZONE = "Europe/Moscow";
 
 export type MeetupBookingState = "open" | "full" | "not_open" | "closed";
@@ -48,7 +63,7 @@ function offsetAt(instant: number, timeZone: string) {
   return Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second) - instant;
 }
 
-/** Convert a timezone-free datetime-local wall time into its real UTC instant. */
+/** Converts a timezone-free admin wall time into its real UTC instant. */
 export function meetupWallTimeToIso(value: string, timeZone = MEETUP_TIME_ZONE) {
   const match = localDateTimePattern.exec(value);
   if (!match) throw new RangeError("Invalid meetup date and time");
@@ -81,7 +96,7 @@ export function meetupWallTimeToIso(value: string, timeZone = MEETUP_TIME_ZONE) 
   return new Date(instant).toISOString();
 }
 
-/** Convert a stored UTC instant into the Moscow wall time expected by datetime-local. */
+/** Converts a stored UTC instant into the Moscow wall time expected by datetime-local. */
 export function instantToMeetupWallTime(value: string, timeZone = MEETUP_TIME_ZONE) {
   const instant = new Date(value);
   if (Number.isNaN(instant.getTime())) throw new RangeError("Invalid stored meetup timestamp");
@@ -90,6 +105,9 @@ export function instantToMeetupWallTime(value: string, timeZone = MEETUP_TIME_ZO
   return `${parts.year}-${pad(parts.month)}-${pad(parts.day)}T${pad(parts.hour)}:${pad(parts.minute)}`;
 }
 
+// ======================================================
+// MEETUP BOOKING — AVAILABILITY STATE
+// ======================================================
 export function getMeetupBookingState(meetup: BookingWindow, now = Date.now()): MeetupBookingState {
   if (meetup.booking_closes_at && now >= new Date(meetup.booking_closes_at).getTime()) return "closed";
   if (meetup.booking_opens_at && now < new Date(meetup.booking_opens_at).getTime()) return "not_open";

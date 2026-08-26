@@ -1,3 +1,8 @@
+-- ============================================
+-- FAQ CONTENT — INDEPENDENT DRAFT ORDERING
+-- Risk: CRITICAL — changes schema and publishing RPC behavior.
+-- ============================================
+
 begin;
 
 alter table public.site_faq_items

@@ -1,3 +1,8 @@
+-- ============================================
+-- QUESTIONS — MEMBER PROGRESS, FAVORITES, AND REALTIME
+-- Risk: CRITICAL — creates member-owned tables and RLS policies.
+-- ============================================
+
 begin;
 
 create table public.question_progress (
@@ -79,6 +84,9 @@ grant insert (question_id) on table public.question_progress to authenticated;
 grant select, delete on table public.question_favorites to authenticated;
 grant insert (question_id) on table public.question_favorites to authenticated;
 
+-- ============================================
+-- QUESTIONS — PRIVATE REALTIME INVALIDATION
+-- ============================================
 -- Broadcast invalidation only. Clients refetch canonical rows instead of
 -- trusting event payloads, and each private topic is tied to auth.uid().
 create policy question_state_receive_own_broadcasts

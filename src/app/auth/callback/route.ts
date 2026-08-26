@@ -1,6 +1,11 @@
+/** Exchanges a Supabase OAuth authorization code for the account session cookie. */
+
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+// ======================================================
+// GOOGLE OAUTH — CALLBACK
+// ======================================================
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const code = url.searchParams.get("code");

@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * Main administrator workspace for meetups, members, attendance, rewards, questions, and content.
+ * The UI sends normal Supabase mutations; RLS, triggers, and RPCs enforce authoritative rules.
+ * Risk: HIGH. Keep form serialization aligned with database constraints and Moscow time helpers.
+ */
+
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useEffect, useMemo, useState } from "react";
@@ -24,6 +30,9 @@ type ManagedQuestion = { id: string; prompt: string; translation: string | null;
 type NotificationRow = { id: string; title: string; body: string; read_at: string | null; created_at: string };
 type AdminData = { currentUserId: string; directory: DirectoryRow[]; profiles: ProfileRow[]; roles: RoleRow[]; meetups: MeetupRow[]; bookings: BookingRow[]; attendance: AttendanceRow[]; loyalty: RewardRow[]; special: SpecialRow[]; progress: QuestionRow[]; favorites: QuestionRow[]; audit: AuditRow[]; signedAvatars: Record<string, string>; managedQuestions: ManagedQuestion[]; content: EditableContent[]; notifications: NotificationRow[]; faq: EditableFaq[]; revisions: ContentRevision[]; media: MediaAsset[] };
 
+// ======================================================
+// ADMIN MEETUP MANAGEMENT — FORM SERIALIZATION
+// ======================================================
 const emptyMeetup = { id: "", title: "", description: "", starts_at: "", ends_at: "", timezone: MEETUP_TIME_ZONE, location_name: "", address: "", capacity: "12", price: "500", currency: "RUB", category: "Conversation", image_url: "", status: "draft", booking_opens_at: "", booking_closes_at: "" };
 
 function meetupToForm(meetup: MeetupRow, duplicate = false) {
@@ -55,6 +64,9 @@ function formatAdminMeetupTime(value: string) {
   }).format(new Date(value));
 }
 
+// ======================================================
+// ADMIN DASHBOARD
+// ======================================================
 export function AdminDashboard({ initial }: { initial: AdminData }) {
   const router = useRouter();
   const [tab, setTab] = useState("overview");
@@ -108,6 +120,7 @@ export function AdminDashboard({ initial }: { initial: AdminData }) {
 
   function message(text: string) { setNotice(text); window.setTimeout(() => setNotice(""), 4000); }
 
+  // Converts every datetime-local field from Moscow wall time before persistence.
   async function saveMeetup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true);
     const client = getSupabaseBrowserClient();
@@ -153,6 +166,9 @@ export function AdminDashboard({ initial }: { initial: AdminData }) {
     message("A draft copy is ready to review.");
   }
 
+  // ======================================================
+  // ATTENDANCE / PAYMENT STATUS
+  // ======================================================
   async function recordAttendance(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); const data = new FormData(event.currentTarget); const client = getSupabaseBrowserClient();
     const paid = data.get("is_paid") === "on";
@@ -172,6 +188,9 @@ export function AdminDashboard({ initial }: { initial: AdminData }) {
     setAttendance((rows) => [...(data ?? []), ...rows.filter((row) => !data?.some((item: { id: string }) => item.id === row.id))]); router.refresh(); message("Bulk check-in completed.");
   }
 
+  // ======================================================
+  // LOYALTY / SPECIAL REWARDS
+  // ======================================================
   async function issueSpecial(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); const data = new FormData(event.currentTarget); const client = getSupabaseBrowserClient();
     const payload = { user_id: String(data.get("user_id")), name: String(data.get("name")).trim(), reason: String(data.get("reason")).trim(), description: String(data.get("description")).trim() || null, status: "available", expires_at: data.get("expires_at") ? new Date(String(data.get("expires_at"))).toISOString() : null };
@@ -180,6 +199,9 @@ export function AdminDashboard({ initial }: { initial: AdminData }) {
     setSpecial((rows) => [row, ...rows]); event.currentTarget.reset(); message("Special reward issued.");
   }
 
+  // ======================================================
+  // ADMIN MEMBER MANAGEMENT
+  // ======================================================
   async function changeRole(userId: string, role: string) {
     if (!window.confirm(`Change this member’s role to ${role}?`)) return;
     setBusy(true); const client = getSupabaseBrowserClient();
@@ -188,6 +210,9 @@ export function AdminDashboard({ initial }: { initial: AdminData }) {
     setRoles((rows) => rows.map((row) => row.user_id === userId ? data : row)); message("Member role updated.");
   }
 
+  // ======================================================
+  // QUESTIONS — ADMIN LIBRARY
+  // ======================================================
   async function saveManagedQuestion(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true);
     const data = new FormData(event.currentTarget);

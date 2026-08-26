@@ -1,3 +1,5 @@
+/** Revalidates public content after an authorized administrator publishes CMS changes. */
+
 import { revalidatePath } from "next/cache";
 import { NextResponse } from "next/server";
 import { isAllowlistedAdminEmail } from "@/lib/admin";
@@ -16,6 +18,9 @@ const paths: Record<string, string> = {
   settings: "/",
 };
 
+// ======================================================
+// API ROUTES — ADMIN CONTENT REVALIDATION
+// ======================================================
 export async function POST(request: Request) {
   const supabase = await createClient();
   if (!supabase) return NextResponse.json({ error: "Unavailable" }, { status: 503 });

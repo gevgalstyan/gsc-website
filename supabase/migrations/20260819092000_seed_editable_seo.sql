@@ -1,3 +1,8 @@
+-- ============================================
+-- CONTENT SEED — EDITABLE SEO METADATA
+-- Risk: CRITICAL when applied; inserts production metadata defaults.
+-- ============================================
+
 begin;
 
 with pages(page_slug, title, description) as (

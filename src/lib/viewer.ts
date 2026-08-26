@@ -1,3 +1,8 @@
+/**
+ * Resolves the current public-site viewer from the verified Supabase session.
+ * This is the reusable server-side source for logged-out, member, and admin UI.
+ */
+
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 
@@ -27,6 +32,9 @@ const loggedOutViewer: Viewer = {
   notifications: [],
 };
 
+// ======================================================
+// SESSION MANAGEMENT — AUTH-AWARE VIEWER
+// ======================================================
 export const getViewer = cache(async (): Promise<Viewer> => {
   const supabase = await createClient();
   if (!supabase) return loggedOutViewer;
@@ -56,6 +64,7 @@ export const getViewer = cache(async (): Promise<Viewer> => {
       avatarUrl = data?.signedUrl ?? avatarUrl;
     }
 
+    // Authorization comes from user_roles; metadata is only a cosmetic fallback.
     return {
       role: roleResult.data?.role === "admin" ? "admin" : "member",
       userId,

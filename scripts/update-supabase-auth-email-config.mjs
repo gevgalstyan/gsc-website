@@ -1,5 +1,13 @@
+/**
+ * Applies branded Auth templates, Resend SMTP settings, and Google provider settings.
+ * Risk: HIGH. Run only with scoped credentials supplied through environment variables.
+ */
+
 import { authEmailConfig, productionAuthUrlConfig } from "../supabase/auth-email-config.mjs";
 
+// ======================================================
+// AUTH EMAILS / GOOGLE OAUTH — ENVIRONMENT INPUTS
+// ======================================================
 const accessToken = process.env.SUPABASE_ACCESS_TOKEN;
 const smtpPassword = process.env.RESEND_SMTP_PASSWORD;
 const googleClientId = process.env.GOOGLE_OAUTH_CLIENT_ID ?? "603668832594-nuaipidtu1rdouhipm2iflan0sm26c0l.apps.googleusercontent.com";
@@ -22,6 +30,9 @@ if (!googleClientId.endsWith(".apps.googleusercontent.com")) {
   throw new Error("GOOGLE_OAUTH_CLIENT_ID must be a Google OAuth client ID.");
 }
 
+// ======================================================
+// SMTP / AUTH PROVIDER CONFIGURATION
+// ======================================================
 const smtpConfig = {
   external_email_enabled: true,
   mailer_autoconfirm: false,

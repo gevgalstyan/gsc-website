@@ -1,6 +1,14 @@
+/**
+ * Server-side access to editable public content stored in Supabase.
+ * Published values are used only when enabled; authored page fallbacks remain available.
+ */
+
 import { createClient } from "@/lib/supabase/server";
 import { absoluteUrl, pageMetadata } from "@/lib/seo";
 
+// ======================================================
+// CONTENT EDITOR — PUBLISHED SITE CONTENT
+// ======================================================
 export async function getPublicContent(): Promise<Record<string, string>> {
   const supabase = await createClient();
   if (!supabase) return {} as Record<string, string>;
@@ -13,6 +21,9 @@ export async function getPublicContent(): Promise<Record<string, string>> {
   }
 }
 
+// ======================================================
+// FAQ CONTENT
+// ======================================================
 export async function getPublishedFaqItems() {
   const supabase = await createClient();
   if (!supabase) return [] as { question: string; answer: string }[];
@@ -31,6 +42,9 @@ export async function getPublishedFaqItems() {
   }
 }
 
+// ======================================================
+// SEO / EDITABLE METADATA
+// ======================================================
 export async function editablePageMetadata(page: string, fallbackTitle: string, fallbackDescription: string, path: string) {
   const content = await getPublicContent();
   const title = content[`${page}.seo.title`] || fallbackTitle;

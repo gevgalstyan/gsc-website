@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * Administrator content workspace for drafts, publishing, revisions, FAQs, and media.
+ * Public pages read published values only; draft state remains private to administrators.
+ * Risk: HIGH. Publishing changes production copy and metadata immediately.
+ */
+
 import Image from "next/image";
 import { ChangeEvent, useMemo, useState } from "react";
 import { ArrowDown, ArrowUp, Check, Eye, History, ImagePlus, Monitor, Plus, RotateCcw, Save, Send, Smartphone, Trash2, Upload } from "lucide-react";
@@ -78,6 +84,9 @@ function friendlyBytes(value: number) {
   return value < 1024 * 1024 ? `${Math.round(value / 1024)} KB` : `${(value / 1024 / 1024).toFixed(1)} MB`;
 }
 
+// ======================================================
+// CONTENT EDITOR — DRAFT / PUBLISH WORKFLOW
+// ======================================================
 export function ContentEditor({
   initialContent,
   initialFaq,
@@ -125,6 +134,7 @@ export function ContentEditor({
     setContent((rows) => rows.map((row) => row.key === key ? { ...row, ...patch } : row));
   }
 
+  // Saves editable fields without changing the published public snapshot.
   async function saveDraft(quiet = false) {
     setError("");
     setBusy(true);
@@ -178,6 +188,7 @@ export function ContentEditor({
     return true;
   }
 
+  // Publishes one page atomically through the database RPC and records a revision.
   async function publish() {
     if (!window.confirm(`Publish the current ${page === "settings" ? "site settings" : `${page} page`} draft?`)) return;
     const saved = await saveDraft(true);
@@ -214,6 +225,7 @@ export function ContentEditor({
     flash("Unpublished changes discarded.");
   }
 
+  // Restores a historical snapshot into draft state so it can be reviewed first.
   async function restoreRevision(id: string) {
     if (!window.confirm("Restore this published version into the draft? You can preview it before publishing.")) return;
     setBusy(true);
@@ -230,6 +242,9 @@ export function ContentEditor({
     flash("Previous version restored to draft. Review and publish when ready.");
   }
 
+  // ======================================================
+  // FAQ CONTENT
+  // ======================================================
   function addFaq() {
     setFaq((items) => [...items, {
       id: crypto.randomUUID(), draft_question: "", draft_answer: "", published_question: "", published_answer: "",
@@ -251,6 +266,9 @@ export function ContentEditor({
     });
   }
 
+  // ======================================================
+  // STORAGE / MEDIA
+  // ======================================================
   async function uploadImage(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";

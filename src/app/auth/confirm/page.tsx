@@ -1,3 +1,5 @@
+/** Branded, no-index confirmation screen for Supabase email verification links. */
+
 import Image from "next/image";
 import Link from "next/link";
 
@@ -6,6 +8,9 @@ export const metadata = {
   referrer: "no-referrer" as const,
 };
 
+// ======================================================
+// EMAIL/PASSWORD AUTH — CONFIRMATION LINK VALIDATION
+// ======================================================
 const confirmationTypes = new Set([
   "signup",
   "invite",

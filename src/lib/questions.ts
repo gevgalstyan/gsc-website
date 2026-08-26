@@ -1,3 +1,8 @@
+/**
+ * Typed access to the bundled conversation-question library.
+ * Account progress and favorites are synchronized by use-question-state.ts.
+ */
+
 import questionData from "@/data/questions.json";
 
 export const categories = [

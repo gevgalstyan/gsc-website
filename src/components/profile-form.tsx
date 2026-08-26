@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Member profile editor and private avatar upload UI.
+ * Profile rows live in Supabase; prepared photos live in profile-avatars Storage.
+ */
+
 import Image from "next/image";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { Camera, Trash2 } from "lucide-react";
@@ -18,6 +23,9 @@ type Profile = {
 
 type Notice = { kind: "error" | "success"; text: string } | null;
 
+// ======================================================
+// MEMBER PROFILE
+// ======================================================
 export function ProfileForm({
   userId,
   initialProfile,
@@ -70,6 +78,9 @@ export function ProfileForm({
     setCropZoom(1);
   }
 
+  // ======================================================
+  // AVATAR UPLOAD
+  // ======================================================
   async function saveCroppedPhoto() {
     if (!cropFile) return;
     setUploading(true);

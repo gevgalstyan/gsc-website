@@ -1,7 +1,12 @@
+/** Builds allowlisted same-site destinations for Supabase authentication callbacks. */
+
 import { SITE_URL } from "@/lib/seo";
 
 const productionHosts = new Set(["galstyansspeakingclub.ru", "www.galstyansspeakingclub.ru"]);
 
+// ======================================================
+// GOOGLE / EMAIL AUTH — SAFE CALLBACK URLS
+// ======================================================
 export function authCallbackUrl(next?: string) {
   const origin = typeof window !== "undefined" && productionHosts.has(window.location.hostname)
     ? SITE_URL

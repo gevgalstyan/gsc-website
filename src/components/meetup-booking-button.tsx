@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Member meetup booking and cancellation control.
+ * Calls the booking API and displays safe loading, blocked, and error states.
+ */
+
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -7,6 +12,9 @@ import { ArrowRight, LoaderCircle, TicketCheck } from "lucide-react";
 
 export type MeetupBookingState = "open" | "full" | "not_open" | "closed";
 
+// ======================================================
+// MEETUP BOOKING / BOOKING CANCELLATION
+// ======================================================
 export function MeetupBookingButton({
   meetupId,
   initialBooked = false,

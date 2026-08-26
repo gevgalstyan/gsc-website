@@ -1,3 +1,8 @@
+/** Timeout-aware network transport shared by browser and server Supabase clients. */
+
+// ======================================================
+// SUPABASE NETWORK SAFETY
+// ======================================================
 const SUPABASE_REQUEST_TIMEOUT = 3500;
 
 /**

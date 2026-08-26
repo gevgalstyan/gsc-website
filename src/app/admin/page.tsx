@@ -1,3 +1,9 @@
+/**
+ * Protected server entry point for the administrator dashboard.
+ * Verifies both the email allowlist and database role before loading admin data.
+ * Risk: HIGH. Client-side visibility must never replace these server checks or RLS.
+ */
+
 import { redirect } from "next/navigation";
 import { AdminDashboard } from "@/components/admin-dashboard";
 import { isAllowlistedAdminEmail } from "@/lib/admin";
@@ -7,6 +13,9 @@ export const metadata = { robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
+  // ======================================================
+  // ADMIN SECURITY — SESSION, ALLOWLIST, AND ROLE
+  // ======================================================
   const supabase = await createClient();
   if (!supabase) redirect("/?auth=login");
   const { data: claims } = await supabase.auth.getClaims();
@@ -17,6 +26,9 @@ export default async function AdminPage() {
   const { data: role } = await supabase.from("user_roles").select("role").eq("user_id", userId).single();
   if (role?.role !== "admin") redirect("/account");
 
+  // ======================================================
+  // ADMIN DASHBOARD — CONSOLIDATED DATA LOADING
+  // ======================================================
   const [directory, profiles, roles, meetups, bookings, attendance, loyalty, special, progress, favorites, audit, managedQuestions, content, notifications, faq, revisions, media] = await Promise.all([
     supabase.rpc("admin_member_directory"),
     supabase.from("profiles").select("id,display_name,avatar_path,avatar_url,telegram_username,english_level,created_at").order("created_at", { ascending: false }),

@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * Synchronizes question progress and favorites for guests and signed-in members.
+ * Guest state uses localStorage; account state uses RLS-protected Supabase tables.
+ * Risk: HIGH. The one-time merge must remain idempotent to avoid losing progress.
+ */
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
 import { questions } from "@/lib/questions";
@@ -24,6 +30,9 @@ function readJson(key: string): unknown {
   try { return JSON.parse(localStorage.getItem(key) || "null"); } catch { return null; }
 }
 
+// ======================================================
+// QUESTIONS — GUEST LOCAL STORAGE
+// ======================================================
 function readGuestProgress(validIds = validQuestionIds): string[] {
   const current = readJson(progressKey) as Partial<StoredProgress> | string[] | null;
   if (Array.isArray(current)) return sanitizeIds(current, validIds);
@@ -58,6 +67,9 @@ function clearImportedGuestState(userId: string) {
   } catch { /* A later idempotent merge is safe if storage is unavailable. */ }
 }
 
+// ======================================================
+// QUESTIONS / FAVORITES — ACCOUNT SYNCHRONIZATION
+// ======================================================
 export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds) {
   const [seen, setSeen] = useState<string[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
@@ -84,6 +96,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds) 
     setReady(true);
   }, [validIds]);
 
+  // Imports unsynchronized device history once, preserving existing account rows.
   const mergeGuestState = useCallback(async (userId: string) => {
     try { if (localStorage.getItem(`${mergeKeyPrefix}${userId}`) === "complete") return; } catch { /* Continue idempotently. */ }
     const client = getSupabaseBrowserClient();

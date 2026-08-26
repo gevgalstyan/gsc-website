@@ -1,3 +1,8 @@
+-- ============================================
+-- SECURITY — RESTRICT OPTIONAL RLS EVENT HELPER
+-- Risk: CRITICAL — controls who may invoke a security-definer helper.
+-- ============================================
+
 begin;
 
 -- This SECURITY DEFINER function is an event-trigger implementation detail in

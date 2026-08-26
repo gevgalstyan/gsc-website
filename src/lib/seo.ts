@@ -1,3 +1,11 @@
+/**
+ * Shared SEO and structured-data defaults for public pages.
+ * Page files use these helpers to keep metadata and canonical URLs consistent.
+ */
+
+// ======================================================
+// SEO / METADATA
+// ======================================================
 export const SITE_URL = "https://galstyansspeakingclub.ru";
 export const SITE_NAME = "Galstyan’s Speaking Club";
 export const SITE_DESCRIPTION =
@@ -31,6 +39,9 @@ export function absoluteUrl(path = "/") {
   return new URL(path, SITE_URL).toString();
 }
 
+// ======================================================
+// STRUCTURED DATA
+// ======================================================
 export const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",

@@ -1,3 +1,8 @@
+-- ============================================
+-- COMPLETE MEETUP BUSINESS FLOW
+-- Risk: CRITICAL — payment status, reward redemption, alerts, audit, and RLS.
+-- ============================================
+
 begin;
 
 -- Keep the existing meetup, booking, attendance, and reward tables as the
@@ -120,6 +125,9 @@ begin
 end;
 $$;
 
+-- ============================================
+-- LOYALTY — FREE MEETUP REDEMPTION
+-- ============================================
 -- A free visit must consume an available ledger reward. It cannot be created
 -- as a free attendance without a booking because redemption must be auditable.
 create or replace function app_private.redeem_free_reward_for_attendance()
@@ -186,6 +194,9 @@ create trigger attendance_05_redeem_free_reward
 before insert or update on public.attendance
 for each row execute function app_private.redeem_free_reward_for_attendance();
 
+-- ============================================
+-- MEETUP AND BOOKING NOTIFICATIONS
+-- ============================================
 -- Replace the publish trigger with a status-aware version. Publishing alerts
 -- all members; cancellation alerts only confirmed bookers and preserves the
 -- booking record for history.

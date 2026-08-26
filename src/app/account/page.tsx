@@ -1,3 +1,14 @@
+/**
+ * Authenticated member dashboard.
+ *
+ * Responsibilities:
+ * - Loads profile, bookings, attendance, loyalty, questions, and notifications
+ * - Builds member-facing progress summaries from database-owned records
+ * - Renders profile editing and booking cancellation controls
+ *
+ * Risk: HIGH. This page reads several RLS-protected member data sets.
+ */
+
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -16,12 +27,18 @@ function formatDate(value: string) {
 }
 
 export default async function AccountPage() {
+  // ======================================================
+  // AUTHENTICATION — PROTECTED MEMBER SESSION
+  // ======================================================
   const supabase = await createClient();
   if (!supabase) redirect("/?auth=login");
   const { data: claims } = await supabase.auth.getClaims();
   const userId = claims?.claims?.sub;
   if (!userId) redirect("/?auth=login");
 
+  // ======================================================
+  // MEMBER DASHBOARD — PROFILE AND ACTIVITY LOADING
+  // ======================================================
   const [profileResult, roleResult, attendanceResult, bookingsResult, rewardsResult, specialResult, progressResult, favoritesResult, notificationsResult] = await Promise.all([
     supabase.from("profiles").select("display_name,avatar_path,avatar_url,telegram_username,english_level,created_at").eq("id", userId).single(),
     supabase.from("user_roles").select("role").eq("user_id", userId).single(),
@@ -46,6 +63,7 @@ export default async function AccountPage() {
   const specialRewards = specialResult.data ?? [];
   const exploredIds = new Set((progressResult.data ?? []).map((row) => row.question_id));
   const favoriteCount = favoritesResult.data?.length ?? 0;
+  // These are display summaries only; SQL triggers remain the loyalty source of truth.
   const attended = attendance.filter((row) => row.status === "attended");
   const paidVisits = attended.filter((row) => row.is_paid).length;
   const availableRewards = rewards.filter((row) => row.status === "available");

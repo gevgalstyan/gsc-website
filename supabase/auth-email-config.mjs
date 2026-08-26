@@ -1,3 +1,11 @@
+/**
+ * Branded Supabase Auth email templates and production callback allowlist.
+ * Contains template markup only. Provider and SMTP secrets must stay in environment variables.
+ */
+
+// ======================================================
+// AUTH EMAILS — SHARED TEMPLATE SHELL
+// ======================================================
 const siteUrl = "https://galstyansspeakingclub.ru";
 const logoUrl = `${siteUrl}/gsc-logo.jpg`;
 
@@ -57,6 +65,9 @@ function hostBlock() {
   return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:26px 0"><tr><td style="padding:20px 22px;background:#f7f2e9;border-left:4px solid #ff5a1f;font-family:Arial,sans-serif;color:#394454"><div style="font-size:12px;font-weight:700;letter-spacing:1.2px;line-height:18px;text-transform:uppercase;color:#7a6757">Hosted by</div><div style="margin-top:5px;font-size:17px;font-weight:700;line-height:24px;color:#07101c">Gevorg Galstyan</div><div style="margin-top:3px;font-size:14px;line-height:22px">Yerevan 🇦🇲 → Sergiyev Posad</div><div style="margin-top:12px;font-family:Georgia,serif;font-size:15px;font-style:italic;line-height:22px;color:#07101c">Practice makes perfect.</div></td></tr></table>`;
 }
 
+// ======================================================
+// EMAIL/PASSWORD AUTH — MESSAGE TEMPLATES
+// ======================================================
 export const authEmailConfig = {
   mailer_subjects_confirmation: "Welcome to Galstyan’s Speaking Club — confirm your email",
   mailer_templates_confirmation_content: emailShell({
@@ -132,6 +143,9 @@ export const authEmailConfig = {
   }),
 };
 
+// ======================================================
+// AUTHENTICATION — PRODUCTION REDIRECT ALLOWLIST
+// ======================================================
 export const productionAuthUrlConfig = {
   site_url: siteUrl,
   uri_allow_list: `${siteUrl}/**,https://www.galstyansspeakingclub.ru/**`,

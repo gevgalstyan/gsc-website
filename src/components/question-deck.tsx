@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Interactive conversation-question browser with filters, history, translation, and favorites.
+ * Persistence is delegated to useQuestionState so the visual deck stays account-agnostic.
+ */
+
 import { ArrowLeft, Copy, Heart, Languages, RotateCcw, Shuffle, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState } from "react";
@@ -16,6 +21,9 @@ import { useQuestionState } from "@/hooks/use-question-state";
 
 const EMPTY_QUESTIONS: Question[] = [];
 
+// ======================================================
+// QUESTIONS — FILTERING AND DECK NAVIGATION
+// ======================================================
 export function QuestionDeck({ showPageLink = true, additionalQuestions = EMPTY_QUESTIONS }: { showPageLink?: boolean; additionalQuestions?: Question[] }) {
   const [category, setCategory] = useState<CategoryFilter>("all");
   const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");

@@ -1,3 +1,8 @@
+-- ============================================
+-- MEETUP BOOKING — CAPACITY GUARD COMPATIBILITY
+-- Risk: CRITICAL — protects booking-capacity trigger updates.
+-- ============================================
+
 begin;
 
 -- The generic updated_at trigger runs before this guard. Ignore that automatic

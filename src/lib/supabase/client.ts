@@ -1,3 +1,5 @@
+/** Browser-only Supabase client for interactive auth, uploads, and member mutations. */
+
 import { createBrowserClient } from "@supabase/ssr";
 import { fetchWithTimeout } from "@/lib/supabase/fetch";
 
@@ -11,6 +13,9 @@ export function isSupabaseConfigured() {
   );
 }
 
+// ======================================================
+// SUPABASE BROWSER CLIENT
+// ======================================================
 export function getSupabaseBrowserClient() {
   if (browserClient !== undefined) return browserClient;
 

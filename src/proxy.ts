@@ -1,7 +1,12 @@
+/** Next.js proxy entry point for refreshing auth on protected and booking routes. */
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 
+// ======================================================
+// SESSION MANAGEMENT — PROTECTED ROUTE MATCHING
+// ======================================================
 export function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const needsSession = pathname.startsWith("/account")

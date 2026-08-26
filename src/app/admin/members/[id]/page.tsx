@@ -1,3 +1,8 @@
+/**
+ * Protected administrator view of one member's club history and rewards.
+ * All queries remain subject to admin RLS policies after the server-side access check.
+ */
+
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, Award, BookOpen, CalendarCheck, Heart, ShieldCheck } from "lucide-react";
@@ -8,6 +13,9 @@ export const metadata = { robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 export default async function AdminMemberPage({ params }: { params: Promise<{ id: string }> }) {
+  // ======================================================
+  // ADMIN SECURITY — MEMBER RECORD ACCESS
+  // ======================================================
   const { id } = await params;
   const supabase = await createClient();
   if (!supabase) redirect("/?auth=login");
@@ -19,6 +27,9 @@ export default async function AdminMemberPage({ params }: { params: Promise<{ id
   const { data: role } = await supabase.from("user_roles").select("role").eq("user_id", currentUserId).single();
   if (role?.role !== "admin") redirect("/account");
 
+  // ======================================================
+  // ADMIN MEMBER MANAGEMENT — READ MODEL
+  // ======================================================
   const [directory, profile, memberRole, attendance, bookings, rewards, special, progress, favorites] = await Promise.all([
     supabase.rpc("admin_member_directory"),
     supabase.from("profiles").select("id,display_name,telegram_username,english_level,created_at").eq("id", id).single(),

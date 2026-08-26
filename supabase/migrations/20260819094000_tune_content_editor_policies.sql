@@ -1,3 +1,8 @@
+-- ============================================
+-- CONTENT EDITOR — RLS POLICY TUNING
+-- Risk: CRITICAL — changes database authorization policies.
+-- ============================================
+
 begin;
 
 drop policy if exists site_content_admin_write on public.site_content;

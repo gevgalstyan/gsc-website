@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Auth-aware public header for desktop and mobile navigation.
+ * It owns drawer focus/scroll behavior and the compact signed-in profile menu.
+ */
+
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Menu, UserCircle, X } from "lucide-react";
@@ -9,6 +14,9 @@ import { NotificationBell } from "@/components/notification-bell";
 import { navigation } from "@/lib/site-data";
 import type { Viewer } from "@/lib/viewer";
 
+// ======================================================
+// DESKTOP / MOBILE NAVIGATION
+// ======================================================
 export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer }) {
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -18,6 +26,7 @@ export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer
   const pathname = usePathname();
   const isAuthenticated = viewer.role !== "loggedOut";
 
+  // Locks background scrolling and traps keyboard focus while the mobile drawer is open.
   useEffect(() => {
     if (!open) return;
 
@@ -55,6 +64,7 @@ export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer
     };
   }, [open]);
 
+  // Closes the desktop profile menu after an outside click or Escape key.
   useEffect(() => {
     if (!profileOpen) return;
     function closeProfile(event: MouseEvent) {

@@ -1,3 +1,8 @@
+-- ============================================
+-- CORE MEMBERS, MEETUPS, BOOKINGS, AND LOYALTY
+-- Risk: CRITICAL — foundational schema, triggers, grants, and RLS.
+-- ============================================
+
 begin;
 
 -- Internal helpers are intentionally kept outside the exposed public schema.
@@ -181,6 +186,9 @@ create table public.loyalty_rewards (
     on delete restrict
 );
 
+-- ============================================
+-- DATABASE INDEXES
+-- ============================================
 -- Foreign-key and common-filter indexes.
 create index user_roles_admin_idx
   on public.user_roles (user_id)
@@ -252,6 +260,9 @@ create trigger loyalty_rewards_set_updated_at
 before update on public.loyalty_rewards
 for each row execute function app_private.set_updated_at();
 
+-- ============================================
+-- ADMIN SECURITY / ROLE AUTHORIZATION
+-- ============================================
 -- Authorization reads protected role data, never user-editable metadata.
 create function app_private.is_admin()
 returns boolean
@@ -391,6 +402,9 @@ create trigger user_roles_guard_changes
 before insert or update or delete on public.user_roles
 for each row execute function app_private.guard_user_role_changes();
 
+-- ============================================
+-- MEETUP BOOKING / CANCELLATION / CAPACITY
+-- ============================================
 -- Members may only turn their own confirmed booking into a cancellation.
 create function app_private.guard_booking_updates()
 returns trigger
@@ -542,6 +556,9 @@ after insert or update of status, meetup_id or delete
 on public.meetup_bookings
 for each row execute function app_private.sync_booking_capacity();
 
+-- ============================================
+-- SECURITY / ROW LEVEL SECURITY
+-- ============================================
 -- RLS is mandatory on every public table.
 alter table public.profiles enable row level security;
 alter table public.user_roles enable row level security;

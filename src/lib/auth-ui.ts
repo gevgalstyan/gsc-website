@@ -1,7 +1,12 @@
+/** Maps viewer roles to useful public calls to action without owning session state. */
+
 import type { ViewerRole } from "@/lib/viewer";
 
 export type AuthCtaKind = "join" | "profile" | "meetup";
 
+// ======================================================
+// AUTHENTICATION — AUTH-AWARE CTA DESTINATIONS
+// ======================================================
 export function resolveAuthCta(
   kind: AuthCtaKind,
   role: ViewerRole,

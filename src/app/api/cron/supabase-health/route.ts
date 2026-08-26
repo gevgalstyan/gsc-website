@@ -1,3 +1,5 @@
+/** Secret-protected health check used by scheduled production monitoring. */
+
 import { createClient } from "@supabase/supabase-js";
 
 export const dynamic = "force-dynamic";
@@ -7,6 +9,9 @@ function json(body: { status: "healthy" | "unhealthy"; timestamp: string }, stat
   return Response.json(body, { status, headers: { "Cache-Control": "no-store, max-age=0" } });
 }
 
+// ======================================================
+// API ROUTES — SUPABASE HEALTH CHECK
+// ======================================================
 export async function GET(request: Request) {
   const timestamp = new Date().toISOString();
   const secret = process.env.CRON_SECRET;

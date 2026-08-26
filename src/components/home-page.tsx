@@ -1,5 +1,10 @@
 "use client";
 
+/**
+ * Interactive public homepage composed from authored fallbacks and published CMS data.
+ * It coordinates auth-aware CTAs, featured meetups, and the conversation deck.
+ */
+
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, ArrowRight, BadgeCheck, CalendarDays, Check, Clock3, Coffee, MapPin, MessageCircle, Star, Ticket, Users } from "lucide-react";
@@ -34,6 +39,9 @@ function bookingState(meetup: PublishedMeetup): { state: MeetupBookingState; lab
   return { state, label: state === "closed" ? "Booking closed" : state === "not_open" ? "Booking opens soon" : state === "full" ? "Meetup full" : "Booking open" };
 }
 
+// ======================================================
+// PUBLIC HOMEPAGE — AUTH-AWARE MEMBER EXPERIENCE
+// ======================================================
 export function HomePage({ initialAuthOpen = false, viewer, meetups = [], content = {}, deferPublicData = false }: { initialAuthOpen?: boolean; viewer: Viewer; meetups?: PublishedMeetup[]; content?: Record<string, string>; deferPublicData?: boolean }) {
   const [authOpen, setAuthOpen] = useState(initialAuthOpen && viewer.role === "loggedOut");
   const [publicMeetups, setPublicMeetups] = useState(meetups);

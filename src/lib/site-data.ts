@@ -15,3 +15,4 @@ export const socialLinks = [
   { label: "Threads", href: "https://threads.net/@galstyansspeakingclub" },
   { label: "VK", href: "https://vk.ru/galstyansspeakingclub" },
 ];
+/** Shared public navigation labels and stable site-wide content constants. */

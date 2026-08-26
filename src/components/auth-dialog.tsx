@@ -1,4 +1,10 @@
 "use client";
+
+/**
+ * Modal for email/password authentication, password recovery, and Google OAuth.
+ * Supabase owns the session; this component owns only form and accessibility state.
+ * Risk: HIGH. Redirect URLs and auth calls affect account access.
+ */
 import { LockKeyhole, X } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -9,12 +15,18 @@ type Notice = { kind: "error" | "success"; text: string } | null;
 const googleEnabled = process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED === "true";
 const telegramEnabled = process.env.NEXT_PUBLIC_TELEGRAM_AUTH_ENABLED === "true";
 
+// ======================================================
+// AUTHENTICATION — HUMAN-READABLE ERRORS
+// ======================================================
 function authErrorMessage(mode: Mode) {
   if (mode === "login") return "We couldn’t sign you in. Check your email and password, then try again.";
   if (mode === "register") return "We couldn’t create your account. Check the details or try signing in instead.";
   return "We couldn’t send the reset email. Please check the address and try again.";
 }
 
+// ======================================================
+// EMAIL/PASSWORD AUTH — SESSION ENTRY
+// ======================================================
 export function AuthDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [mode, setMode] = useState<Mode>("login"); const [notice, setNotice] = useState<Notice>(null); const [loading, setLoading] = useState(false); const [googleLoading, setGoogleLoading] = useState(false);
   const dialogRef = useRef<HTMLElement>(null); const closeRef = useRef<HTMLButtonElement>(null); const router = useRouter();
@@ -34,6 +46,9 @@ export function AuthDialog({ open, onClose }: { open: boolean; onClose: () => vo
     if (mode === "register") { const displayName = String(form.get("display_name") ?? "").trim(); const { data, error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: authCallbackUrl(), data: { full_name: displayName } } }); setLoading(false); setNotice(error ? { kind: "error", text: authErrorMessage(mode) } : data.session ? { kind: "success", text: "Account created. Opening your profile…" } : { kind: "success", text: "Check your email to confirm your account." }); if (data.session) setTimeout(() => { close(); router.push("/account"); router.refresh(); }, 500); return; }
     const { error } = await client.auth.signInWithPassword({ email, password }); setLoading(false); if (error) return setNotice({ kind: "error", text: authErrorMessage(mode) }); close(); router.push("/account"); router.refresh();
   }
+  // ======================================================
+  // GOOGLE OAUTH
+  // ======================================================
   async function googleLogin() {
     setLoading(true); setGoogleLoading(true); setNotice(null); const client = getSupabaseBrowserClient();
     if (!client) { setLoading(false); setGoogleLoading(false); setNotice({ kind: "error", text: "Member access is being configured. Please join us on Telegram for announcements." }); return; }

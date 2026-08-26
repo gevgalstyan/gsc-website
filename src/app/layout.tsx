@@ -1,3 +1,5 @@
+/** Root document shell, global fonts, viewport settings, and default site metadata. */
+
 import type { Metadata, Viewport } from "next";
 import { Manrope, Playfair_Display } from "next/font/google";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
@@ -7,6 +9,9 @@ import "./business-flow.css";
 const manrope = Manrope({ subsets: ["latin", "cyrillic"], variable: "--font-sans", display: "swap", preload: false });
 const playfair = Playfair_Display({ subsets: ["latin", "cyrillic"], variable: "--font-display", style: ["normal", "italic"], display: "swap", preload: false });
 
+// ======================================================
+// SEO / METADATA — SITE DEFAULTS
+// ======================================================
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {

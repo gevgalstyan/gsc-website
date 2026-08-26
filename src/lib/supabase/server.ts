@@ -1,7 +1,12 @@
+/** Request-scoped Supabase server client backed by Next.js cookies. */
+
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { fetchWithTimeout } from "@/lib/supabase/fetch";
 
+// ======================================================
+// SUPABASE SERVER CLIENT — COOKIE SESSION
+// ======================================================
 export async function createClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;

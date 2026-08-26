@@ -1,8 +1,13 @@
 "use client";
+
+/** Lets a recovery-session user choose and save a new Supabase Auth password. */
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
+// ======================================================
+// EMAIL/PASSWORD AUTH — PASSWORD RECOVERY
+// ======================================================
 export function PasswordResetForm() {
   const [status, setStatus] = useState<{ kind: "idle" | "loading" | "error" | "success"; message?: string }>({ kind: "idle" });
   const router = useRouter();

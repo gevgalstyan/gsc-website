@@ -1,3 +1,8 @@
+-- ============================================
+-- STRUCTURED SITE CONTENT EDITOR
+-- Risk: CRITICAL — public content, revisions, media storage, and RLS.
+-- ============================================
+
 begin;
 
 -- Evolve the original key/value CMS without breaking existing public fallbacks.
@@ -50,6 +55,9 @@ $$;
 create index if not exists site_content_page_order_idx
   on public.site_content (page_slug, section_slug, sort_order, key);
 
+-- ============================================
+-- FAQ CONTENT / REVISION HISTORY
+-- ============================================
 create table if not exists public.site_faq_items (
   id uuid primary key default gen_random_uuid(),
   draft_question text not null default '',
@@ -134,6 +142,9 @@ for all to authenticated
 using ((select app_private.is_admin()))
 with check ((select app_private.is_admin()));
 
+-- ============================================
+-- STORAGE / PUBLIC SITE MEDIA
+-- ============================================
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
   'site-media',
@@ -161,6 +172,9 @@ create policy site_media_admin_delete on storage.objects
 for delete to authenticated
 using (bucket_id = 'site-media' and (select app_private.is_admin()));
 
+-- ============================================
+-- CONTENT PUBLISH / DISCARD / RESTORE RPCS
+-- ============================================
 create or replace function public.publish_site_page(p_page_slug text)
 returns void
 language plpgsql

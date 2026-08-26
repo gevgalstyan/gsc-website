@@ -1,3 +1,8 @@
+/**
+ * Loads published meetup summaries from Supabase for the public website.
+ * Missing configuration or query failures fall back safely to an empty list.
+ */
+
 import { createClient } from "@/lib/supabase/server";
 
 export type PublishedMeetup = {
@@ -21,6 +26,9 @@ export type PublishedMeetup = {
   member_booking_status: "confirmed" | "cancelled" | null;
 };
 
+// ======================================================
+// MEETUP LISTING — PUBLIC READ MODEL
+// ======================================================
 export async function getPublishedMeetups(): Promise<PublishedMeetup[]> {
   const supabase = await createClient();
   if (!supabase) return [];

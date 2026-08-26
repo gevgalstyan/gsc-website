@@ -1,3 +1,8 @@
+-- ============================================
+-- CONTENT SEED — PRESERVE HOMEPAGE COPY
+-- Risk: CRITICAL when applied; updates production content rows.
+-- ============================================
+
 begin;
 
 update public.site_content
