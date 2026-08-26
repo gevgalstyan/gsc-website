@@ -5,6 +5,7 @@ import { getManagedQuestions } from "@/lib/managed-questions";
 import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
 
 export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export const generateMetadata = () => editablePageMetadata("questions", "English Conversation Questions", "Explore Galstyan’s Speaking Club’s conversation-question library by category and English level, with random prompts, translations, favorites, and progress.", "/questions");
 

@@ -4,8 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, ArrowRight, BadgeCheck, CalendarDays, Check, Clock3, Coffee, MapPin, MessageCircle, Star, Ticket, Users } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { AuthDialog } from "@/components/auth-dialog";
+import { AuthAwareCta } from "@/components/auth-aware-cta";
 import { FaqSection } from "@/components/faq-section";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
@@ -14,7 +14,7 @@ import type { PublishedMeetup } from "@/lib/public-content";
 import type { MeetupBookingState } from "@/components/meetup-booking-button";
 import { getMeetupBookingState, MEETUP_TIME_ZONE } from "@/lib/meetup-time";
 import { socialLinks } from "@/lib/site-data";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import type { Viewer } from "@/lib/viewer";
 
 function meetupDate(meetup: PublishedMeetup) {
   const date = new Date(meetup.starts_at);
@@ -34,34 +34,20 @@ function bookingState(meetup: PublishedMeetup): { state: MeetupBookingState; lab
   return { state, label: state === "closed" ? "Booking closed" : state === "not_open" ? "Booking opens soon" : state === "full" ? "Meetup full" : "Booking open" };
 }
 
-export function HomePage({ initialAuthOpen = false, authenticated = false, meetups = [], content = {}, deferPublicData = false }: { initialAuthOpen?: boolean; authenticated?: boolean; meetups?: PublishedMeetup[]; content?: Record<string, string>; deferPublicData?: boolean }) {
-  const [authOpen, setAuthOpen] = useState(initialAuthOpen);
-  const [isAuthenticated, setIsAuthenticated] = useState(authenticated);
+export function HomePage({ initialAuthOpen = false, viewer, meetups = [], content = {}, deferPublicData = false }: { initialAuthOpen?: boolean; viewer: Viewer; meetups?: PublishedMeetup[]; content?: Record<string, string>; deferPublicData?: boolean }) {
+  const [authOpen, setAuthOpen] = useState(initialAuthOpen && viewer.role === "loggedOut");
   const [publicMeetups, setPublicMeetups] = useState(meetups);
   const [publicContent, setPublicContent] = useState(content);
   const [publicDataState, setPublicDataState] = useState<"loading" | "ready" | "error">(deferPublicData ? "loading" : "ready");
   const [publicDataAttempt, setPublicDataAttempt] = useState(0);
 
   useEffect(() => {
+    if (viewer.role !== "loggedOut") return;
     const authParam = new URLSearchParams(window.location.search).get("auth");
     if (!authParam) return;
     const openTimer = window.setTimeout(() => setAuthOpen(true), 0);
     return () => window.clearTimeout(openTimer);
-  }, []);
-
-  useEffect(() => {
-    const client = getSupabaseBrowserClient();
-    if (!client) return;
-    let active = true;
-
-    client.auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
-      if (active) setIsAuthenticated(Boolean(data.session?.user));
-    }).catch(() => undefined);
-    const { data: authState } = client.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
-      if (active) setIsAuthenticated(Boolean(session?.user));
-    });
-    return () => { active = false; authState.subscription.unsubscribe(); };
-  }, []);
+  }, [viewer.role]);
 
   useEffect(() => {
     if (!deferPublicData) return;
@@ -87,7 +73,7 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
 
   return (
     <>
-      <Header onAuth={() => setAuthOpen(true)} authenticated={authenticated} />
+      <Header onAuth={() => setAuthOpen(true)} viewer={viewer} />
       <main>
         {publicContent["settings.banner_text"] && <aside className="site-banner" role="status">{publicContent["settings.banner_text"]}</aside>}
         <section id="home" className="hero section">
@@ -96,7 +82,7 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
             {publicContent["home.hero.title"] === "English Speaking Club in Sergiev Posad" || !publicContent["home.hero.title"] ? <h1>English<br /><em>Speaking Club</em><small> in Sergiev Posad</small></h1> : <h1>{publicContent["home.hero.title"]}</h1>}
             <p className="hero-lead">{publicContent["home.hero.subtitle"] || publicContent["homepage.hero.lead"] || "A friendly English conversation club in Sergiev Posad. Practice spoken English with real people."}</p>
             <div className="hero-buttons">
-              <Link className="button button-primary" href={isAuthenticated ? "/account" : publicContent["home.hero.cta_url"] || "/?auth=register"}>{isAuthenticated ? "Open your dashboard" : publicContent["home.hero.cta"] || "Join the club"} <ArrowRight /></Link>
+              <AuthAwareCta kind="join" role={viewer.role} loggedOutLabel={publicContent["home.hero.cta"] || "Join the club"} loggedOutHref={publicContent["home.hero.cta_url"] || "/?auth=register"} adminDestination="admin" onLoggedOutAuth={() => setAuthOpen(true)} />
               <Link className="button button-quiet" href="/meetups">Explore meetups <ArrowDown /></Link>
             </div>
             <div className="hero-proof">
@@ -148,7 +134,7 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
                 <Link className="button button-card" href="/meetups">See meetup details <ArrowRight /></Link>
               </article>;
             })}
-          </div> : <div className="meetup-empty"><CalendarDays /><div><h3>{publicDataState === "loading" ? "Loading upcoming meetups…" : publicDataState === "error" ? "Meetups are taking a moment." : "Next meetup coming soon."}</h3><p>{publicDataState === "error" ? "Couldn’t load this section. Try again, or join Telegram for announcements." : "No published meetup is available yet. Join Telegram for the first real date, venue, and booking details."}</p>{publicDataState === "error" ? <button className="text-link" type="button" onClick={retryPublicData}>Try again <ArrowRight /></button> : <a className="text-link" href={socialLinks[0].href} target="_blank" rel="noreferrer">Join the announcement channel <ArrowRight /></a>}</div></div>}
+          </div> : <div className="meetup-empty"><CalendarDays /><div><h3>{publicDataState === "loading" ? "Loading upcoming meetups…" : publicDataState === "error" ? "Meetups are taking a moment." : "No upcoming meetup yet."}</h3><p>{publicDataState === "error" ? "Couldn’t load this section. Try again, or join Telegram for announcements." : "We’ll let you know when the next one is published. Join Telegram for the first real date, venue, and booking details."}</p>{publicDataState === "error" ? <button className="text-link" type="button" onClick={retryPublicData}>Try again <ArrowRight /></button> : <a className="text-link" href={socialLinks[0].href} target="_blank" rel="noreferrer">Join the announcement channel <ArrowRight /></a>}</div></div>}
           <p className="meetup-note"><CalendarDays /> Want to see every published event? <Link href="/meetups">Open the meetups page.</Link></p>
         </section>
 
@@ -165,7 +151,7 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
 
         <section id="loyalty" className="section loyalty-section">
           <div className="loyalty-card">
-            <div className="loyalty-copy"><span className="eyebrow">Keep showing up</span><h2>Six visits.<br />One free <em>meetup.</em></h2><p>Every conversation counts. Members can track qualifying attendance and unlock a free meetup after six paid visits.</p><div className="loyalty-actions">{isAuthenticated ? <Link className="button button-primary" href="/account#rewards">View your progress <ArrowRight /></Link> : <button className="button button-primary" onClick={() => setAuthOpen(true)}>Create your profile <ArrowRight /></button>}<Link className="button button-outline-dark" href="/membership">How membership works <ArrowRight /></Link></div></div>
+            <div className="loyalty-copy"><span className="eyebrow">Keep showing up</span><h2>Six visits.<br />One free <em>meetup.</em></h2><p>Every conversation counts. Members can track qualifying attendance and unlock a free meetup after six paid visits.</p><div className="loyalty-actions">{viewer.role === "loggedOut" ? <AuthAwareCta kind="profile" role={viewer.role} onLoggedOutAuth={() => setAuthOpen(true)} /> : <Link className="button button-primary" href="/account#rewards">View your progress <ArrowRight /></Link>}<Link className="button button-outline-dark" href="/membership">How membership works <ArrowRight /></Link></div></div>
             <div className="stamp-card"><div className="stamp-head"><div><BadgeCheck /><span><b>GSC Member</b><small>Loyalty card</small></span></div><strong>English ON.</strong></div><div className="stamps">{[1,2,3,4,5,6].map((n) => <span key={n}>{n}</span>)}<span className="reward"><Star />FREE</span></div><div className="stamp-foot"><span>6 visits</span><i /><span>1 free meetup</span></div></div>
           </div>
         </section>
@@ -173,7 +159,7 @@ export function HomePage({ initialAuthOpen = false, authenticated = false, meetu
         <section id="how-it-works" className="section how-section">
           <div className="section-heading"><div><span className="eyebrow">Simple by design</span><h2>How an English speaking meetup <em>works.</em></h2></div><p>Your next good conversation starts with the community, a published meetup, and a table ready for English.</p></div>
           <div className="steps">
-            <article><span>01</span><div><Users /></div><h3>Join the community</h3><p>Create a member profile or join our Telegram channel for announcements.</p></article>
+            <article><span>01</span><div><Users /></div><h3>{viewer.role === "loggedOut" ? "Join the community" : "Open your member space"}</h3><p>{viewer.role === "loggedOut" ? "Create a member profile or join our Telegram channel for announcements." : "Use your dashboard for bookings, progress, attendance, and rewards."}</p></article>
             <article><span>02</span><div><CalendarDays /></div><h3>Choose a published meetup</h3><p>When a date and venue are announced, check the details and reserve your place if booking is open.</p></article>
             <article><span>03</span><div><MessageCircle /></div><h3>Turn English on</h3><p>Arrive, meet your table, draw a card, and start speaking.</p></article>
           </div>

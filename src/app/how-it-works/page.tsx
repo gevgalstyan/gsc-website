@@ -3,13 +3,15 @@ import { ArrowRight, Award, CalendarDays, Check, MessageCircle, Users } from "lu
 import { FaqSection } from "@/components/faq-section";
 import { PublicPageShell } from "@/components/public-page-shell";
 import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
+import { getViewer } from "@/lib/viewer";
 
 export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export const generateMetadata = () => editablePageMetadata("how-it-works", "How the English Speaking Club Works", "See how Galstyan’s Speaking Club combines English conversation practice, meetups, questions, and a local community in Sergiev Posad.", "/how-it-works");
 
 export default async function HowItWorksPage() {
-  const content = await getPublicContent();
+  const [content, viewer] = await Promise.all([getPublicContent(), getViewer()]);
   return (
     <PublicPageShell
       eyebrow="How it works"
@@ -20,7 +22,7 @@ export default async function HowItWorksPage() {
     >
       <section className="section public-section public-steps">
         <div className="public-step"><span>01</span><div><Users /><h2>Discover GSC</h2><p>Read about the club, browse the question library, and follow Telegram for real meetup announcements.</p></div></div>
-        <div className="public-step"><span>02</span><div><Users /><h2>Register when ready</h2><p>Create a member account when the configured authentication options are available. Member access keeps your progress in one place.</p></div></div>
+        <div className="public-step"><span>02</span><div><Users /><h2>{viewer.role === "loggedOut" ? "Register when ready" : "Use your dashboard"}</h2><p>{viewer.role === "loggedOut" ? "Create a member account when you are ready. Your profile keeps progress in one place." : "Your existing member space keeps bookings, question progress, attendance, and rewards together."}</p></div></div>
         <div className="public-step"><span>03</span><div><CalendarDays /><h2>Choose a published meetup</h2><p>Check the real date, time, venue, capacity, price, and booking state. Nothing is invented while an event is still unpublished.</p></div></div>
         <div className="public-step"><span>04</span><div><MessageCircle /><h2>Book and attend</h2><p>Use the booking route or club instructions attached to the published event, then arrive ready for an English-first conversation.</p></div></div>
         <div className="public-step"><span>05</span><div><Check /><h2>Check in</h2><p>Attendance is recorded by the club/admin flow so your member history can reflect the conversation you joined.</p></div></div>

@@ -6,6 +6,7 @@ import type { MeetupBookingState } from "@/components/meetup-booking-button";
 import { getPublishedMeetups, type PublishedMeetup } from "@/lib/public-content";
 import { getMeetupBookingState, MEETUP_TIME_ZONE } from "@/lib/meetup-time";
 import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
+import { getViewer, type ViewerRole } from "@/lib/viewer";
 
 export const generateMetadata = () => editablePageMetadata("meetups", "English Speaking Meetups in Sergiev Posad", "Find published English conversation meetups from Galstyan’s Speaking Club in Sergiev Posad, with real times, places, capacity, price, and booking status.", "/meetups");
 export const dynamic = "force-dynamic";
@@ -28,7 +29,7 @@ function bookingState(meetup: PublishedMeetup): { state: MeetupBookingState; lab
   return { state, label: state === "closed" ? "Booking closed" : state === "not_open" ? "Booking opens soon" : state === "full" ? "Meetup full" : "Booking open" };
 }
 
-function MeetupCard({ meetup }: { meetup: PublishedMeetup }) {
+function MeetupCard({ meetup, viewerRole }: { meetup: PublishedMeetup; viewerRole: ViewerRole }) {
   const details = formatDate(meetup);
   const booking = bookingState(meetup);
   return (
@@ -46,14 +47,14 @@ function MeetupCard({ meetup }: { meetup: PublishedMeetup }) {
         <div><Users /><dt>Capacity</dt><dd>{Math.max(0, meetup.capacity - meetup.confirmed_booking_count)} of {meetup.capacity} places remaining</dd></div>
         <div><Ticket /><dt>Price</dt><dd>{price(meetup)}</dd></div>
       </dl>
-      <p className="published-meetup-note">Book a place with your member account. If you need help before joining, the club is also available on Telegram.</p>
-      <div className="public-actions"><MeetupBookingButton meetupId={meetup.id} initialBooked={meetup.member_booking_status === "confirmed"} bookingState={booking.state} /><a className="button button-outline-dark" href="https://t.me/GalstyansSpeakingClub" target="_blank" rel="noreferrer">Ask on Telegram <ArrowRight /></a></div>
+      <p className="published-meetup-note">{viewerRole === "loggedOut" ? "Sign in to reserve a place. You can also ask the club a question on Telegram." : viewerRole === "admin" ? "Review this event in the admin workspace, or ask the club a question on Telegram." : "Reserve your place here, or ask the club a question on Telegram."}</p>
+      <div className="public-actions">{viewerRole === "admin" ? <Link className="button button-primary" href="/admin">Manage meetup <ArrowRight /></Link> : <MeetupBookingButton meetupId={meetup.id} initialBooked={meetup.member_booking_status === "confirmed"} bookingState={booking.state} authenticated={viewerRole === "member"} />}<a className="button button-outline-dark" href="https://t.me/GalstyansSpeakingClub" target="_blank" rel="noreferrer">Ask on Telegram <ArrowRight /></a></div>
     </article>
   );
 }
 
 export default async function MeetupsPage() {
-  const [meetups, content] = await Promise.all([getPublishedMeetups(), getPublicContent()]);
+  const [meetups, content, viewer] = await Promise.all([getPublishedMeetups(), getPublicContent(), getViewer()]);
   return (
     <PublicPageShell
       eyebrow="Meetups"
@@ -63,7 +64,7 @@ export default async function MeetupsPage() {
       breadcrumbPath="/meetups"
     >
       <section className="section public-section published-meetups-section">
-        {meetups.length ? <div className="published-meetup-list">{meetups.map((meetup) => <MeetupCard key={meetup.id} meetup={meetup} />)}</div> : <div className="public-empty-state"><CalendarDays /><span className="eyebrow">No published events yet</span><h2>Next meetup coming soon.</h2><p>There is no confirmed public meetup to show right now. We will never fill this page with invented dates, venues, prices, or capacity. Join Telegram for the next real announcement.</p><div className="public-actions"><a className="button button-primary" href="https://t.me/GalstyansSpeakingClub" target="_blank" rel="noreferrer">Join Telegram <ArrowRight /></a><Link className="button button-outline-dark" href="/contact">Contact the club <ArrowRight /></Link></div></div>}
+        {meetups.length ? <div className="published-meetup-list">{meetups.map((meetup) => <MeetupCard key={meetup.id} meetup={meetup} viewerRole={viewer.role} />)}</div> : <div className="public-empty-state"><CalendarDays /><span className="eyebrow">No published events yet</span><h2>No upcoming meetup yet.</h2><p>We’ll let you know when the next one is published. Join Telegram for the next real date, venue, and booking details.</p><div className="public-actions"><a className="button button-primary" href="https://t.me/GalstyansSpeakingClub" target="_blank" rel="noreferrer">Join Telegram <ArrowRight /></a><Link className="button button-outline-dark" href="/contact">Contact the club <ArrowRight /></Link></div></div>}
       </section>
 
       <section className="section public-section public-card-section">

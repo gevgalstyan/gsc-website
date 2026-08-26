@@ -3,51 +3,20 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Menu, UserCircle, X } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { NotificationBell } from "@/components/notification-bell";
 import { navigation } from "@/lib/site-data";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import type { Viewer } from "@/lib/viewer";
 
-export function Header({ onAuth, authenticated = false }: { onAuth?: () => void; authenticated?: boolean }) {
+export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer }) {
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(authenticated);
-  const [profile, setProfile] = useState<{ name: string; avatarUrl: string | null }>({ name: "GSC member", avatarUrl: null });
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const configuredClient = getSupabaseBrowserClient();
-    if (!configuredClient) return;
-    const client = configuredClient;
-    let mounted = true;
-
-    async function loadProfile() {
-      const { data } = await client.auth.getSession();
-      const user = data.session?.user;
-      const userId = user?.id ?? null;
-      if (!userId || !mounted) {
-        if (mounted) setIsAuthenticated(false);
-        return;
-      }
-      const metadata = user.user_metadata as Record<string, unknown> | undefined;
-      const { data: profileRow } = await client.from("profiles").select("display_name,avatar_url").eq("id", userId).maybeSingle();
-      if (!mounted) return;
-      const name = typeof profileRow?.display_name === "string" && profileRow.display_name.trim()
-        ? profileRow.display_name
-        : typeof metadata?.full_name === "string" && metadata.full_name.trim()
-          ? metadata.full_name
-          : typeof metadata?.name === "string" && metadata.name.trim()
-            ? metadata.name
-            : "GSC member";
-      const avatarUrl = typeof profileRow?.avatar_url === "string" ? profileRow.avatar_url : typeof metadata?.avatar_url === "string" ? metadata.avatar_url : null;
-      setProfile({ name, avatarUrl });
-      setIsAuthenticated(true);
-    }
-
-    void loadProfile().catch(() => undefined);
-    const { data: authState } = client.auth.onAuthStateChange(() => { void loadProfile().catch(() => undefined); });
-    return () => { mounted = false; authState.subscription.unsubscribe(); };
-  }, []);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const isAuthenticated = viewer.role !== "loggedOut";
 
   useEffect(() => {
     if (!open) return;
@@ -86,6 +55,22 @@ export function Header({ onAuth, authenticated = false }: { onAuth?: () => void;
     };
   }, [open]);
 
+  useEffect(() => {
+    if (!profileOpen) return;
+    function closeProfile(event: MouseEvent) {
+      if (!profileRef.current?.contains(event.target as Node)) setProfileOpen(false);
+    }
+    function closeProfileOnEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") setProfileOpen(false);
+    }
+    document.addEventListener("mousedown", closeProfile);
+    window.addEventListener("keydown", closeProfileOnEscape);
+    return () => {
+      document.removeEventListener("mousedown", closeProfile);
+      window.removeEventListener("keydown", closeProfileOnEscape);
+    };
+  }, [profileOpen]);
+
   function closeMenu() {
     setOpen(false);
   }
@@ -94,18 +79,21 @@ export function Header({ onAuth, authenticated = false }: { onAuth?: () => void;
     if (onAuth) onAuth();
   }
 
-  const profileInitial = profile.name.trim().charAt(0).toUpperCase() || "G";
-  const profileControl = <div className="profile-control">
+  function isActive(href: string) {
+    return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+  }
+
+  const profileInitial = viewer.name.trim().charAt(0).toUpperCase() || "G";
+  const profileControl = <div className="profile-control" ref={profileRef}>
     <button className="profile-trigger" type="button" aria-expanded={profileOpen} aria-haspopup="menu" onClick={() => setProfileOpen((value) => !value)}>
-      {profile.avatarUrl ? <Image src={profile.avatarUrl} alt="" width={34} height={34} unoptimized /> : <span>{profileInitial}</span>}
-      <b>{profile.name}</b><ChevronDown size={15} />
+      {viewer.avatarUrl ? <Image src={viewer.avatarUrl} alt="" width={34} height={34} unoptimized /> : <span>{profileInitial}</span>}
+      <b>{viewer.name}</b><ChevronDown size={15} />
     </button>
     {profileOpen && <div className="profile-menu" role="menu">
-      <Link href="/account" role="menuitem" onClick={() => setProfileOpen(false)}>My profile</Link>
-      <Link href="/account#bookings" role="menuitem" onClick={() => setProfileOpen(false)}>My bookings</Link>
-      <Link href="/account#attendance" role="menuitem" onClick={() => setProfileOpen(false)}>Attendance</Link>
-      <Link href="/account#rewards" role="menuitem" onClick={() => setProfileOpen(false)}>Rewards</Link>
-      <Link href="/account#settings" role="menuitem" onClick={() => setProfileOpen(false)}>Settings</Link>
+      <Link href="/account" role="menuitem" onClick={() => setProfileOpen(false)}>My account</Link>
+      <Link href="/account#settings" role="menuitem" onClick={() => setProfileOpen(false)}>Profile</Link>
+      <Link href="/account#bookings" role="menuitem" onClick={() => setProfileOpen(false)}>Meetups &amp; bookings</Link>
+      {viewer.role === "admin" && <Link href="/admin" role="menuitem" onClick={() => setProfileOpen(false)}>Admin dashboard</Link>}
       <form action="/auth/signout" method="post"><button type="submit" role="menuitem">Log out</button></form>
     </div>}
   </div>;
@@ -118,10 +106,11 @@ export function Header({ onAuth, authenticated = false }: { onAuth?: () => void;
           <span><b>Galstyan&apos;s</b><small>Speaking Club</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
-          {navigation.map((item) => <Link key={item.href} href={item.href}>{item.label}</Link>)}
+          {navigation.map((item) => <Link className={isActive(item.href) ? "active" : undefined} aria-current={isActive(item.href) ? "page" : undefined} key={item.href} href={item.href}>{item.label}</Link>)}
         </nav>
         <div className="header-actions">
-          {isAuthenticated ? profileControl : onAuth ? <button className="button button-small button-outline desktop-auth" onClick={openAuth}>Member access</button> : <Link className="button button-small button-outline desktop-auth" href="/?auth=login">Member access</Link>}
+          {isAuthenticated && <NotificationBell initialNotifications={viewer.notifications} />}
+          {isAuthenticated ? profileControl : onAuth ? <button className="button button-small button-outline desktop-auth" onClick={openAuth}>Join / Login</button> : <Link className="button button-small button-outline desktop-auth" href="/?auth=login">Join / Login</Link>}
           <button ref={menuButtonRef} className="menu-button" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open} aria-controls="mobile-navigation"><Menu /></button>
         </div>
       </div>
@@ -133,12 +122,19 @@ export function Header({ onAuth, authenticated = false }: { onAuth?: () => void;
           </div>
           <nav aria-label="Mobile navigation">
             {navigation.map((item, index) => (
-              <Link key={item.href} href={item.href} onClick={closeMenu}>
+              <Link className={isActive(item.href) ? "active" : undefined} aria-current={isActive(item.href) ? "page" : undefined} key={item.href} href={item.href} onClick={closeMenu}>
                 <span>0{index + 1}</span>{item.label}
               </Link>
             ))}
           </nav>
-          {isAuthenticated ? <><Link className="mobile-profile-link" href="/account" onClick={closeMenu}><UserCircle size={18} />{profile.name}&apos;s dashboard</Link><Link className="mobile-profile-link" href="/account#bookings" onClick={closeMenu}>My bookings</Link><Link className="mobile-profile-link" href="/account#attendance" onClick={closeMenu}>Attendance & rewards</Link><form action="/auth/signout" method="post"><button className="button button-primary" type="submit">Log out</button></form></> : onAuth ? <button className="button button-primary" onClick={() => { closeMenu(); openAuth(); }}>Member access</button> : <Link className="button button-primary" href="/?auth=login" onClick={closeMenu}>Member access</Link>}
+          {isAuthenticated ? <div className="mobile-account-panel">
+            <div className="mobile-account-heading">{viewer.avatarUrl ? <Image src={viewer.avatarUrl} alt="" width={38} height={38} unoptimized /> : <span>{profileInitial}</span>}<div><small>Signed in as</small><strong>{viewer.name}</strong></div></div>
+            <Link className="mobile-profile-link" href="/account" onClick={closeMenu}><UserCircle size={18} />My account</Link>
+            <Link className="mobile-profile-link" href="/account#settings" onClick={closeMenu}>Profile</Link>
+            <Link className="mobile-profile-link" href="/account#bookings" onClick={closeMenu}>Meetups &amp; bookings</Link>
+            {viewer.role === "admin" && <Link className="mobile-profile-link" href="/admin" onClick={closeMenu}>Admin dashboard</Link>}
+            <form action="/auth/signout" method="post"><button className="mobile-logout" type="submit">Log out</button></form>
+          </div> : onAuth ? <button className="button button-primary mobile-auth-action" onClick={() => { closeMenu(); openAuth(); }}>Join / Login</button> : <Link className="button button-primary mobile-auth-action" href="/?auth=login" onClick={closeMenu}>Join / Login</Link>}
           <p>English ON. <span>•</span> Sergiev Posad</p>
         </div>
       )}

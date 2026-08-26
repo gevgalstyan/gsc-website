@@ -17,7 +17,7 @@ export function PasswordResetForm() {
     const client = getSupabaseBrowserClient();
     if (!client) return setStatus({ kind: "error", message: "Password reset is temporarily unavailable." });
     const { error } = await client.auth.updateUser({ password });
-    if (error) return setStatus({ kind: "error", message: error.message });
+    if (error) return setStatus({ kind: "error", message: "We couldn’t update your password. Please request a new reset link and try again." });
     setStatus({ kind: "success", message: "Password updated. Opening your account…" });
     setTimeout(() => router.replace("/account"), 700);
   }

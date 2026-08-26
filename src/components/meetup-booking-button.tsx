@@ -11,10 +11,12 @@ export function MeetupBookingButton({
   meetupId,
   initialBooked = false,
   bookingState = "open",
+  authenticated = true,
 }: {
   meetupId: string;
   initialBooked?: boolean;
   bookingState?: MeetupBookingState;
+  authenticated?: boolean;
 }) {
   const [booked, setBooked] = useState(initialBooked);
   const [busy, setBusy] = useState(false);
@@ -22,6 +24,10 @@ export function MeetupBookingButton({
   const router = useRouter();
 
   async function toggleBooking() {
+    if (!authenticated) {
+      router.push("/?auth=login");
+      return;
+    }
     setBusy(true);
     setNotice("");
     try {
@@ -52,7 +58,7 @@ export function MeetupBookingButton({
       ? "Booking opens soon"
       : bookingState === "closed"
         ? "Booking closed"
-        : "Book my place";
+        : authenticated ? "Book my place" : "Sign in to book";
   const blocked = !booked && bookingState !== "open";
 
   return <div className="booking-action"><button className="button button-primary" type="button" onClick={toggleBooking} disabled={busy || blocked}>{busy ? <LoaderCircle className="spin" /> : booked ? <TicketCheck /> : <ArrowRight />}{busy ? "Updating…" : booked ? "Booked ✓ · Cancel" : stateLabel}</button>{notice && <p className="form-status" role="status" aria-live="polite">{notice}{notice.startsWith("Please log in") && <> <Link href="/?auth=login">Log in</Link></>}</p>}</div>;

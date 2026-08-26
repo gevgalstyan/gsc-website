@@ -1,8 +1,9 @@
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { Breadcrumbs } from "@/components/breadcrumbs";
+import { getViewer } from "@/lib/viewer";
 
-export function PublicPageShell({
+export async function PublicPageShell({
   eyebrow,
   title,
   intro,
@@ -17,9 +18,10 @@ export function PublicPageShell({
   breadcrumbPath: string;
   children: React.ReactNode;
 }) {
+  const viewer = await getViewer();
   return (
     <>
-      <Header />
+      <Header viewer={viewer} />
       <main className="public-page">
         <section className="public-hero section">
           <Breadcrumbs label={breadcrumbLabel} path={breadcrumbPath} />

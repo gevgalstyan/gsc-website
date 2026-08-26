@@ -5,6 +5,7 @@ import { faqItems } from "@/lib/faq-data";
 import { editablePageMetadata, getPublicContent, getPublishedFaqItems } from "@/lib/site-content";
 
 export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export const generateMetadata = () => editablePageMetadata("faq", "FAQ About the English Speaking Club", "Answers about Galstyan’s Speaking Club, English conversation practice, meetups, attendance, loyalty, and joining the Sergiev Posad community.", "/faq");
 

@@ -1,15 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Check, MapPin, MessageCircle, Users } from "lucide-react";
+import { AuthAwareCta } from "@/components/auth-aware-cta";
 import { PublicPageShell } from "@/components/public-page-shell";
 import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
+import { getViewer } from "@/lib/viewer";
 
 export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export const generateMetadata = () => editablePageMetadata("about", "About Galstyan’s Speaking Club", "Learn about Galstyan’s Speaking Club, an English-speaking community for real conversation practice in Sergiev Posad, Moscow Region.", "/about");
 
 export default async function AboutPage() {
-  const content = await getPublicContent();
+  const [content, viewer] = await Promise.all([getPublicContent(), getViewer()]);
   const hostName = content["about.host.name"] || "Gevorg Galstyan";
   const hostLocation = content["about.host.location"] || "I’m from Yerevan, Armenia 🇦🇲 and currently live in Sergiyev Posad.";
   const hostBio = (content["about.host.bio"] || "I’m Gevorg Galstyan, the host of our meetups.\n\nI’ve been studying English for years, and I genuinely love the whole English-speaking vibe — the people, the conversations, the confidence, the atmosphere.\n\nThat’s exactly why I created Galstyan’s Speaking Club.\n\nCome join us, practice English with real people, meet new friends, and don’t worry about your level.\n\nYou don’t need perfect English to start.\n\nPractice makes perfect.").split(/\n\n+/);
@@ -56,7 +59,7 @@ export default async function AboutPage() {
               {hostBio.slice(1).map((paragraph, index) => <p className={index === hostBio.length - 2 ? "host-profile-closing" : undefined} key={`${index}:${paragraph}`}>{paragraph}</p>)}
             </div>
             <div className="public-actions">
-              <Link className="button button-primary" href={content["about.host.cta_url"] || "/?auth=register"}>{content["about.host.cta"] || "Join the club"} <ArrowRight /></Link>
+              <AuthAwareCta kind="join" role={viewer.role} loggedOutLabel={content["about.host.cta"] || "Join the club"} loggedOutHref={content["about.host.cta_url"] || "/?auth=register"} />
               <Link className="button button-outline-dark" href="/meetups">Explore meetups <ArrowRight /></Link>
             </div>
           </div>
