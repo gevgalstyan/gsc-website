@@ -18,23 +18,35 @@ import {
   type Question,
 } from "@/lib/questions";
 import { useQuestionState } from "@/hooks/use-question-state";
+import type { InitialQuestionSyncState } from "@/lib/question-sync";
 
 const EMPTY_QUESTIONS: Question[] = [];
 
 // ======================================================
 // QUESTIONS — FILTERING AND DECK NAVIGATION
 // ======================================================
-export function QuestionDeck({ showPageLink = true, additionalQuestions = EMPTY_QUESTIONS }: { showPageLink?: boolean; additionalQuestions?: Question[] }) {
-  const [category, setCategory] = useState<CategoryFilter>("all");
-  const [difficulty, setDifficulty] = useState<DifficultyFilter>("all");
-  const [question, setQuestion] = useState<Question | null>(null);
+export function QuestionDeck({
+  showPageLink = true,
+  additionalQuestions = EMPTY_QUESTIONS,
+  initialSyncState = null,
+}: {
+  showPageLink?: boolean;
+  additionalQuestions?: Question[];
+  initialSyncState?: InitialQuestionSyncState | null;
+}) {
+  const initialQuestions = useMemo(() => [...questions, ...additionalQuestions], [additionalQuestions]);
+  const initialDeckState = initialSyncState?.deckState ?? null;
+  const initialQuestion = initialDeckState?.currentQuestionId ? initialQuestions.find((item) => item.id === initialDeckState.currentQuestionId) ?? null : null;
+  const [category, setCategory] = useState<CategoryFilter>(initialDeckState?.category ?? "all");
+  const [difficulty, setDifficulty] = useState<DifficultyFilter>(initialDeckState?.difficulty ?? "all");
+  const [question, setQuestion] = useState<Question | null>(initialQuestion);
   const [history, setHistory] = useState<string[]>([]);
-  const [favoritesOnly, setFavoritesOnly] = useState(false);
+  const [favoritesOnly, setFavoritesOnly] = useState(initialDeckState?.favoritesOnly ?? false);
   const [feedback, setFeedback] = useState("");
   const [showTranslation, setShowTranslation] = useState(false);
   const allQuestions = useMemo(() => [...questions, ...additionalQuestions], [additionalQuestions]);
   const additionalIds = useMemo(() => additionalQuestions.map((item) => item.id), [additionalQuestions]);
-  const { seen, favorites, ready, syncError, markExplored, setFavorite, resetProgress } = useQuestionState(additionalIds);
+  const { seen, favorites, deckState, ready, syncError, markExplored, setFavorite, saveDeckState, resetProgress } = useQuestionState(additionalIds, initialSyncState);
 
   const pool = useMemo(
     () => allQuestions.filter((item) =>
@@ -50,6 +62,8 @@ export function QuestionDeck({ showPageLink = true, additionalQuestions = EMPTY_
   const categoryLabel = category === "all" ? "All Categories" : category;
   const difficultyLabel = difficulty === "all" ? "All Levels" : difficultyLabels[difficulty];
   const currentFavorite = question ? favorites.includes(question.id) : false;
+  const continuationQuestion = deckState?.currentQuestionId ? allQuestions.find((item) => item.id === deckState.currentQuestionId) ?? null : null;
+  const canContinue = Boolean(continuationQuestion && continuationQuestion.id !== question?.id);
 
   function compatible(item: Question, nextCategory = category, nextDifficulty = difficulty, onlyFavorites = favoritesOnly) {
     return (nextCategory === "all" || item.category === nextCategory)
@@ -70,11 +84,13 @@ export function QuestionDeck({ showPageLink = true, additionalQuestions = EMPTY_
   function changeCategory(nextCategory: CategoryFilter) {
     setCategory(nextCategory);
     clearCurrentForFilters(nextCategory, difficulty);
+    void saveDeckState({ currentQuestionId: null, category: nextCategory, difficulty, favoritesOnly });
   }
 
   function changeDifficulty(nextDifficulty: DifficultyFilter) {
     setDifficulty(nextDifficulty);
     clearCurrentForFilters(category, nextDifficulty);
+    void saveDeckState({ currentQuestionId: null, category, difficulty: nextDifficulty, favoritesOnly });
   }
 
   function next() {
@@ -92,6 +108,7 @@ export function QuestionDeck({ showPageLink = true, additionalQuestions = EMPTY_
     setQuestion(nextQuestion);
     setFeedback("");
     void markExplored(nextQuestion.id);
+    void saveDeckState({ currentQuestionId: nextQuestion.id, category, difficulty, favoritesOnly });
   }
 
   function reset() {
@@ -100,6 +117,7 @@ export function QuestionDeck({ showPageLink = true, additionalQuestions = EMPTY_
     setQuestion(null);
     setShowTranslation(false);
     void resetProgress([...poolIds]);
+    void saveDeckState({ currentQuestionId: null, category, difficulty, favoritesOnly });
   }
 
   function previous() {
@@ -110,9 +128,11 @@ export function QuestionDeck({ showPageLink = true, additionalQuestions = EMPTY_
     const previousId = compatibleHistory.at(-1);
     if (!previousId) return;
     setHistory(compatibleHistory.slice(0, -1));
-    setQuestion(allQuestions.find((item) => item.id === previousId) ?? null);
+    const previousQuestion = allQuestions.find((item) => item.id === previousId) ?? null;
+    setQuestion(previousQuestion);
     setShowTranslation(false);
     setFeedback("");
+    void saveDeckState({ currentQuestionId: previousQuestion?.id ?? null, category, difficulty, favoritesOnly });
   }
 
   function toggleFavorite() {
@@ -141,6 +161,17 @@ export function QuestionDeck({ showPageLink = true, additionalQuestions = EMPTY_
     const nextValue = !favoritesOnly;
     setFavoritesOnly(nextValue);
     clearCurrentForFilters(category, difficulty, nextValue);
+    void saveDeckState({ currentQuestionId: null, category, difficulty, favoritesOnly: nextValue });
+  }
+
+  function continueWhereLeftOff() {
+    if (!deckState || !continuationQuestion) return;
+    setCategory(deckState.category);
+    setDifficulty(deckState.difficulty);
+    setFavoritesOnly(deckState.favoritesOnly);
+    setQuestion(continuationQuestion);
+    setShowTranslation(false);
+    setFeedback("Restored your last question.");
   }
 
   return (
@@ -166,6 +197,7 @@ export function QuestionDeck({ showPageLink = true, additionalQuestions = EMPTY_
           <span>{categoryLabel}</span><i>•</i><span>{difficultyLabel}</span>{favoritesOnly && <><i>•</i><span>Favorites</span></>}<strong>{pool.length} available</strong>
         </p>
       </div>
+      {canContinue && <button className="continue-question-state" type="button" onClick={continueWhereLeftOff}>Continue where you left off</button>}
 
       <div className="category-select-wrap">
         <label htmlFor="question-category">Question category</label>

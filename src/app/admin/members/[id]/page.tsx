@@ -39,7 +39,7 @@ export default async function AdminMemberPage({ params }: { params: Promise<{ id
     supabase.from("loyalty_rewards").select("id,status,earned_at,reward_sequence").eq("user_id", id).order("earned_at", { ascending: false }),
     supabase.from("special_rewards").select("id,name,reason,status,issued_at").eq("user_id", id).order("issued_at", { ascending: false }),
     supabase.from("question_progress").select("question_id").eq("user_id", id),
-    supabase.from("question_favorites").select("question_id").eq("user_id", id),
+    supabase.from("question_favorites").select("question_id").eq("user_id", id).eq("is_favorite", true),
   ]);
   if (!profile.data) notFound();
   const auth = directory.data?.find((row: { user_id: string }) => row.user_id === id);

@@ -39,7 +39,7 @@ export default async function AdminPage() {
     supabase.from("loyalty_rewards").select("id,user_id,status,earned_at,reward_sequence"),
     supabase.from("special_rewards").select("id,user_id,name,reason,description,status,issued_at,expires_at").order("issued_at", { ascending: false }),
     supabase.from("question_progress").select("user_id,question_id"),
-    supabase.from("question_favorites").select("user_id,question_id"),
+    supabase.from("question_favorites").select("user_id,question_id").eq("is_favorite", true),
     supabase.from("admin_audit_log").select("id,actor_user_id,action,target_table,target_id,details,created_at").order("created_at", { ascending: false }).limit(100),
     supabase.from("managed_questions").select("id,prompt,translation,category,difficulty,is_published").order("created_at", { ascending: false }),
     supabase.from("site_content").select("key,value,page_slug,section_slug,label,content_type,draft_value,published_value,sort_order,is_enabled,published_is_enabled,updated_at,published_at").order("sort_order"),
