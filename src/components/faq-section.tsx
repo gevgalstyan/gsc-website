@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FaqList } from "@/components/faq-list";
-import { faqItems } from "@/lib/faq-data";
+import { featuredFaqItems } from "@/lib/faq-data";
 
 export function FaqSection({ compact = false }: { compact?: boolean }) {
   return (
@@ -12,7 +12,7 @@ export function FaqSection({ compact = false }: { compact?: boolean }) {
         </div>
         <p>Clear answers about English practice, meetup details, and joining the local GSC community.<br /><Link className="text-link" href="/faq">Read the full FAQ →</Link></p>
       </div>
-      <FaqList items={faqItems} />
+      <FaqList items={featuredFaqItems} />
     </section>
   );
 }

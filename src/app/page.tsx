@@ -2,9 +2,9 @@
 
 import { HomePage } from "@/components/home-page";
 import { StructuredData } from "@/components/structured-data";
-import { faqItems } from "@/lib/faq-data";
+import { featuredFaqItems } from "@/lib/faq-data";
 import { organizationSchema, websiteSchema } from "@/lib/seo";
-import { editablePageMetadata, getPublicContent, getPublishedFaqItems } from "@/lib/site-content";
+import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
 import { getViewer } from "@/lib/viewer";
 
 export const revalidate = 60;
@@ -14,8 +14,8 @@ export const generateMetadata = () => editablePageMetadata("home", "English Spea
 
 export default async function Page() {
   // Public content and the verified viewer load together so auth-aware UI is correct on first paint.
-  const [content, editableFaq, viewer] = await Promise.all([getPublicContent(), getPublishedFaqItems(), getViewer()]);
-  const items = editableFaq.length ? editableFaq : [...faqItems];
+  const [content, viewer] = await Promise.all([getPublicContent(), getViewer()]);
+  const items = featuredFaqItems;
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
