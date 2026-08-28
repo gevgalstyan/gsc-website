@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { NotificationBell } from "@/components/notification-bell";
+import { ThemeToggle } from "@/components/theme-toggle";
 import type { ViewerNotification } from "@/lib/viewer";
 
 const sections = [
@@ -58,6 +59,7 @@ export function MemberDashboardHeader({
         <Link href="/community">Community</Link>
       </nav>
       <div className="dashboard-user-controls">
+        <ThemeToggle compact />
         <NotificationBell initialNotifications={notifications} />
         {isAdmin && <Link className="dashboard-admin-link" href="/admin">Admin</Link>}
         <details className="dashboard-account-menu">

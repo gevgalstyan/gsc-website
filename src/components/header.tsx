@@ -11,6 +11,7 @@ import { ChevronDown, Menu, UserCircle, X } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { NotificationBell } from "@/components/notification-bell";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { navigation } from "@/lib/site-data";
 import type { Viewer } from "@/lib/viewer";
 
@@ -119,6 +120,7 @@ export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer
           {navigation.map((item) => <Link className={isActive(item.href) ? "active" : undefined} aria-current={isActive(item.href) ? "page" : undefined} key={item.href} href={item.href}>{item.label}</Link>)}
         </nav>
         <div className="header-actions">
+          <ThemeToggle compact />
           {isAuthenticated && <NotificationBell initialNotifications={viewer.notifications} />}
           {isAuthenticated ? profileControl : onAuth ? <button className="button button-small button-outline desktop-auth" onClick={openAuth}>Join / Login</button> : <Link className="button button-small button-outline desktop-auth" href="/?auth=login">Join / Login</Link>}
           <button ref={menuButtonRef} className="menu-button" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open} aria-controls="mobile-navigation"><Menu /></button>
