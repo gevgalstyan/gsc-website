@@ -14,8 +14,8 @@ export const generateMetadata = () => editablePageMetadata("about", "About Galst
 export default async function AboutPage() {
   const [content, viewer] = await Promise.all([getPublicContent(), getViewer()]);
   const hostName = content["about.host.name"] || "Gevorg Galstyan";
-  const hostLocation = content["about.host.location"] || "I’m from Yerevan, Armenia 🇦🇲 and currently live in Sergiyev Posad.";
-  const hostBio = (content["about.host.bio"] || "I’m Gevorg Galstyan, the host of our meetups.\n\nI’ve been studying English for years, and I genuinely love the whole English-speaking vibe — the people, the conversations, the confidence, the atmosphere.\n\nThat’s exactly why I created Galstyan’s Speaking Club.\n\nCome join us, practice English with real people, meet new friends, and don’t worry about your level.\n\nYou don’t need perfect English to start.\n\nPractice makes perfect.").split(/\n\n+/);
+  const hostLocation = content["about.host.location"] || "";
+  const hostBio = (content["about.host.bio"] || "I’m Gevorg Galstyan, the host of our meetups.\n\nI’ve been studying English for years, and I genuinely love the whole English-speaking vibe — the people, the conversations, the confidence, and the atmosphere.\n\nMy English isn’t native-level, and I still make mistakes too. But I understand native speakers well, I can express myself confidently, and once I’m speaking English, I feel like a fish in water.\n\nThat’s exactly why I created Galstyan’s Speaking Club.\n\nCome join us, practice English with real people, meet new friends, and don’t worry about your level.\n\nYou don’t need perfect English to start.\n\nPractice makes perfect.").split(/\n\n+/);
   const requestedPhoto = content["about.host.photo"] || "/gevorg-galstyan-host.jpg";
   const hostPhoto = requestedPhoto.startsWith("/") || requestedPhoto.startsWith("https://vmvsxxtaqtvaotrooafq.supabase.co/storage/v1/object/public/site-media/") ? requestedPhoto : "/gevorg-galstyan-host.jpg";
   return (
@@ -55,7 +55,7 @@ export default async function AboutPage() {
             <h2 id="host-profile-heading">Let’s get to know <em>each other.</em></h2>
             <div className="host-profile-text">
               {hostBio[0] && <p>{hostBio[0]}</p>}
-              <p>{hostLocation}</p>
+              {hostLocation && <p>{hostLocation}</p>}
               {hostBio.slice(1).map((paragraph, index) => <p className={index === hostBio.length - 2 ? "host-profile-closing" : undefined} key={`${index}:${paragraph}`}>{paragraph}</p>)}
             </div>
             <div className="public-actions">

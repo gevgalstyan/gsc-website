@@ -108,7 +108,7 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
           <div className="scroll-cue"><span>Scroll to explore</span><ArrowDown /></div>
         </section>
 
-        <section id="about" className="manifesto">
+        <section className="manifesto">
           <div><span className="eyebrow">This isn&apos;t a lesson</span><h2>A local English speaking club in <em>Sergiev Posad.</em></h2></div>
           <div><p>GSC is a space to stop overthinking and start speaking. No textbooks, no tests, no pressure to be perfect.</p><p>Meet people from Sergiev Posad, practice spoken English, and find a reason to use your English in real conversation.</p><Link href="#community">Meet the community <ArrowRight /></Link></div>
         </section>

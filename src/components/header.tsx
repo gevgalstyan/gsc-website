@@ -21,55 +21,11 @@ import type { Viewer } from "@/lib/viewer";
 export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer }) {
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState("home");
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
-  const activeSectionRef = useRef("home");
   const pathname = usePathname();
   const isAuthenticated = viewer.role !== "loggedOut";
-
-  // Homepage items are real in-page destinations. A narrow observer band below the
-  // sticky header selects the section occupying the reader's primary viewport area.
-  useEffect(() => {
-    if (pathname !== "/") return;
-    let observer: IntersectionObserver | undefined;
-    let animationFrame = 0;
-    const onScroll = () => {
-      if (animationFrame) return;
-      animationFrame = window.requestAnimationFrame(syncActiveSection);
-    };
-    const syncActiveSection = () => {
-      animationFrame = 0;
-      const sections = navigation.flatMap((item) => {
-        const element = item.sectionId ? document.getElementById(item.sectionId) : null;
-        return element ? [element] : [];
-      });
-      const activationLine = 116;
-      const next = sections.find((element) => {
-        const rect = element.getBoundingClientRect();
-        return rect.top <= activationLine && rect.bottom > activationLine;
-      })?.id ?? sections.find((element) => element.getBoundingClientRect().top > activationLine)?.id ?? "home";
-      if (activeSectionRef.current === next) return;
-      activeSectionRef.current = next;
-      window.history.replaceState(null, "", next === "home" ? "/" : `/#${next}`);
-      setActiveSection(next);
-    };
-    let setupRetry = 0;
-    const setup = () => {
-      const sections = navigation.flatMap((item) => {
-        const element = item.sectionId ? document.getElementById(item.sectionId) : null;
-        return element ? [element] : [];
-      });
-      if (!sections.length) { setupRetry = window.setTimeout(setup, 100); return; }
-      observer = new IntersectionObserver(syncActiveSection, { rootMargin: "-96px 0px -86% 0px", threshold: 0 });
-      sections.forEach((section) => observer?.observe(section));
-      window.addEventListener("scroll", onScroll, { passive: true });
-      syncActiveSection();
-    };
-    const setupFrame = window.requestAnimationFrame(setup);
-    return () => { observer?.disconnect(); window.removeEventListener("scroll", onScroll); window.cancelAnimationFrame(animationFrame); window.cancelAnimationFrame(setupFrame); window.clearTimeout(setupRetry); };
-  }, [pathname]);
 
   // Locks background scrolling and traps keyboard focus while the mobile drawer is open.
   useEffect(() => {
@@ -134,13 +90,8 @@ export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer
     if (onAuth) onAuth();
   }
 
-  function isActive(item: (typeof navigation)[number]) {
-    return pathname === "/" ? item.sectionId === activeSection : item.href === "/" ? pathname === "/" : pathname === item.href || pathname.startsWith(`${item.href}/`);
-  }
-
-  function itemHref(item: (typeof navigation)[number]) {
-    if (!item.sectionId) return item.href;
-    return pathname === "/" ? `#${item.sectionId}` : `/#${item.sectionId}`;
+  function isActive(href: string) {
+    return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
   }
 
   const profileInitial = viewer.name.trim().charAt(0).toUpperCase() || "G";
@@ -161,12 +112,12 @@ export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer
   return (
     <header className="site-header">
       <div className="header-inner">
-        <Link className="wordmark" href="/#home" aria-label="GSC home">
+        <Link className="wordmark" href="/" aria-label="GSC home">
           <Image src="/gsc-logo.jpg" alt="Galstyan's Speaking Club logo" width={48} height={48} loading="eager" />
           <span><b>Galstyan&apos;s</b><small>Speaking Club</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
-          {navigation.map((item) => <Link className={isActive(item) ? "active" : undefined} aria-current={isActive(item) ? pathname === "/" ? "location" : "page" : undefined} key={item.href} href={itemHref(item)} onClick={() => { if (item.sectionId && pathname === "/") { activeSectionRef.current = item.sectionId; setActiveSection(item.sectionId); } }}>{item.label}</Link>)}
+          {navigation.map((item) => <Link className={isActive(item.href) ? "active" : undefined} aria-current={isActive(item.href) ? "page" : undefined} key={item.href} href={item.href}>{item.label}</Link>)}
         </nav>
         <div className="header-actions">
           <ThemeToggle compact />
@@ -183,7 +134,7 @@ export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer
           </div>
           <nav aria-label="Mobile navigation">
             {navigation.map((item, index) => (
-              <Link className={isActive(item) ? "active" : undefined} aria-current={isActive(item) ? pathname === "/" ? "location" : "page" : undefined} key={item.href} href={itemHref(item)} onClick={() => { if (item.sectionId && pathname === "/") { activeSectionRef.current = item.sectionId; setActiveSection(item.sectionId); } closeMenu(); }}>
+              <Link className={isActive(item.href) ? "active" : undefined} aria-current={isActive(item.href) ? "page" : undefined} key={item.href} href={item.href} onClick={closeMenu}>
                 <span>0{index + 1}</span>{item.label}
               </Link>
             ))}

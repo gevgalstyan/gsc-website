@@ -1,12 +1,12 @@
 export const navigation = [
-  { label: "Home", href: "/", sectionId: "home" },
-  { label: "About", href: "/about", sectionId: "about" },
-  { label: "Meetups", href: "/meetups", sectionId: "meetups" },
-  { label: "Questions", href: "/questions", sectionId: "questions" },
-  { label: "How it works", href: "/how-it-works", sectionId: "how-it-works" },
-  { label: "Community", href: "/community", sectionId: "community" },
-  { label: "FAQ", href: "/faq", sectionId: "faq" },
-  { label: "Contact", href: "/contact", sectionId: "contact" },
+  { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  { label: "Meetups", href: "/meetups" },
+  { label: "Questions", href: "/questions" },
+  { label: "How it works", href: "/how-it-works" },
+  { label: "Community", href: "/community" },
+  { label: "FAQ", href: "/faq" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export const socialLinks = [
