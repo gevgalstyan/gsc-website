@@ -15,9 +15,10 @@ import type { ViewerNotification } from "@/lib/viewer";
 
 const sections = [
   { href: "#overview", label: "Overview" },
-  { href: "#rewards", label: "Rewards" },
-  { href: "#bookings", label: "Bookings" },
+  { href: "#rewards", label: "Loyalty" },
+  { href: "#bookings", label: "Meetups" },
   { href: "#attendance", label: "Attendance" },
+  { href: "#questions", label: "Questions" },
   { href: "#settings", label: "Profile" },
 ];
 

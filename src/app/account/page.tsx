@@ -16,6 +16,7 @@ import { Award, BookOpen, CalendarDays, CheckCircle2, Heart, History, Settings, 
 import { ProfileForm } from "@/components/profile-form";
 import { MeetupBookingButton } from "@/components/meetup-booking-button";
 import { MemberDashboardHeader } from "@/components/member-dashboard-header";
+import { MemberOnboarding } from "@/components/member-onboarding";
 import { categories, difficulties, questions } from "@/lib/questions";
 import { createClient } from "@/lib/supabase/server";
 
@@ -24,6 +25,10 @@ export const dynamic = "force-dynamic";
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short", year: "numeric" }).format(new Date(value));
+}
+
+function currentTimestamp() {
+  return Date.now();
 }
 
 export default async function AccountPage() {
@@ -72,9 +77,16 @@ export default async function AccountPage() {
   const loyaltyRemainder = rewardAvailable ? 6 : paidVisits % 6;
   const visitsUntilReward = rewardAvailable ? 0 : 6 - loyaltyRemainder;
   const availableSpecial = specialRewards.filter((row) => row.status === "available");
+  const now = currentTimestamp();
   const upcomingBooking = bookings
-    .filter((row) => row.status === "confirmed" && row.meetup)
+    .filter((row) => row.status === "confirmed" && row.meetup && new Date(row.meetup.starts_at).getTime() >= now)
     .sort((a, b) => new Date(a.meetup!.starts_at).getTime() - new Date(b.meetup!.starts_at).getTime())[0];
+  const upcomingBookings = bookings
+    .filter((row) => row.status === "confirmed" && row.meetup && new Date(row.meetup.starts_at).getTime() >= now)
+    .sort((a, b) => new Date(a.meetup!.starts_at).getTime() - new Date(b.meetup!.starts_at).getTime());
+  const pastBookings = bookings
+    .filter((row) => !row.meetup || new Date(row.meetup.starts_at).getTime() < now || row.status !== "confirmed")
+    .sort((a, b) => new Date(b.meetup?.starts_at ?? b.booked_at).getTime() - new Date(a.meetup?.starts_at ?? a.booked_at).getTime());
   const completeFields = [profile.display_name, profile.avatar_path || profile.avatar_url, profile.telegram_username].filter(Boolean).length;
   const completion = Math.round(completeFields / 3 * 100);
   const exploredQuestions = questions.filter((question) => exploredIds.has(question.id));
@@ -100,6 +112,14 @@ export default async function AccountPage() {
         <div className="profile-completion"><span>{completion}%</span><div><strong>Profile completion</strong><div className="mini-progress"><i style={{ width: `${completion}%` }} /></div></div></div>
       </section>
 
+      <MemberOnboarding
+        userId={userId}
+        profileComplete={completion === 100}
+        hasExploredQuestions={exploredIds.size > 0}
+        hasBookedMeetup={bookings.length > 0}
+        hasAttendedMeetup={attended.length > 0}
+      />
+
       {(availableRewards.length > 0 || availableSpecial.length > 0) && <section className="reward-banner"><Sparkles /><div><strong>{availableSpecial.length ? "A special reward is waiting for you." : "Your free meetup is ready."}</strong><p>{availableSpecial[0]?.name ?? "You’ve completed six qualifying visits."}</p></div></section>}
 
       <section className="dashboard-stat-grid" aria-label="Member statistics">
@@ -114,13 +134,13 @@ export default async function AccountPage() {
 
         <section className="dashboard-card"><div className="card-heading"><div><p className="dashboard-kicker">Next up</p><h2>Upcoming meetup</h2></div><CalendarDays /></div>{upcomingBooking?.meetup ? <div className="upcoming-meetup"><strong>{upcomingBooking.meetup.title}</strong><p>{formatDate(upcomingBooking.meetup.starts_at)} · {upcomingBooking.meetup.location_name}</p><span>Booking confirmed</span><MeetupBookingButton meetupId={upcomingBooking.meetup.id} initialBooked /></div> : <div className="dashboard-empty"><CalendarDays /><p>No upcoming meetup yet. We’ll let you know when the next one is published.</p><Link href="/meetups">Explore meetups</Link></div>}</section>
 
-        <section className="dashboard-card question-stats-card"><div className="card-heading"><div><p className="dashboard-kicker">Question library</p><h2>{exploredIds.size} explored · {questions.length - exploredIds.size} remaining</h2></div><BookOpen /></div><div className="question-breakdown"><div><strong>By level</strong>{difficulties.map((level) => { const total = questions.filter((q) => q.difficulty === level).length; const count = exploredQuestions.filter((q) => q.difficulty === level).length; return <p key={level}><span>{level}</span><b>{count}/{total}</b></p>; })}</div><div><strong>Top categories</strong>{categories.slice(0, 5).map((category) => <p key={category}><span>{category}</span><b>{exploredQuestions.filter((q) => q.category === category).length}</b></p>)}</div></div><Link className="card-link" href="/questions">Continue exploring</Link></section>
+        <section id="questions" className="dashboard-card question-stats-card"><div className="card-heading"><div><p className="dashboard-kicker">Question library</p><h2>{exploredIds.size} explored · {questions.length - exploredIds.size} remaining</h2></div><BookOpen /></div>{exploredIds.size ? <div className="question-breakdown"><div><strong>By level</strong>{difficulties.map((level) => { const total = questions.filter((q) => q.difficulty === level).length; const count = exploredQuestions.filter((q) => q.difficulty === level).length; return <p key={level}><span>{level}</span><b>{count}/{total}</b></p>; })}</div><div><strong>Favorites & categories</strong><p><span>Saved favorites</span><b>{favoriteCount}</b></p>{categories.slice(0, 4).map((category) => <p key={category}><span>{category}</span><b>{exploredQuestions.filter((q) => q.category === category).length}</b></p>)}</div></div> : <div className="dashboard-empty"><BookOpen /><p>No questions explored yet. Start with a prompt that fits your level and save the ones you love.</p></div>}<Link className="card-link" href="/questions">{exploredIds.size ? "Continue exploring" : "Browse questions"}</Link></section>
 
         <section className="dashboard-card"><div className="card-heading"><div><p className="dashboard-kicker">Milestones</p><h2>Achievements</h2></div><Trophy /></div>{achievements.length ? <div className="achievement-list">{achievements.map(([title, copy]) => <div key={title}><CheckCircle2 /><span><strong>{title}</strong><small>{copy}</small></span></div>)}</div> : <div className="dashboard-empty"><Trophy /><p>Your first achievement is just ahead.</p></div>}</section>
 
-        <section id="attendance" className="dashboard-card dashboard-card-wide"><div className="card-heading"><div><p className="dashboard-kicker">Your history</p><h2>Attendance & bookings</h2></div><History /></div>{attendance.length || bookings.length ? <div className="history-list">{attendance.slice(0, 6).map((row) => <div key={row.id}><span className={`history-mark ${row.status}`} /><div><strong>{row.meetup?.title ?? "Speaking club meetup"}</strong><p>{formatDate(row.recorded_at)} · {row.status.replace("_", " ")}</p></div><b>{row.payment_status === "free_reward" ? "FREE reward" : row.is_paid ? `${((row.paid_amount_minor ?? 0) / 100).toLocaleString()} ${row.paid_currency ?? "RUB"}` : "Unpaid"}</b></div>)}</div> : <div className="dashboard-empty"><History /><p>Your first attended meetup will appear here.</p></div>}</section>
+        <section id="attendance" className="dashboard-card dashboard-card-wide"><div className="card-heading"><div><p className="dashboard-kicker">Your history</p><h2>Attendance</h2></div><History /></div>{attendance.length ? <div className="history-list">{attendance.slice(0, 6).map((row) => <div key={row.id}><span className={`history-mark ${row.status}`} /><div><strong>{row.meetup?.title ?? "Speaking club meetup"}</strong><p>{formatDate(row.recorded_at)} · {row.status.replace("_", " ")}</p></div><b>{row.payment_status === "free_reward" ? "FREE reward" : row.is_paid ? `${((row.paid_amount_minor ?? 0) / 100).toLocaleString()} ${row.paid_currency ?? "RUB"}` : "Unpaid"}</b></div>)}</div> : <div className="dashboard-empty"><History /><p>No attendance history yet. Once you join a meetup, its attendance and loyalty qualification will appear here.</p><Link href="/meetups">Browse published meetups</Link></div>}</section>
 
-        <section id="bookings" className="dashboard-card dashboard-card-wide"><div className="card-heading"><div><p className="dashboard-kicker">Your bookings</p><h2>Upcoming and past reservations</h2></div><TicketCheck /></div>{bookings.length ? <div className="history-list">{bookings.slice(0, 8).map((row) => <div key={row.id}><span className={`history-mark ${row.status}`} /><div><strong>{row.meetup?.title ?? "Speaking club meetup"}</strong><p>{row.meetup?.starts_at ? formatDate(row.meetup.starts_at) : "Meetup details unavailable"} · {row.status}</p></div>{row.status === "confirmed" && row.meetup?.id && <MeetupBookingButton meetupId={row.meetup.id} initialBooked />}</div>)}</div> : <div className="dashboard-empty"><TicketCheck /><p>You haven’t booked a meetup yet.</p><Link href="/meetups">Find a meetup</Link></div>}</section>
+        <section id="bookings" className="dashboard-card dashboard-card-wide"><div className="card-heading"><div><p className="dashboard-kicker">Your meetups</p><h2>Upcoming and past reservations</h2></div><TicketCheck /></div>{bookings.length ? <div className="member-meetup-groups"><div><h3>Upcoming</h3>{upcomingBookings.length ? <div className="history-list">{upcomingBookings.map((row) => <div key={row.id}><span className={`history-mark ${row.status}`} /><div><strong>{row.meetup?.title ?? "Speaking club meetup"}</strong><p>{row.meetup?.starts_at ? formatDate(row.meetup.starts_at) : "Meetup details unavailable"} · {row.meetup?.location_name ?? "Venue to be announced"}</p></div>{row.meetup?.id && <MeetupBookingButton meetupId={row.meetup.id} initialBooked />}</div>)}</div> : <div className="inline-empty-state"><p>No upcoming bookings yet.</p><Link href="/meetups">Explore meetups</Link></div>}</div><div><h3>Past</h3>{pastBookings.length ? <div className="history-list">{pastBookings.slice(0, 6).map((row) => <div key={row.id}><span className={`history-mark ${row.status}`} /><div><strong>{row.meetup?.title ?? "Speaking club meetup"}</strong><p>{row.meetup?.starts_at ? formatDate(row.meetup.starts_at) : "Meetup details unavailable"} · {row.status}</p></div><b>{row.status === "cancelled" ? "Cancelled" : "Past meetup"}</b></div>)}</div> : <div className="inline-empty-state"><p>Past bookings will be saved here after each meetup.</p></div>}</div></div> : <div className="dashboard-empty"><TicketCheck /><p>No bookings yet. Browse published meetups and reserve your place.</p><Link href="/meetups">Find a meetup</Link></div>}</section>
 
         <section id="settings" className="dashboard-card dashboard-card-wide"><details className="settings-panel"><summary><span><Settings />Account settings</span><small>Photo, display name and Telegram</small></summary><ProfileForm userId={userId} initialProfile={profile} initialAvatarUrl={avatarUrl} /></details></section>
       </div>
