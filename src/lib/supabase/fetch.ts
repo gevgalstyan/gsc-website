@@ -3,7 +3,10 @@
 // ======================================================
 // SUPABASE NETWORK SAFETY
 // ======================================================
-const SUPABASE_REQUEST_TIMEOUT = 3500;
+// Mobile wake-up, token refresh, and an upsert can legitimately take more than
+// one radio round-trip. The previous 3.5s cap turned healthy slow requests into
+// aborted queue entries; twelve seconds is still bounded without being brittle.
+const SUPABASE_REQUEST_TIMEOUT = 12_000;
 
 /**
  * Supabase requests must not be able to hold a page or an auth control open

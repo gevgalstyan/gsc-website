@@ -163,9 +163,16 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
   const [accountId, setAccountId] = useState<string | null>(initialState?.userId ?? null);
   const [ready, setReady] = useState(Boolean(initialState));
   const [syncError, setSyncError] = useState("");
+  const [pendingRevision, setPendingRevision] = useState(0);
   const loadSequence = useRef(0);
   const accountIdRef = useRef<string | null>(initialState?.userId ?? null);
+  const retryAttempt = useRef(0);
   const validIds = useMemo(() => new Set([...validQuestionIds, ...extraQuestionIds]), [extraQuestionIds]);
+
+  const queuePendingWrite = useCallback((userId: string, updater: (pending: PendingQuestionWrites) => PendingQuestionWrites) => {
+    updatePending(userId, updater);
+    setPendingRevision((value) => value + 1);
+  }, []);
 
   const loadAccountState = useCallback(async (userId: string) => {
     const client = getSupabaseBrowserClient();
@@ -195,21 +202,32 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
     const favoriteRows = Object.entries(pending.favorites)
       .filter(([questionId]) => validIds.has(questionId))
       .map(([question_id, value]) => ({ question_id, is_favorite: value.isFavorite, favorite_updated_at: value.updatedAt }));
-    const writes = [];
-    if (progressRows.length) writes.push(client.from("question_progress").upsert(progressRows, { onConflict: "user_id,question_id" }));
-    if (favoriteRows.length) writes.push(client.from("question_favorites").upsert(favoriteRows, { onConflict: "user_id,question_id" }));
+    let remaining: PendingQuestionWrites = pending;
+    const failures: string[] = [];
+    // Flush each durable queue lane independently. A successful progress write must
+    // never remain stuck behind a temporary favorite/deck request failure.
+    if (progressRows.length) {
+      const { error } = await client.from("question_progress").upsert(progressRows, { onConflict: "user_id,question_id" });
+      if (error) failures.push("progress"); else remaining = { ...remaining, progress: {} };
+    }
+    if (favoriteRows.length) {
+      const { error } = await client.from("question_favorites").upsert(favoriteRows, { onConflict: "user_id,question_id" });
+      if (error) failures.push("favorites"); else remaining = { ...remaining, favorites: {} };
+    }
     if (pending.deckState) {
-      writes.push(client.from("question_deck_state").upsert({
+      const { error } = await client.from("question_deck_state").upsert({
         current_question_id: pending.deckState.currentQuestionId,
         category_filter: pending.deckState.category,
         difficulty_filter: pending.deckState.difficulty,
         favorites_only: pending.deckState.favoritesOnly,
         updated_at: pending.deckState.updatedAt,
-      }, { onConflict: "user_id" }));
+      }, { onConflict: "user_id" });
+      if (error) failures.push("continuation"); else remaining = { ...remaining, deckState: null };
     }
-    const results = await Promise.all(writes);
-    if (results.some((result) => result.error)) throw new Error("Queued question changes are waiting to sync.");
-    savePending(userId, emptyPending);
+    savePending(userId, remaining);
+    setPendingRevision((value) => value + 1);
+    if (failures.length) throw new Error("Question changes are saved on this device and will retry automatically.");
+    retryAttempt.current = 0;
   }, [validIds]);
 
   const mergeGuestState = useCallback(async (userId: string) => {
@@ -349,6 +367,25 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
     };
   }, [accountId, flushPendingWrites, loadAccountState]);
 
+  // A real offline queue must recover without waiting for a manual focus event.
+  // Backoff is capped to avoid noisy retries on a weak mobile connection.
+  useEffect(() => {
+    if (!accountId) return;
+    const pending = readPending(accountId);
+    if (!Object.keys(pending.progress).length && !Object.keys(pending.favorites).length && !pending.deckState) return;
+    const delay = Math.min(30_000, 2_000 * 2 ** retryAttempt.current);
+    const timer = window.setTimeout(() => {
+      void flushPendingWrites(accountId)
+        .then(() => loadAccountState(accountId))
+        .catch(() => {
+          retryAttempt.current += 1;
+          setSyncError("Changes saved on this device. Syncing when the connection returns.");
+          setPendingRevision((value) => value + 1);
+        });
+    }, delay);
+    return () => window.clearTimeout(timer);
+  }, [accountId, flushPendingWrites, loadAccountState, pendingRevision]);
+
   useEffect(() => {
     if (accountId) return;
     const refreshGuest = (event: StorageEvent) => {
@@ -374,10 +411,10 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
     const client = getSupabaseBrowserClient();
     const { error } = await client!.from("question_progress").upsert({ question_id: questionId, last_viewed_at: timestamp }, { onConflict: "user_id,question_id" });
     if (!error) return true;
-    updatePending(accountId, (pending) => ({ ...pending, progress: { ...pending.progress, [questionId]: timestamp } }));
-    setSyncError("Question sync is retrying. Your progress is kept on this device.");
+    queuePendingWrite(accountId, (pending) => ({ ...pending, progress: { ...pending.progress, [questionId]: timestamp } }));
+    setSyncError("Changes saved on this device. Syncing when the connection returns.");
     return false;
-  }, [accountId, seen, validIds]);
+  }, [accountId, queuePendingWrite, seen, validIds]);
 
   const setFavorite = useCallback(async (questionId: string, favorite: boolean) => {
     if (!validIds.has(questionId)) return false;
@@ -393,13 +430,13 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
       favorite_updated_at: timestamp,
     }, { onConflict: "user_id,question_id" });
     if (!error) return true;
-    updatePending(accountId, (pending) => ({
+    queuePendingWrite(accountId, (pending) => ({
       ...pending,
       favorites: { ...pending.favorites, [questionId]: { isFavorite: favorite, updatedAt: timestamp } },
     }));
-    setSyncError("Favorite sync is retrying. Your latest choice is kept on this device.");
+    setSyncError("Changes saved on this device. Syncing when the connection returns.");
     return false;
-  }, [accountId, favorites, validIds]);
+  }, [accountId, favorites, queuePendingWrite, validIds]);
 
   const saveDeckState = useCallback(async (state: Omit<QuestionDeckSyncState, "updatedAt">) => {
     const updated: QuestionDeckSyncState = {
@@ -419,10 +456,10 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
       updated_at: updated.updatedAt,
     }, { onConflict: "user_id" });
     if (!error) return true;
-    updatePending(accountId, (pending) => ({ ...pending, deckState: updated }));
-    setSyncError("Continue state will sync when the connection recovers.");
+    queuePendingWrite(accountId, (pending) => ({ ...pending, deckState: updated }));
+    setSyncError("Changes saved on this device. Syncing when the connection returns.");
     return false;
-  }, [accountId, validIds]);
+  }, [accountId, queuePendingWrite, validIds]);
 
   const resetProgress = useCallback(async (questionIds: string[]) => {
     const ids = sanitizeIds(questionIds, validIds).filter((id) => seen.includes(id));
