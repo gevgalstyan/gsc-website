@@ -4,6 +4,7 @@
  */
 
 import { createClient } from "@/lib/supabase/server";
+import { withPublicFallback } from "@/lib/public-resilience";
 
 export type PublishedMeetup = {
   id: string;
@@ -30,10 +31,9 @@ export type PublishedMeetup = {
 // MEETUP LISTING — PUBLIC READ MODEL
 // ======================================================
 export async function getPublishedMeetups(): Promise<PublishedMeetup[]> {
-  const supabase = await createClient();
-  if (!supabase) return [];
-
-  try {
+  return withPublicFallback(async () => {
+    const supabase = await createClient();
+    if (!supabase) return [];
     const { data, error } = await supabase
         .from("meetups")
         .select("id,title,description,starts_at,ends_at,timezone,location_name,address,capacity,price_minor,currency,status,booking_opens_at,booking_closes_at,confirmed_booking_count,category,image_url")
@@ -49,7 +49,5 @@ export async function getPublishedMeetups(): Promise<PublishedMeetup[]> {
       // never wait for a member session to render.
       member_booking_status: null,
     }));
-  } catch {
-    return [];
-  }
+  }, []);
 }

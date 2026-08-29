@@ -2,6 +2,7 @@ import { QuestionDeck } from "@/components/question-deck";
 import { PublicPageShell } from "@/components/public-page-shell";
 import { questions, type CategoryFilter, type DifficultyFilter } from "@/lib/questions";
 import { getManagedQuestions } from "@/lib/managed-questions";
+import { withPublicFallback } from "@/lib/public-resilience";
 import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
 import type { InitialQuestionSyncState } from "@/lib/question-sync";
 import { createClient } from "@/lib/supabase/server";
@@ -17,32 +18,34 @@ export default async function QuestionsPage() {
 }
 
 async function getInitialQuestionSyncState(): Promise<InitialQuestionSyncState | null> {
-  const supabase = await createClient();
-  if (!supabase) return null;
-  const { data: claims } = await supabase.auth.getClaims();
-  const userId = claims?.claims?.sub;
-  if (!userId) return null;
-  const [progressResult, favoritesResult, deckStateResult] = await Promise.all([
-    supabase.from("question_progress").select("question_id").eq("user_id", userId),
-    supabase.from("question_favorites").select("question_id").eq("user_id", userId).eq("is_favorite", true),
-    supabase.from("question_deck_state").select("current_question_id,category_filter,difficulty_filter,favorites_only,updated_at").eq("user_id", userId).maybeSingle(),
-  ]);
-  if (progressResult.error || favoritesResult.error || deckStateResult.error) return null;
-  const validIds = new Set(questions.map((question) => question.id));
-  const validCategories = new Set(questions.map((question) => question.category));
-  const deckRow = deckStateResult.data;
-  return {
-    userId,
-    seen: uniqueValidIds((progressResult.data ?? []).map((row) => row.question_id), validIds),
-    favorites: uniqueValidIds((favoritesResult.data ?? []).map((row) => row.question_id), validIds),
-    deckState: deckRow ? {
-      currentQuestionId: deckRow.current_question_id && validIds.has(deckRow.current_question_id) ? deckRow.current_question_id : null,
-      category: deckRow.category_filter === "all" || validCategories.has(deckRow.category_filter) ? deckRow.category_filter as CategoryFilter : "all",
-      difficulty: deckRow.difficulty_filter === "beginner" || deckRow.difficulty_filter === "intermediate" || deckRow.difficulty_filter === "advanced" ? deckRow.difficulty_filter as DifficultyFilter : "all",
-      favoritesOnly: Boolean(deckRow.favorites_only),
-      updatedAt: deckRow.updated_at,
-    } : null,
-  };
+  return withPublicFallback(async () => {
+    const supabase = await createClient();
+    if (!supabase) return null;
+    const { data: claims } = await supabase.auth.getClaims();
+    const userId = claims?.claims?.sub;
+    if (!userId) return null;
+    const [progressResult, favoritesResult, deckStateResult] = await Promise.all([
+      supabase.from("question_progress").select("question_id").eq("user_id", userId),
+      supabase.from("question_favorites").select("question_id").eq("user_id", userId).eq("is_favorite", true),
+      supabase.from("question_deck_state").select("current_question_id,category_filter,difficulty_filter,favorites_only,updated_at").eq("user_id", userId).maybeSingle(),
+    ]);
+    if (progressResult.error || favoritesResult.error || deckStateResult.error) return null;
+    const validIds = new Set(questions.map((question) => question.id));
+    const validCategories = new Set(questions.map((question) => question.category));
+    const deckRow = deckStateResult.data;
+    return {
+      userId,
+      seen: uniqueValidIds((progressResult.data ?? []).map((row) => row.question_id), validIds),
+      favorites: uniqueValidIds((favoritesResult.data ?? []).map((row) => row.question_id), validIds),
+      deckState: deckRow ? {
+        currentQuestionId: deckRow.current_question_id && validIds.has(deckRow.current_question_id) ? deckRow.current_question_id : null,
+        category: deckRow.category_filter === "all" || validCategories.has(deckRow.category_filter) ? deckRow.category_filter as CategoryFilter : "all",
+        difficulty: deckRow.difficulty_filter === "beginner" || deckRow.difficulty_filter === "intermediate" || deckRow.difficulty_filter === "advanced" ? deckRow.difficulty_filter as DifficultyFilter : "all",
+        favoritesOnly: Boolean(deckRow.favorites_only),
+        updatedAt: deckRow.updated_at,
+      } : null,
+    };
+  }, null);
 }
 
 function uniqueValidIds(ids: string[], validIds: Set<string>) {

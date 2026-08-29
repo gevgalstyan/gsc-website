@@ -5,29 +5,28 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { absoluteUrl, pageMetadata } from "@/lib/seo";
+import { withPublicFallback } from "@/lib/public-resilience";
 
 // ======================================================
 // CONTENT EDITOR — PUBLISHED SITE CONTENT
 // ======================================================
 export async function getPublicContent(): Promise<Record<string, string>> {
-  const supabase = await createClient();
-  if (!supabase) return {} as Record<string, string>;
-  try {
+  return withPublicFallback(async () => {
+    const supabase = await createClient();
+    if (!supabase) return {} as Record<string, string>;
     const { data, error } = await supabase.from("site_content").select("key,value,published_value,published_is_enabled").eq("is_public", true).eq("published_is_enabled", true);
     if (error || !data) return {} as Record<string, string>;
     return Object.fromEntries(data.map((row) => [row.key, row.published_value ?? row.value]));
-  } catch {
-    return {} as Record<string, string>;
-  }
+  }, {});
 }
 
 // ======================================================
 // FAQ CONTENT
 // ======================================================
 export async function getPublishedFaqItems() {
-  const supabase = await createClient();
-  if (!supabase) return [] as { question: string; answer: string }[];
-  try {
+  return withPublicFallback(async () => {
+    const supabase = await createClient();
+    if (!supabase) return [] as { question: string; answer: string }[];
     const { data, error } = await supabase
       .from("site_faq_items")
       .select("published_question,published_answer")
@@ -37,9 +36,7 @@ export async function getPublishedFaqItems() {
     return data
       .filter((item) => item.published_question.trim() && item.published_answer.trim())
       .map((item) => ({ question: item.published_question, answer: item.published_answer }));
-  } catch {
-    return [] as { question: string; answer: string }[];
-  }
+  }, [] as { question: string; answer: string }[]);
 }
 
 // ======================================================

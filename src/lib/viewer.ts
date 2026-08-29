@@ -4,6 +4,7 @@
  */
 
 import { cache } from "react";
+import { withPublicFallback } from "@/lib/public-resilience";
 import { createClient } from "@/lib/supabase/server";
 
 export type ViewerRole = "loggedOut" | "member" | "admin";
@@ -35,7 +36,7 @@ const loggedOutViewer: Viewer = {
 // ======================================================
 // SESSION MANAGEMENT — AUTH-AWARE VIEWER
 // ======================================================
-export const getViewer = cache(async (): Promise<Viewer> => {
+async function resolveViewer(): Promise<Viewer> {
   const supabase = await createClient();
   if (!supabase) return loggedOutViewer;
 
@@ -75,4 +76,8 @@ export const getViewer = cache(async (): Promise<Viewer> => {
   } catch {
     return loggedOutViewer;
   }
-});
+}
+
+// Public navigation is enhanced when a session is available, never gated by it.
+// A slow auth/backend path therefore falls back to the normal logged-out shell.
+export const getViewer = cache(() => withPublicFallback(resolveViewer, loggedOutViewer));

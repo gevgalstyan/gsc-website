@@ -117,7 +117,7 @@ export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer
           <span><b>Galstyan&apos;s</b><small>Speaking Club</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">
-          {navigation.map((item) => <Link className={isActive(item.href) ? "active" : undefined} aria-current={isActive(item.href) ? "page" : undefined} key={item.href} href={item.href}>{item.label}</Link>)}
+          {navigation.map((item) => <Link prefetch={false} className={isActive(item.href) ? "active" : undefined} aria-current={isActive(item.href) ? "page" : undefined} key={item.href} href={item.href}>{item.label}</Link>)}
         </nav>
         <div className="header-actions">
           <ThemeToggle compact />
@@ -134,7 +134,7 @@ export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer
           </div>
           <nav aria-label="Mobile navigation">
             {navigation.map((item, index) => (
-              <Link className={isActive(item.href) ? "active" : undefined} aria-current={isActive(item.href) ? "page" : undefined} key={item.href} href={item.href} onClick={closeMenu}>
+              <Link prefetch={false} className={isActive(item.href) ? "active" : undefined} aria-current={isActive(item.href) ? "page" : undefined} key={item.href} href={item.href} onClick={closeMenu}>
                 <span>0{index + 1}</span>{item.label}
               </Link>
             ))}
