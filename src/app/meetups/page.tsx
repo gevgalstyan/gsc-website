@@ -14,7 +14,6 @@ import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
 import { getViewer, type ViewerRole } from "@/lib/viewer";
 
 export const generateMetadata = () => editablePageMetadata("meetups", "English Speaking Meetups in Sergiev Posad", "Find published English conversation meetups from Galstyan’s Speaking Club in Sergiev Posad, with real times, places, capacity, price, and booking status.", "/meetups");
-export const dynamic = "force-dynamic";
 
 // ======================================================
 // DATE / TIMEZONE DISPLAY — EUROPE/MOSCOW

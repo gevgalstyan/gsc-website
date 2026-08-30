@@ -7,7 +7,6 @@ import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
 import { getViewer } from "@/lib/viewer";
 
 export const revalidate = 60;
-export const dynamic = "force-dynamic";
 
 export const generateMetadata = () => editablePageMetadata("about", "About Galstyan’s Speaking Club", "Learn about Galstyan’s Speaking Club, an English-speaking community for real conversation practice in Sergiev Posad, Moscow Region.", "/about");
 

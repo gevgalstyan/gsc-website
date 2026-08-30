@@ -1,12 +1,12 @@
 /** Branded, no-index confirmation screen for Supabase email verification links. */
 
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-
-export const metadata = {
-  robots: { index: false, follow: false },
-  referrer: "no-referrer" as const,
-};
+import { useSearchParams, useRouter } from "next/navigation";
+import { Suspense } from "react";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 // ======================================================
 // EMAIL/PASSWORD AUTH — CONFIRMATION LINK VALIDATION
@@ -53,15 +53,12 @@ const copyByType: Record<string, { title: string; description: string; action: s
   },
 };
 
-export default async function ConfirmAuthEmailPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ token_hash?: string; type?: string; next?: string }>;
-}) {
-  const params = await searchParams;
-  const tokenHash = params.token_hash?.trim() ?? "";
-  const type = params.type?.trim() ?? "";
-  const requestedNext = params.next?.trim() ?? "";
+function ConfirmAuthEmailPage() {
+  const params = useSearchParams();
+  const router = useRouter();
+  const tokenHash = params.get("token_hash")?.trim() ?? "";
+  const type = params.get("type")?.trim() ?? "";
+  const requestedNext = params.get("next")?.trim() ?? "";
   const next = requestedNext.startsWith("/") && !requestedNext.startsWith("//")
     ? requestedNext
     : type === "recovery"
@@ -69,6 +66,12 @@ export default async function ConfirmAuthEmailPage({
       : "/account";
   const valid = /^[A-Za-z0-9_-]{20,}$/.test(tokenHash) && confirmationTypes.has(type);
   const copy = copyByType[type] ?? copyByType.email;
+  async function confirm() {
+    const client = getSupabaseBrowserClient();
+    if (!client) return;
+    const { error } = await client.auth.verifyOtp({ token_hash: tokenHash, type: type as "signup" | "invite" | "magiclink" | "recovery" | "email_change" | "email" });
+    router.replace(error ? "/?authError=callback" : next);
+  }
 
   return (
     <main className="auth-page">
@@ -86,12 +89,7 @@ export default async function ConfirmAuthEmailPage({
         {valid ? (
           <>
             <p>{copy.description}</p>
-            <form action="/auth/confirm/complete" method="post">
-              <input type="hidden" name="token_hash" value={tokenHash} />
-              <input type="hidden" name="type" value={type} />
-              <input type="hidden" name="next" value={next} />
-              <button className="button button-primary" type="submit">{copy.action}</button>
-            </form>
+            <button className="button button-primary" type="button" onClick={confirm}>{copy.action}</button>
             <small>This extra click protects one-time links from email security scanners.</small>
           </>
         ) : (
@@ -103,4 +101,8 @@ export default async function ConfirmAuthEmailPage({
       </section>
     </main>
   );
+}
+
+export default function ConfirmPage() {
+  return <Suspense fallback={<main className="auth-page"><section className="account-card"><p>Loading secure confirmation…</p></section></main>}><ConfirmAuthEmailPage /></Suspense>;
 }

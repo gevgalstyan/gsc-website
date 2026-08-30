@@ -8,6 +8,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { ArrowRight, LoaderCircle, TicketCheck } from "lucide-react";
 
 export type MeetupBookingState = "open" | "full" | "not_open" | "closed";
@@ -39,19 +40,22 @@ export function MeetupBookingButton({
     setBusy(true);
     setNotice("");
     try {
-      const response = await fetch(`/api/meetups/${meetupId}/book`, {
-        method: booked ? "DELETE" : "POST",
-        headers: booked ? undefined : { "Content-Type": "application/json" },
-      });
-      const payload = await response.json().catch(() => ({}));
-      if (response.status === 401) {
+      const client = getSupabaseBrowserClient();
+      if (!client) throw new Error("Member access is not configured.");
+      const { data: sessionData } = await client.auth.getSession();
+      if (!sessionData.session) {
         setNotice("Please log in to book a place.");
-      } else if (!response.ok) {
-        setNotice(payload.error ?? "The booking could not be updated.");
       } else {
+        const result = booked
+          ? await client.from("meetup_bookings").update({ status: "cancelled" }).eq("meetup_id", meetupId).eq("user_id", sessionData.session.user.id).eq("status", "confirmed").select("id").single()
+          : await client.from("meetup_bookings").insert({ meetup_id: meetupId }).select("id").single();
+        if (result.error) {
+          const message = result.error.message.toLowerCase();
+          setNotice(message.includes("capacity") || result.error.code === "23505" ? "This meetup is full or you already have a booking." : "The booking could not be updated.");
+          return;
+        }
         setBooked(!booked);
         setNotice(booked ? "Booking cancelled." : "Your place is booked.");
-        router.refresh();
       }
     } catch {
       setNotice("The booking service is temporarily unavailable.");

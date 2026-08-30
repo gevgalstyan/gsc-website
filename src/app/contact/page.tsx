@@ -7,7 +7,6 @@ import { resolveAuthCta } from "@/lib/auth-ui";
 import { getViewer } from "@/lib/viewer";
 
 export const revalidate = 60;
-export const dynamic = "force-dynamic";
 
 export const generateMetadata = () => editablePageMetadata("contact", "Join an English Speaking Club in Sergiyev Posad", "Contact Galstyan’s Speaking Club about English conversation practice, upcoming meetups, and joining the local community in Sergiyev Posad.", "/contact");
 

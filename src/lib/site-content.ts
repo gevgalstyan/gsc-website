@@ -3,40 +3,22 @@
  * Published values are used only when enabled; authored page fallbacks remain available.
  */
 
-import { createClient } from "@/lib/supabase/server";
 import { absoluteUrl, pageMetadata } from "@/lib/seo";
-import { withPublicFallback } from "@/lib/public-resilience";
 
 // ======================================================
 // CONTENT EDITOR — PUBLISHED SITE CONTENT
 // ======================================================
 export async function getPublicContent(): Promise<Record<string, string>> {
-  return withPublicFallback(async () => {
-    const supabase = await createClient();
-    if (!supabase) return {} as Record<string, string>;
-    const { data, error } = await supabase.from("site_content").select("key,value,published_value,published_is_enabled").eq("is_public", true).eq("published_is_enabled", true);
-    if (error || !data) return {} as Record<string, string>;
-    return Object.fromEntries(data.map((row) => [row.key, row.published_value ?? row.value]));
-  }, {});
+  // Static pages render their authored copy immediately. Interactive clients
+  // refresh editable records after hydration where that content is displayed.
+  return {};
 }
 
 // ======================================================
 // FAQ CONTENT
 // ======================================================
 export async function getPublishedFaqItems() {
-  return withPublicFallback(async () => {
-    const supabase = await createClient();
-    if (!supabase) return [] as { question: string; answer: string }[];
-    const { data, error } = await supabase
-      .from("site_faq_items")
-      .select("published_question,published_answer")
-      .eq("published_is_enabled", true)
-      .order("published_sort_order");
-    if (error || !data) return [] as { question: string; answer: string }[];
-    return data
-      .filter((item) => item.published_question.trim() && item.published_answer.trim())
-      .map((item) => ({ question: item.published_question, answer: item.published_answer }));
-  }, [] as { question: string; answer: string }[]);
+  return [] as { question: string; answer: string }[];
 }
 
 // ======================================================

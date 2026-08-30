@@ -7,7 +7,6 @@ import { editablePageMetadata, getPublicContent, getPublishedFaqItems } from "@/
 import { getViewer } from "@/lib/viewer";
 
 export const revalidate = 60;
-export const dynamic = "force-dynamic";
 
 export const generateMetadata = () => editablePageMetadata(
   "faq",

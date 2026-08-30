@@ -5,7 +5,6 @@ import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
 import { getViewer } from "@/lib/viewer";
 
 export const revalidate = 60;
-export const dynamic = "force-dynamic";
 
 export const generateMetadata = () => editablePageMetadata("membership", "GSC Membership and Loyalty", "See what Galstyan’s Speaking Club member access currently supports: profiles, attendance, question progress, favorites, and qualifying-visit rewards.", "/membership");
 

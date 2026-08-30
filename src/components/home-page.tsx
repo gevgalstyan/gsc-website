@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable react-hooks/set-state-in-effect */
 
 /**
  * Interactive public homepage composed from authored fallbacks and published CMS data.
@@ -20,6 +21,7 @@ import type { MeetupBookingState } from "@/components/meetup-booking-button";
 import { getMeetupBookingState, MEETUP_TIME_ZONE } from "@/lib/meetup-time";
 import { socialLinks } from "@/lib/site-data";
 import type { Viewer } from "@/lib/viewer";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 function meetupDate(meetup: PublishedMeetup) {
   const date = new Date(meetup.starts_at);
@@ -61,11 +63,16 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
     if (!deferPublicData) return;
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 2800);
-    fetch("/api/public-content", { signal: controller.signal, cache: "force-cache" })
-      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Public content request failed")))
-      .then((data: { meetups?: PublishedMeetup[]; content?: Record<string, string> }) => {
-        setPublicMeetups(data.meetups ?? []);
-        setPublicContent(data.content ?? {});
+    const client = getSupabaseBrowserClient();
+    if (!client) { setPublicDataState("error"); return; }
+    Promise.all([
+      client.from("meetups").select("id,title,description,starts_at,ends_at,timezone,location_name,address,capacity,price_minor,currency,status,booking_opens_at,booking_closes_at,confirmed_booking_count,category,image_url").eq("status", "published").gte("starts_at", new Date().toISOString()).order("starts_at"),
+      client.from("site_content").select("key,value,published_value").eq("is_public", true).eq("published_is_enabled", true),
+    ])
+      .then(([meetups, contentRows]) => {
+        if (meetups.error || contentRows.error) throw new Error("Public content request failed");
+        setPublicMeetups((meetups.data ?? []).map((item: Omit<PublishedMeetup, "member_booking_status">) => ({ ...item, member_booking_status: null })) as PublishedMeetup[]);
+        setPublicContent(Object.fromEntries((contentRows.data ?? []).map((item: { key: string; value: string; published_value: string | null }) => [item.key, item.published_value ?? item.value])));
         setPublicDataState("ready");
       })
       .catch(() => setPublicDataState("error"))

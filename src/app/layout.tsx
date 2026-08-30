@@ -1,7 +1,6 @@
 /** Root document shell, global fonts, viewport settings, and default site metadata. */
 
 import type { Metadata, Viewport } from "next";
-import { Manrope, Playfair_Display } from "next/font/google";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
 import "./globals.css";
 import "./business-flow.css";
@@ -9,8 +8,6 @@ import "./design-system.css";
 
 const themeScript = `(()=>{try{const saved=localStorage.getItem('gsc-theme');const theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch(e){}})()`;
 
-const manrope = Manrope({ subsets: ["latin", "cyrillic"], variable: "--font-sans", display: "swap", preload: false });
-const playfair = Playfair_Display({ subsets: ["latin", "cyrillic"], variable: "--font-display", style: ["normal", "italic"], display: "swap", preload: false });
 
 // ======================================================
 // SEO / METADATA — SITE DEFAULTS
@@ -60,5 +57,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#07101c", width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" suppressHydrationWarning className={`${manrope.variable} ${playfair.variable}`} data-scroll-behavior="smooth"><head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head><body>{children}</body></html>;
+  return <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth"><head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head><body>{children}</body></html>;
 }

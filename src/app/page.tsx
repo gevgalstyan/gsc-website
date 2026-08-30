@@ -8,7 +8,6 @@ import { editablePageMetadata } from "@/lib/site-content";
 import { getViewer } from "@/lib/viewer";
 
 export const revalidate = 60;
-export const dynamic = "force-dynamic";
 
 export const generateMetadata = () => editablePageMetadata("home", "English Speaking Club in Sergiev Posad", "Join Galstyan’s Speaking Club for friendly English conversation practice, real meetups, and a welcoming local community in Sergiev Posad.", "/");
 

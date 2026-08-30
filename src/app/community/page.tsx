@@ -5,7 +5,6 @@ import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
 import { getViewer } from "@/lib/viewer";
 
 export const revalidate = 60;
-export const dynamic = "force-dynamic";
 
 export const generateMetadata = () => editablePageMetadata("community", "The GSC English Speaking Community", "Meet people, practice conversational English, and build speaking confidence with a friendly local English community in Sergiev Posad.", "/community");
 

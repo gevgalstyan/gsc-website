@@ -29,7 +29,7 @@ type QuestionRow = { user_id: string; question_id: string };
 type AuditRow = { id: string; actor_user_id: string | null; action: string; target_table: string; target_id: string | null; created_at: string };
 type ManagedQuestion = { id: string; prompt: string; translation: string | null; category: string; difficulty: string; is_published: boolean };
 type NotificationRow = { id: string; title: string; body: string; read_at: string | null; created_at: string };
-type AdminData = { currentUserId: string; directory: DirectoryRow[]; profiles: ProfileRow[]; roles: RoleRow[]; meetups: MeetupRow[]; bookings: BookingRow[]; attendance: AttendanceRow[]; loyalty: RewardRow[]; special: SpecialRow[]; progress: QuestionRow[]; favorites: QuestionRow[]; audit: AuditRow[]; signedAvatars: Record<string, string>; managedQuestions: ManagedQuestion[]; content: EditableContent[]; notifications: NotificationRow[]; faq: EditableFaq[]; revisions: ContentRevision[]; media: MediaAsset[] };
+export type AdminData = { currentUserId: string; directory: DirectoryRow[]; profiles: ProfileRow[]; roles: RoleRow[]; meetups: MeetupRow[]; bookings: BookingRow[]; attendance: AttendanceRow[]; loyalty: RewardRow[]; special: SpecialRow[]; progress: QuestionRow[]; favorites: QuestionRow[]; audit: AuditRow[]; signedAvatars: Record<string, string>; managedQuestions: ManagedQuestion[]; content: EditableContent[]; notifications: NotificationRow[]; faq: EditableFaq[]; revisions: ContentRevision[]; media: MediaAsset[] };
 
 // ======================================================
 // ADMIN MEETUP MANAGEMENT — FORM SERIALIZATION

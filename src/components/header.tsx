@@ -14,6 +14,7 @@ import { NotificationBell } from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { navigation } from "@/lib/site-data";
 import type { Viewer } from "@/lib/viewer";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 // ======================================================
 // DESKTOP / MOBILE NAVIGATION
@@ -89,6 +90,10 @@ export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer
   function openAuth() {
     if (onAuth) onAuth();
   }
+  async function signOut() {
+    await getSupabaseBrowserClient()?.auth.signOut();
+    window.location.assign("/");
+  }
 
   function isActive(href: string) {
     return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
@@ -105,7 +110,7 @@ export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer
       <Link href="/account#settings" role="menuitem" onClick={() => setProfileOpen(false)}>Profile</Link>
       <Link href="/account#bookings" role="menuitem" onClick={() => setProfileOpen(false)}>Meetups &amp; bookings</Link>
       {viewer.role === "admin" && <Link href="/admin" role="menuitem" onClick={() => setProfileOpen(false)}>Admin dashboard</Link>}
-      <form action="/auth/signout" method="post"><button type="submit" role="menuitem">Log out</button></form>
+      <button type="button" role="menuitem" onClick={signOut}>Log out</button>
     </div>}
   </div>;
 
@@ -145,7 +150,7 @@ export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer
             <Link className="mobile-profile-link" href="/account#settings" onClick={closeMenu}>Profile</Link>
             <Link className="mobile-profile-link" href="/account#bookings" onClick={closeMenu}>Meetups &amp; bookings</Link>
             {viewer.role === "admin" && <Link className="mobile-profile-link" href="/admin" onClick={closeMenu}>Admin dashboard</Link>}
-            <form action="/auth/signout" method="post"><button className="mobile-logout" type="submit">Log out</button></form>
+            <button className="mobile-logout" type="button" onClick={signOut}>Log out</button>
           </div> : onAuth ? <button className="button button-primary mobile-auth-action" onClick={() => { closeMenu(); openAuth(); }}>Join / Login</button> : <Link className="button button-primary mobile-auth-action" href="/?auth=login" onClick={closeMenu}>Join / Login</Link>}
           <p>English ON. <span>•</span> Sergiev Posad</p>
         </div>

@@ -196,7 +196,8 @@ export function ContentEditor({
     setBusy(true);
     const client = getSupabaseBrowserClient();
     const { error: publishError } = await client!.rpc("publish_site_page", { p_page_slug: page });
-    if (!publishError) await fetch("/api/admin/revalidate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ page }) }).catch(() => undefined);
+    // Static hosting has no revalidation endpoint. Local editor state is the
+    // immediate source of truth; public clients refetch published rows.
     setBusy(false);
     if (publishError) return setError(publishError.message);
     const publishedAt = new Date().toISOString();
