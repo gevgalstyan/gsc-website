@@ -18,6 +18,7 @@ const favoritesKey = "gsc_question_favorites_v1";
 const deckStateKey = "gsc_question_deck_state_v1";
 const mergeKeyPrefix = "gsc_question_account_merge_v1:";
 const pendingKeyPrefix = "gsc_question_pending_v1:";
+const cloudPollIntervalMs = 7_500;
 const validQuestionIds = new Set(questions.map((question) => question.id));
 const emptyQuestionIds: string[] = [];
 
@@ -172,6 +173,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
   const accountIdRef = useRef<string | null>(initialState?.userId ?? null);
   const retryAttempt = useRef(0);
   const loadingUserRef = useRef<string | null>(null);
+  const cloudRefreshRef = useRef<Promise<void> | null>(null);
   const validIds = useMemo(() => new Set([...validQuestionIds, ...extraQuestionIds]), [extraQuestionIds]);
 
   const queuePendingWrite = useCallback((userId: string, updater: (pending: PendingQuestionWrites) => PendingQuestionWrites) => {
@@ -237,6 +239,24 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
     if (failures.length) { logSync("queue-flush-failed", failures); throw new Error("Question changes are saved on this device and will retry automatically."); }
     retryAttempt.current = 0;
   }, [validIds]);
+
+  // REST is the canonical transport. This guard is shared by polling, browser
+  // lifecycle events, queue retries, and optional Realtime invalidations so a
+  // slow connection cannot create overlapping reads or stale UI writes.
+  const refreshCloudState = useCallback((userId: string) => {
+    if (cloudRefreshRef.current) return cloudRefreshRef.current;
+    const request = (async () => {
+      await flushPendingWrites(userId);
+      await loadAccountState(userId);
+    })();
+    cloudRefreshRef.current = request;
+    void request.then(() => {
+      if (cloudRefreshRef.current === request) cloudRefreshRef.current = null;
+    }, () => {
+      if (cloudRefreshRef.current === request) cloudRefreshRef.current = null;
+    });
+    return request;
+  }, [flushPendingWrites, loadAccountState]);
 
   const mergeGuestState = useCallback(async (userId: string) => {
     try { if (localStorage.getItem(`${mergeKeyPrefix}${userId}`) === "complete") return; } catch { /* Continue idempotently. */ }
@@ -357,14 +377,16 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
     let channel: ReturnType<typeof client.channel> | null = null;
     const refresh = () => {
       if (!active) return;
-      void flushPendingWrites(accountId)
-        .then(() => loadAccountState(accountId))
+      void refreshCloudState(accountId)
         .catch(() => setSyncError("Question sync is retrying. Your latest actions are kept on this device."));
     };
     const onVisibility = () => { if (document.visibilityState === "visible") refresh(); };
     window.addEventListener("focus", refresh);
     window.addEventListener("online", refresh);
     document.addEventListener("visibilitychange", onVisibility);
+    const poll = window.setInterval(() => {
+      if (document.visibilityState === "visible" && navigator.onLine) refresh();
+    }, cloudPollIntervalMs);
     void client.auth.getSession().then(async ({ data }: { data: { session: Session | null } }) => {
       if (!active || !data.session) return;
       await client.realtime.setAuth(data.session.access_token);
@@ -372,19 +394,22 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
       channel = client.channel(`question-state:${accountId}`, { config: { private: true } })
         .on("broadcast", { event: "question_state_changed" }, refresh)
         .subscribe((status: string) => {
-          if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") setSyncError("Live sync is reconnecting. Your progress will refresh automatically.");
+          // Realtime is only an early invalidation hint. REST polling remains
+          // fully authoritative when WebSockets are unavailable.
+          if (status === "CHANNEL_ERROR" || status === "TIMED_OUT" || status === "CLOSED") logSync("realtime-unavailable", status);
         });
     }).catch(() => {
-      if (active) setSyncError("Live sync is temporarily unavailable. Your progress will refresh automatically.");
+      if (active) logSync("realtime-setup-failed");
     });
     return () => {
       active = false;
       window.removeEventListener("focus", refresh);
       window.removeEventListener("online", refresh);
       document.removeEventListener("visibilitychange", onVisibility);
+      window.clearInterval(poll);
       if (channel) void client.removeChannel(channel);
     };
-  }, [accountId, flushPendingWrites, loadAccountState]);
+  }, [accountId, refreshCloudState]);
 
   // A real offline queue must recover without waiting for a manual focus event.
   // Backoff is capped to avoid noisy retries on a weak mobile connection.
@@ -394,8 +419,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
     if (!Object.keys(pending.progress).length && !Object.keys(pending.favorites).length && !pending.deckState) return;
     const delay = Math.min(30_000, 2_000 * 2 ** retryAttempt.current);
     const timer = window.setTimeout(() => {
-      void flushPendingWrites(accountId)
-        .then(() => loadAccountState(accountId))
+      void refreshCloudState(accountId)
         .catch(() => {
           retryAttempt.current += 1;
           setSyncError("Changes saved on this device. Syncing when the connection returns.");
@@ -403,7 +427,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
         });
     }, delay);
     return () => window.clearTimeout(timer);
-  }, [accountId, flushPendingWrites, loadAccountState, pendingRevision]);
+  }, [accountId, pendingRevision, refreshCloudState]);
 
   useEffect(() => {
     if (accountId) return;
@@ -503,9 +527,8 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
 
   const refreshState = useCallback(async () => {
     if (!accountId) return;
-    await flushPendingWrites(accountId);
-    await loadAccountState(accountId);
-  }, [accountId, flushPendingWrites, loadAccountState]);
+    await refreshCloudState(accountId);
+  }, [accountId, refreshCloudState]);
 
   return { seen, favorites, deckState, ready, syncError, markExplored, setFavorite, saveDeckState, resetProgress, refreshState };
 }
