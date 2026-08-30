@@ -7,7 +7,7 @@
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
+import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { questions, type CategoryFilter, type DifficultyFilter } from "@/lib/questions";
 import type { InitialQuestionSyncState, QuestionDeckSyncState } from "@/lib/question-sync";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -38,6 +38,10 @@ type PendingQuestionWrites = {
 };
 
 const emptyPending: PendingQuestionWrites = { progress: {}, favorites: {}, deckState: null };
+const debugSync = process.env.NODE_ENV === "development";
+function logSync(event: string, detail?: unknown) {
+  if (debugSync) console.debug("[gsc:question-sync]", event, detail ?? "");
+}
 
 function nowIso() {
   return new Date().toISOString();
@@ -167,6 +171,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
   const loadSequence = useRef(0);
   const accountIdRef = useRef<string | null>(initialState?.userId ?? null);
   const retryAttempt = useRef(0);
+  const loadingUserRef = useRef<string | null>(null);
   const validIds = useMemo(() => new Set([...validQuestionIds, ...extraQuestionIds]), [extraQuestionIds]);
 
   const queuePendingWrite = useCallback((userId: string, updater: (pending: PendingQuestionWrites) => PendingQuestionWrites) => {
@@ -183,7 +188,10 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
       client.from("question_favorites").select("question_id,is_favorite,favorite_updated_at").eq("user_id", userId).eq("is_favorite", true),
       client.from("question_deck_state").select("current_question_id,category_filter,difficulty_filter,favorites_only,updated_at").eq("user_id", userId).maybeSingle(),
     ]);
-    if (progressResult.error || favoritesResult.error || deckStateResult.error) throw new Error("Couldn’t synchronize question progress.");
+    if (progressResult.error || favoritesResult.error || deckStateResult.error) {
+      logSync("cloud-read-failed", { progress: progressResult.error, favorites: favoritesResult.error, deck: deckStateResult.error });
+      throw new Error("Couldn’t synchronize question progress.");
+    }
     if (sequence !== loadSequence.current || accountIdRef.current !== userId) return;
     setSeen(sanitizeIds((progressResult.data as QuestionProgressRow[]).map((row) => row.question_id), validIds));
     setFavorites(sanitizeIds((favoritesResult.data as QuestionFavoriteRow[]).map((row) => row.question_id), validIds));
@@ -226,7 +234,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
     }
     savePending(userId, remaining);
     setPendingRevision((value) => value + 1);
-    if (failures.length) throw new Error("Question changes are saved on this device and will retry automatically.");
+    if (failures.length) { logSync("queue-flush-failed", failures); throw new Error("Question changes are saved on this device and will retry automatically."); }
     retryAttempt.current = 0;
   }, [validIds]);
 
@@ -287,6 +295,10 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
     }
 
     async function loadUser(userId: string) {
+      // getSession and INITIAL_SESSION can both arrive during static hydration.
+      // One ordered load prevents a late duplicate from showing stale local state.
+      if (loadingUserRef.current === userId) return;
+      loadingUserRef.current = userId;
       const sameUser = accountIdRef.current === userId;
       const sequence = ++loadSequence.current;
       accountIdRef.current = userId;
@@ -299,6 +311,9 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
       }
       setSyncError("");
       try {
+        // Cloud is authoritative for signed-in UI. Never render guest storage
+        // into this account before it has been read.
+        await loadAccountState(userId);
         await mergeGuestState(userId);
         await flushPendingWrites(userId);
         if (active && sequence === loadSequence.current) await loadAccountState(userId);
@@ -306,6 +321,8 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
         if (!active || accountIdRef.current !== userId) return;
         setSyncError(error instanceof Error ? error.message : "Couldn’t synchronize question progress.");
         setReady(sameUser);
+      } finally {
+        if (loadingUserRef.current === userId) loadingUserRef.current = null;
       }
     }
 
@@ -314,9 +331,11 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
       return;
     }
 
-    client.auth.getUser().then(({ data }: { data: { user: User | null } }) => {
+    client.auth.getSession().then(({ data }: { data: { session: Session | null } }) => {
       if (!active) return;
-      if (data.user) void loadUser(data.user.id); else loadGuest();
+      // The browser session is available synchronously from Supabase storage;
+      // getUser is still used by queries/RLS but must not delay state selection.
+      if (data.session?.user) void loadUser(data.session.user.id); else loadGuest();
     }).catch(() => {
       if (active) loadGuest();
     });
