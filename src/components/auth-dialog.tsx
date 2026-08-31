@@ -7,9 +7,8 @@
  */
 import { LockKeyhole, X } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
-import { authCallbackUrl } from "@/lib/auth-redirect";
+import { authCallbackUrl, safeAuthDestination } from "@/lib/auth-redirect";
 type Mode = "login" | "register" | "forgot";
 type Notice = { kind: "error" | "success"; text: string } | null;
 const googleEnabled = process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED === "true";
@@ -29,8 +28,9 @@ function authErrorMessage(mode: Mode) {
 // ======================================================
 export function AuthDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [mode, setMode] = useState<Mode>("login"); const [notice, setNotice] = useState<Notice>(null); const [loading, setLoading] = useState(false); const [googleLoading, setGoogleLoading] = useState(false);
-  const dialogRef = useRef<HTMLElement>(null); const closeRef = useRef<HTMLButtonElement>(null); const router = useRouter();
+  const dialogRef = useRef<HTMLElement>(null); const closeRef = useRef<HTMLButtonElement>(null);
   function close() { setNotice(null); setLoading(false); setGoogleLoading(false); onClose(); }
+  function requestedDestination() { return safeAuthDestination(new URLSearchParams(window.location.search).get("next")); }
   useEffect(() => {
     if (!open) return; const previous = document.activeElement as HTMLElement | null; const overflow = document.body.style.overflow; document.body.style.overflow = "hidden"; closeRef.current?.focus();
     function onKey(event: KeyboardEvent) { if (event.key === "Escape") return close(); if (event.key !== "Tab" || !dialogRef.current) return; const items = dialogRef.current.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),input:not([disabled]),[tabindex]:not([tabindex="-1"])'); if (!items.length) return; const first = items[0], last = items[items.length - 1]; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } }
@@ -43,8 +43,9 @@ export function AuthDialog({ open, onClose }: { open: boolean; onClose: () => vo
     if (!client) { setLoading(false); setNotice({ kind: "error", text: "Member access is being configured. Please join us on Telegram for announcements." }); return; }
     if (mode === "forgot") { const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: authCallbackUrl("/reset-password") }); setLoading(false); setNotice(error ? { kind: "error", text: authErrorMessage(mode) } : { kind: "success", text: "If an account exists, a password-reset email is on its way." }); return; }
     if (password.length < 8) { setLoading(false); setNotice({ kind: "error", text: "Use at least 8 characters for your password." }); return; }
-    if (mode === "register") { const displayName = String(form.get("display_name") ?? "").trim(); const { data, error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: authCallbackUrl(), data: { full_name: displayName } } }); setLoading(false); setNotice(error ? { kind: "error", text: authErrorMessage(mode) } : data.session ? { kind: "success", text: "Account created. Opening your profile…" } : { kind: "success", text: "Check your email to confirm your account." }); if (data.session) setTimeout(() => { close(); router.push("/account"); router.refresh(); }, 500); return; }
-    const { error } = await client.auth.signInWithPassword({ email, password }); setLoading(false); if (error) return setNotice({ kind: "error", text: authErrorMessage(mode) }); close(); router.push("/account"); router.refresh();
+    const next = requestedDestination();
+    if (mode === "register") { const displayName = String(form.get("display_name") ?? "").trim(); const { data, error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: authCallbackUrl(next), data: { full_name: displayName } } }); setLoading(false); setNotice(error ? { kind: "error", text: authErrorMessage(mode) } : data.session ? { kind: "success", text: "Account created. Opening the club…" } : { kind: "success", text: "Check your email to confirm your account." }); if (data.session) setTimeout(() => { close(); window.location.replace(next); }, 500); return; }
+    const { error } = await client.auth.signInWithPassword({ email, password }); setLoading(false); if (error) return setNotice({ kind: "error", text: authErrorMessage(mode) }); close(); window.location.replace(next);
   }
   // ======================================================
   // GOOGLE OAUTH
@@ -54,7 +55,7 @@ export function AuthDialog({ open, onClose }: { open: boolean; onClose: () => vo
     if (!client) { setLoading(false); setGoogleLoading(false); setNotice({ kind: "error", text: "Member access is being configured. Please join us on Telegram for announcements." }); return; }
     const { data, error } = await client.auth.signInWithOAuth({
       provider: "google",
-      options: { redirectTo: authCallbackUrl(), skipBrowserRedirect: true },
+      options: { redirectTo: authCallbackUrl(requestedDestination()), skipBrowserRedirect: true },
     });
     if (error || !data.url) { setLoading(false); setGoogleLoading(false); setNotice({ kind: "error", text: "Google login could not be opened. Please try again." }); return; }
     window.location.assign(data.url);

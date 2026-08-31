@@ -2,7 +2,6 @@
 
 /** Lets a recovery-session user choose and save a new Supabase Auth password. */
 import { FormEvent, useState } from "react";
-import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 // ======================================================
@@ -10,7 +9,6 @@ import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 // ======================================================
 export function PasswordResetForm() {
   const [status, setStatus] = useState<{ kind: "idle" | "loading" | "error" | "success"; message?: string }>({ kind: "idle" });
-  const router = useRouter();
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -23,8 +21,8 @@ export function PasswordResetForm() {
     if (!client) return setStatus({ kind: "error", message: "Password reset is temporarily unavailable." });
     const { error } = await client.auth.updateUser({ password });
     if (error) return setStatus({ kind: "error", message: "We couldn’t update your password. Please request a new reset link and try again." });
-    setStatus({ kind: "success", message: "Password updated. Opening your account…" });
-    setTimeout(() => router.replace("/account"), 700);
+    setStatus({ kind: "success", message: "Password updated. Returning to the club…" });
+    setTimeout(() => window.location.replace("/"), 700);
   }
   return <form className="account-form" onSubmit={submit} aria-busy={status.kind === "loading"}><label>New password<input name="password" type="password" minLength={8} autoComplete="new-password" required /></label><label>Confirm password<input name="confirmation" type="password" minLength={8} autoComplete="new-password" required /></label><button className="button button-primary" disabled={status.kind === "loading"}>{status.kind === "loading" ? "Updating…" : "Update password"}</button>{status.message && <p className={`form-status ${status.kind}`} role="status">{status.message}</p>}</form>;
 }

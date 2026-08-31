@@ -3,14 +3,11 @@
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { safeAuthDestination } from "@/lib/auth-redirect";
 
 const debugAuth = process.env.NODE_ENV === "development";
 function logCallback(event: string, detail?: unknown) {
   if (debugAuth) console.debug("[gsc:oauth-callback]", event, detail ?? "");
-}
-
-function destination(value: string | null) {
-  return value?.startsWith("/") && !value.startsWith("//") ? value : "/account";
 }
 
 /**
@@ -28,7 +25,7 @@ function AuthCallbackPage() {
 
     const client = getSupabaseBrowserClient();
     const code = params.get("code");
-    const next = destination(params.get("next"));
+    const next = safeAuthDestination(params.get("next"));
     logCallback("loaded", { path: window.location.pathname, codePresent: Boolean(code), exchangeStarted: Boolean(code) });
 
     void (async () => {

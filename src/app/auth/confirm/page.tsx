@@ -4,9 +4,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { safeAuthDestination } from "@/lib/auth-redirect";
 
 // ======================================================
 // EMAIL/PASSWORD AUTH — CONFIRMATION LINK VALIDATION
@@ -55,22 +56,19 @@ const copyByType: Record<string, { title: string; description: string; action: s
 
 function ConfirmAuthEmailPage() {
   const params = useSearchParams();
-  const router = useRouter();
   const tokenHash = params.get("token_hash")?.trim() ?? "";
   const type = params.get("type")?.trim() ?? "";
   const requestedNext = params.get("next")?.trim() ?? "";
-  const next = requestedNext.startsWith("/") && !requestedNext.startsWith("//")
-    ? requestedNext
-    : type === "recovery"
-      ? "/reset-password"
-      : "/account";
+  const next = type === "recovery"
+    ? safeAuthDestination(requestedNext, "/reset-password")
+    : safeAuthDestination(requestedNext);
   const valid = /^[A-Za-z0-9_-]{20,}$/.test(tokenHash) && confirmationTypes.has(type);
   const copy = copyByType[type] ?? copyByType.email;
   async function confirm() {
     const client = getSupabaseBrowserClient();
     if (!client) return;
     const { error } = await client.auth.verifyOtp({ token_hash: tokenHash, type: type as "signup" | "invite" | "magiclink" | "recovery" | "email_change" | "email" });
-    router.replace(error ? "/?authError=callback" : next);
+    window.location.replace(error ? "/?authError=callback" : next);
   }
 
   return (
