@@ -1,9 +1,9 @@
 /** Browser-only Supabase client for interactive auth, uploads, and member mutations. */
 
-import { createBrowserClient } from "@supabase/ssr";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { fetchWithTimeout } from "@/lib/supabase/fetch";
 
-type BrowserClient = ReturnType<typeof createBrowserClient>;
+type BrowserClient = SupabaseClient;
 let browserClient: BrowserClient | null | undefined;
 
 export function isSupabaseConfigured() {
@@ -27,8 +27,16 @@ export function getSupabaseBrowserClient() {
     return browserClient;
   }
 
-  browserClient = createBrowserClient(url, key, {
+  // Static hosting has no server cookie bridge. Keep the one canonical client
+  // in browser localStorage and exchange OAuth codes explicitly in the callback.
+  browserClient = createClient(url, key, {
     global: { fetch: fetchWithTimeout },
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: false,
+      storage: window.localStorage,
+    },
   });
   return browserClient;
 }

@@ -7,6 +7,7 @@ import "./business-flow.css";
 import "./design-system.css";
 
 const themeScript = `(()=>{try{const saved=localStorage.getItem('gsc-theme');const theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch(e){}})()`;
+const canonicalOriginScript = `(()=>{if(location.hostname==='www.galstyansspeakingclub.ru'){location.replace('https://galstyansspeakingclub.ru'+location.pathname+location.search+location.hash)}})()`;
 
 
 // ======================================================
@@ -57,5 +58,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#07101c", width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth"><head><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head><body>{children}</body></html>;
+  return <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth"><head><script dangerouslySetInnerHTML={{ __html: canonicalOriginScript }} /><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head><body>{children}</body></html>;
 }

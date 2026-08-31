@@ -15,18 +15,21 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { navigation } from "@/lib/site-data";
 import type { Viewer } from "@/lib/viewer";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useBrowserViewer } from "@/hooks/use-browser-viewer";
 
 // ======================================================
 // DESKTOP / MOBILE NAVIGATION
 // ======================================================
-export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer }) {
+export function Header({ onAuth, viewer, liveViewer }: { onAuth?: () => void; viewer: Viewer; liveViewer?: Viewer }) {
+  const restoredViewer = useBrowserViewer(viewer, !liveViewer);
+  const browserViewer = liveViewer ?? restoredViewer;
   const [open, setOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
-  const isAuthenticated = viewer.role !== "loggedOut";
+  const isAuthenticated = browserViewer.role !== "loggedOut";
 
   // Locks background scrolling and traps keyboard focus while the mobile drawer is open.
   useEffect(() => {
@@ -99,17 +102,17 @@ export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer
     return href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
   }
 
-  const profileInitial = viewer.name.trim().charAt(0).toUpperCase() || "G";
+  const profileInitial = browserViewer.name.trim().charAt(0).toUpperCase() || "G";
   const profileControl = <div className="profile-control" ref={profileRef}>
     <button className="profile-trigger" type="button" aria-expanded={profileOpen} aria-haspopup="menu" onClick={() => setProfileOpen((value) => !value)}>
-      {viewer.avatarUrl ? <Image src={viewer.avatarUrl} alt="" width={34} height={34} unoptimized /> : <span>{profileInitial}</span>}
-      <b>{viewer.name}</b><ChevronDown size={15} />
+      {browserViewer.avatarUrl ? <Image src={browserViewer.avatarUrl} alt="" width={34} height={34} unoptimized /> : <span>{profileInitial}</span>}
+      <b>{browserViewer.name}</b><ChevronDown size={15} />
     </button>
     {profileOpen && <div className="profile-menu" role="menu">
       <Link href="/account" role="menuitem" onClick={() => setProfileOpen(false)}>My account</Link>
       <Link href="/account#settings" role="menuitem" onClick={() => setProfileOpen(false)}>Profile</Link>
       <Link href="/account#bookings" role="menuitem" onClick={() => setProfileOpen(false)}>Meetups &amp; bookings</Link>
-      {viewer.role === "admin" && <Link href="/admin" role="menuitem" onClick={() => setProfileOpen(false)}>Admin dashboard</Link>}
+      {browserViewer.role === "admin" && <Link href="/admin" role="menuitem" onClick={() => setProfileOpen(false)}>Admin dashboard</Link>}
       <button type="button" role="menuitem" onClick={signOut}>Log out</button>
     </div>}
   </div>;
@@ -126,7 +129,7 @@ export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer
         </nav>
         <div className="header-actions">
           <ThemeToggle compact />
-          {isAuthenticated && <NotificationBell initialNotifications={viewer.notifications} />}
+          {isAuthenticated && <NotificationBell key={browserViewer.userId} initialNotifications={browserViewer.notifications} />}
           {isAuthenticated ? profileControl : onAuth ? <button className="button button-small button-outline desktop-auth" onClick={openAuth}>Join / Login</button> : <Link className="button button-small button-outline desktop-auth" href="/?auth=login">Join / Login</Link>}
           <button ref={menuButtonRef} className="menu-button" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open} aria-controls="mobile-navigation"><Menu /></button>
         </div>
@@ -145,11 +148,11 @@ export function Header({ onAuth, viewer }: { onAuth?: () => void; viewer: Viewer
             ))}
           </nav>
           {isAuthenticated ? <div className="mobile-account-panel">
-            <div className="mobile-account-heading">{viewer.avatarUrl ? <Image src={viewer.avatarUrl} alt="" width={38} height={38} unoptimized /> : <span>{profileInitial}</span>}<div><small>Signed in as</small><strong>{viewer.name}</strong></div></div>
+            <div className="mobile-account-heading">{browserViewer.avatarUrl ? <Image src={browserViewer.avatarUrl} alt="" width={38} height={38} unoptimized /> : <span>{profileInitial}</span>}<div><small>Signed in as</small><strong>{browserViewer.name}</strong></div></div>
             <Link className="mobile-profile-link" href="/account" onClick={closeMenu}><UserCircle size={18} />My account</Link>
             <Link className="mobile-profile-link" href="/account#settings" onClick={closeMenu}>Profile</Link>
             <Link className="mobile-profile-link" href="/account#bookings" onClick={closeMenu}>Meetups &amp; bookings</Link>
-            {viewer.role === "admin" && <Link className="mobile-profile-link" href="/admin" onClick={closeMenu}>Admin dashboard</Link>}
+            {browserViewer.role === "admin" && <Link className="mobile-profile-link" href="/admin" onClick={closeMenu}>Admin dashboard</Link>}
             <button className="mobile-logout" type="button" onClick={signOut}>Log out</button>
           </div> : onAuth ? <button className="button button-primary mobile-auth-action" onClick={() => { closeMenu(); openAuth(); }}>Join / Login</button> : <Link className="button button-primary mobile-auth-action" href="/?auth=login" onClick={closeMenu}>Join / Login</Link>}
           <p>English ON. <span>•</span> Sergiev Posad</p>

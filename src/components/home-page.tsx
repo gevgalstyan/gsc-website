@@ -22,6 +22,7 @@ import { getMeetupBookingState, MEETUP_TIME_ZONE } from "@/lib/meetup-time";
 import { socialLinks } from "@/lib/site-data";
 import type { Viewer } from "@/lib/viewer";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { useBrowserViewer } from "@/hooks/use-browser-viewer";
 
 function meetupDate(meetup: PublishedMeetup) {
   const date = new Date(meetup.starts_at);
@@ -45,19 +46,20 @@ function bookingState(meetup: PublishedMeetup): { state: MeetupBookingState; lab
 // PUBLIC HOMEPAGE — AUTH-AWARE MEMBER EXPERIENCE
 // ======================================================
 export function HomePage({ initialAuthOpen = false, viewer, meetups = [], content = {}, deferPublicData = false }: { initialAuthOpen?: boolean; viewer: Viewer; meetups?: PublishedMeetup[]; content?: Record<string, string>; deferPublicData?: boolean }) {
-  const [authOpen, setAuthOpen] = useState(initialAuthOpen && viewer.role === "loggedOut");
+  const browserViewer = useBrowserViewer(viewer);
+  const [authOpen, setAuthOpen] = useState(initialAuthOpen && browserViewer.role === "loggedOut");
   const [publicMeetups, setPublicMeetups] = useState(meetups);
   const [publicContent, setPublicContent] = useState(content);
   const [publicDataState, setPublicDataState] = useState<"loading" | "ready" | "error">(deferPublicData ? "loading" : "ready");
   const [publicDataAttempt, setPublicDataAttempt] = useState(0);
 
   useEffect(() => {
-    if (viewer.role !== "loggedOut") return;
+    if (browserViewer.role !== "loggedOut") return;
     const authParam = new URLSearchParams(window.location.search).get("auth");
     if (!authParam) return;
     const openTimer = window.setTimeout(() => setAuthOpen(true), 0);
     return () => window.clearTimeout(openTimer);
-  }, [viewer.role]);
+  }, [browserViewer.role]);
 
   useEffect(() => {
     if (!deferPublicData) return;
@@ -88,7 +90,7 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
 
   return (
     <>
-      <Header onAuth={() => setAuthOpen(true)} viewer={viewer} />
+      <Header onAuth={() => setAuthOpen(true)} viewer={browserViewer} liveViewer={browserViewer} />
       <main>
         {publicContent["settings.banner_text"] && <aside className="site-banner" role="status">{publicContent["settings.banner_text"]}</aside>}
         <section id="home" className="hero section">
@@ -97,7 +99,7 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
             {publicContent["home.hero.title"] === "English Speaking Club in Sergiev Posad" || !publicContent["home.hero.title"] ? <h1>English<br /><em>Speaking Club</em><small> in Sergiev Posad</small></h1> : <h1>{publicContent["home.hero.title"]}</h1>}
             <p className="hero-lead">{publicContent["home.hero.subtitle"] || publicContent["homepage.hero.lead"] || "A friendly English conversation club in Sergiev Posad. Practice spoken English with real people."}</p>
             <div className="hero-buttons">
-              <AuthAwareCta kind="join" role={viewer.role} loggedOutLabel={publicContent["home.hero.cta"] || "Join the club"} loggedOutHref={publicContent["home.hero.cta_url"] || "/?auth=register"} adminDestination="admin" onLoggedOutAuth={() => setAuthOpen(true)} />
+              <AuthAwareCta kind="join" role={browserViewer.role} loggedOutLabel={publicContent["home.hero.cta"] || "Join the club"} loggedOutHref={publicContent["home.hero.cta_url"] || "/?auth=register"} adminDestination="admin" onLoggedOutAuth={() => setAuthOpen(true)} />
               <Link className="button button-quiet" href="/meetups">Explore meetups <ArrowDown /></Link>
             </div>
             <div className="hero-proof">
@@ -166,7 +168,7 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
 
         <section id="loyalty" className="section loyalty-section">
           <div className="loyalty-card">
-            <div className="loyalty-copy"><span className="eyebrow">Keep showing up</span><h2>Six visits.<br />One free <em>meetup.</em></h2><p>Every conversation counts. Members can track qualifying attendance and unlock a free meetup after six paid visits.</p><div className="loyalty-actions">{viewer.role === "loggedOut" ? <AuthAwareCta kind="profile" role={viewer.role} onLoggedOutAuth={() => setAuthOpen(true)} /> : <Link className="button button-primary" href="/account#rewards">View your progress <ArrowRight /></Link>}<Link className="button button-outline-dark" href="/membership">How membership works <ArrowRight /></Link></div></div>
+            <div className="loyalty-copy"><span className="eyebrow">Keep showing up</span><h2>Six visits.<br />One free <em>meetup.</em></h2><p>Every conversation counts. Members can track qualifying attendance and unlock a free meetup after six paid visits.</p><div className="loyalty-actions">{browserViewer.role === "loggedOut" ? <AuthAwareCta kind="profile" role={browserViewer.role} onLoggedOutAuth={() => setAuthOpen(true)} /> : <Link className="button button-primary" href="/account#rewards">View your progress <ArrowRight /></Link>}<Link className="button button-outline-dark" href="/membership">How membership works <ArrowRight /></Link></div></div>
             <div className="stamp-card"><div className="stamp-head"><div><BadgeCheck /><span><b>GSC Member</b><small>Loyalty card</small></span></div><strong>English ON.</strong></div><div className="stamps">{[1,2,3,4,5,6].map((n) => <span key={n}>{n}</span>)}<span className="reward"><Star />FREE</span></div><div className="stamp-foot"><span>6 visits</span><i /><span>1 free meetup</span></div></div>
           </div>
         </section>
@@ -174,7 +176,7 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
         <section id="how-it-works" className="section how-section">
           <div className="section-heading"><div><span className="eyebrow">Simple by design</span><h2>How an English speaking meetup <em>works.</em></h2></div><p>Your next good conversation starts with the community, a published meetup, and a table ready for English.</p></div>
           <div className="steps">
-            <article><span>01</span><div><Users /></div><h3>{viewer.role === "loggedOut" ? "Join the community" : "Open your member space"}</h3><p>{viewer.role === "loggedOut" ? "Create a member profile or join our Telegram channel for announcements." : "Use your dashboard for bookings, progress, attendance, and rewards."}</p></article>
+            <article><span>01</span><div><Users /></div><h3>{browserViewer.role === "loggedOut" ? "Join the community" : "Open your member space"}</h3><p>{browserViewer.role === "loggedOut" ? "Create a member profile or join our Telegram channel for announcements." : "Use your dashboard for bookings, progress, attendance, and rewards."}</p></article>
             <article><span>02</span><div><CalendarDays /></div><h3>Choose a published meetup</h3><p>When a date and venue are announced, check the details and reserve your place if booking is open.</p></article>
             <article><span>03</span><div><MessageCircle /></div><h3>Turn English on</h3><p>Arrive, meet your table, draw a card, and start speaking.</p></article>
           </div>
