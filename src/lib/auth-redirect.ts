@@ -13,7 +13,9 @@ export function authCallbackUrl(next?: string) {
     : typeof window !== "undefined"
       ? window.location.origin
       : SITE_URL;
-  const callback = new URL("/auth/callback", origin);
+  // Static export emits /auth/callback/index.html. Keep the externally visible
+  // callback canonical so OAuth does not rely on host redirect behavior.
+  const callback = new URL("/auth/callback/", origin);
   if (next?.startsWith("/") && !next.startsWith("//")) callback.searchParams.set("next", next);
   return callback.toString();
 }
