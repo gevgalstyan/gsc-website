@@ -30,10 +30,12 @@ export function ProfileForm({
   userId,
   initialProfile,
   initialAvatarUrl,
+  onboarding = false,
 }: {
   userId: string;
   initialProfile: Profile;
   initialAvatarUrl: string | null;
+  onboarding?: boolean;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const previewRef = useRef<string | null>(null);
@@ -70,6 +72,14 @@ export function ProfileForm({
     event.target.value = "";
     if (!file) return;
     setNotice(null);
+    if (!new Set(["image/jpeg", "image/png", "image/webp"]).has(file.type)) {
+      setNotice({ kind: "error", text: "Please choose a JPEG, PNG, or WebP image." });
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setNotice({ kind: "error", text: "That photo is larger than 5 MB. Please choose a smaller image." });
+      return;
+    }
     if (cropUrl) URL.revokeObjectURL(cropUrl);
     setCropFile(file);
     setCropUrl(URL.createObjectURL(file));
@@ -115,7 +125,7 @@ export function ProfileForm({
       replacePreview(initialAvatarUrl);
       setNotice({
         kind: "error",
-        text: error instanceof AvatarImageError ? error.message : "We couldn’t upload your photo. Please try again.",
+        text: error instanceof AvatarImageError ? error.message : error instanceof Error ? `Photo upload failed: ${error.message}` : "We couldn’t upload your photo. Please try again.",
       });
     } finally {
       setUploading(false);
@@ -166,12 +176,23 @@ export function ProfileForm({
     const data = new FormData(event.currentTarget);
     const clean = (key: string) => String(data.get(key) ?? "").trim() || null;
     const telegram = clean("telegram_username")?.replace(/^@/, "") ?? null;
+    if (onboarding && !clean("display_name")) {
+      setSaving(false);
+      setNotice({ kind: "error", text: "Please add the name you’d like the community to use." });
+      return;
+    }
     const client = getSupabaseBrowserClient();
     const { error } = client
-      ? await client.from("profiles").update({ display_name: clean("display_name"), telegram_username: telegram, english_level: clean("english_level") }).eq("id", userId)
+      ? await client.from("profiles").update({ display_name: clean("display_name"), telegram_username: telegram, english_level: clean("english_level"), ...(onboarding ? { onboarding_completed: true } : {}) }).eq("id", userId)
       : { error: new Error("Profile updates are temporarily unavailable.") };
     setSaving(false);
-    setNotice(error ? { kind: "error", text: "We couldn’t save your profile. Please check the fields and try again." } : { kind: "success", text: "Profile saved." });
+    if (error) { setNotice({ kind: "error", text: `We couldn’t save your profile: ${error.message}` }); return; }
+    if (onboarding) {
+      setNotice({ kind: "success", text: "Profile complete. Opening the club…" });
+      window.setTimeout(() => window.location.replace("/"), 450);
+      return;
+    }
+    setNotice({ kind: "success", text: "Profile saved." });
   }
 
   const initials = displayName.trim().charAt(0).toUpperCase() || "G";
@@ -198,10 +219,10 @@ export function ProfileForm({
     </div>
     {cropFile && cropUrl && <div className="modal-backdrop" role="presentation"><section className="avatar-crop-dialog" role="dialog" aria-modal="true" aria-labelledby="avatar-crop-title"><span className="eyebrow">Profile photo</span><h2 id="avatar-crop-title">Frame your photo</h2><p>Move, zoom, and preview the square image before it is saved.</p><div className="avatar-crop-preview"><Image src={cropUrl} alt="Photo crop preview" width={280} height={280} unoptimized style={{ transform: `translate(${cropX * 12}%, ${cropY * 12}%) scale(${cropZoom})` }} /></div><label>Zoom<input type="range" min="1" max="2.5" step="0.05" value={cropZoom} onChange={(event) => setCropZoom(Number(event.target.value))} /></label><label>Horizontal position<input type="range" min="-1" max="1" step="0.05" value={cropX} onChange={(event) => setCropX(Number(event.target.value))} /></label><label>Vertical position<input type="range" min="-1" max="1" step="0.05" value={cropY} onChange={(event) => setCropY(Number(event.target.value))} /></label><div className="public-actions"><button className="button button-outline-dark" type="button" onClick={cancelCrop} disabled={uploading}>Cancel</button><button className="button button-primary" type="button" onClick={saveCroppedPhoto} disabled={uploading}>{uploading ? "Saving…" : "Save photo"}</button></div></section></div>}
     <form className="account-form" onSubmit={submit} aria-busy={saving}>
-      <label>Display name<input name="display_name" value={displayName} onChange={(event) => setDisplayName(event.target.value)} maxLength={80} autoComplete="name" disabled={busy} /></label>
+      <label>Display name<input name="display_name" value={displayName} onChange={(event) => setDisplayName(event.target.value)} maxLength={80} autoComplete="name" required={onboarding} disabled={busy} /></label>
       <label>Telegram username<input name="telegram_username" defaultValue={initialProfile.telegram_username ?? ""} pattern="@?[A-Za-z0-9_]{5,32}" placeholder="@username" disabled={busy} /></label>
       <label>English level<select name="english_level" value={englishLevel} onChange={(event) => setEnglishLevel(event.target.value)} disabled={busy}><option value="">Choose your level</option><option value="beginner">Beginner</option><option value="elementary">Elementary</option><option value="pre-intermediate">Pre-intermediate</option><option value="intermediate">Intermediate</option><option value="upper-intermediate">Upper-intermediate</option><option value="advanced">Advanced</option></select></label>
-      <button className="button button-primary" disabled={busy}>{saving ? "Saving…" : "Save profile"}</button>
+      <button className="button button-primary" disabled={busy}>{saving ? "Saving…" : onboarding ? "Complete profile" : "Save profile"}</button>
       {notice && <p className={`form-status ${notice.kind}`} role="status" aria-live="polite">{notice.text}</p>}
     </form>
   </>;

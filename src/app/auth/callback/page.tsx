@@ -4,6 +4,7 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { safeAuthDestination } from "@/lib/auth-redirect";
+import { authenticatedLandingDestination } from "@/lib/profile-onboarding";
 
 const debugAuth = process.env.NODE_ENV === "development";
 function logCallback(event: string, detail?: unknown) {
@@ -36,7 +37,7 @@ function AuthCallbackPage() {
       if (!code) {
         if (before.data.session) {
           logCallback("redirect-existing-session");
-          window.location.replace(next);
+          window.location.replace(await authenticatedLandingDestination(client, before.data.session.user.id, next));
         } else {
           setMessage("This sign-in link is invalid or has expired.");
         }
@@ -52,7 +53,8 @@ function AuthCallbackPage() {
       // error is observed. A usable session always wins over the expired-code UI.
       if (!error || data.session || after.data.session) {
         window.history.replaceState({}, "", window.location.pathname);
-        window.location.replace(next);
+        const userId = (data.session ?? after.data.session)?.user.id;
+        window.location.replace(userId ? await authenticatedLandingDestination(client, userId, next) : next);
         return;
       }
       setMessage("This sign-in link is invalid or has expired.");

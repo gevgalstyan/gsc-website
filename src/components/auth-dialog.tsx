@@ -9,6 +9,7 @@ import { LockKeyhole, X } from "lucide-react";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { authCallbackUrl, safeAuthDestination } from "@/lib/auth-redirect";
+import { authenticatedLandingDestination } from "@/lib/profile-onboarding";
 type Mode = "login" | "register" | "forgot";
 type Notice = { kind: "error" | "success"; text: string } | null;
 const googleEnabled = process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED === "true";
@@ -44,8 +45,8 @@ export function AuthDialog({ open, onClose }: { open: boolean; onClose: () => vo
     if (mode === "forgot") { const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: authCallbackUrl("/reset-password") }); setLoading(false); setNotice(error ? { kind: "error", text: authErrorMessage(mode) } : { kind: "success", text: "If an account exists, a password-reset email is on its way." }); return; }
     if (password.length < 8) { setLoading(false); setNotice({ kind: "error", text: "Use at least 8 characters for your password." }); return; }
     const next = requestedDestination();
-    if (mode === "register") { const displayName = String(form.get("display_name") ?? "").trim(); const { data, error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: authCallbackUrl(next), data: { full_name: displayName } } }); setLoading(false); setNotice(error ? { kind: "error", text: authErrorMessage(mode) } : data.session ? { kind: "success", text: "Account created. Opening the club…" } : { kind: "success", text: "Check your email to confirm your account." }); if (data.session) setTimeout(() => { close(); window.location.replace(next); }, 500); return; }
-    const { error } = await client.auth.signInWithPassword({ email, password }); setLoading(false); if (error) return setNotice({ kind: "error", text: authErrorMessage(mode) }); close(); window.location.replace(next);
+    if (mode === "register") { const displayName = String(form.get("display_name") ?? "").trim(); const { data, error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: authCallbackUrl(next), data: { full_name: displayName } } }); const destination = data.session ? await authenticatedLandingDestination(client, data.session.user.id, next) : next; setLoading(false); setNotice(error ? { kind: "error", text: authErrorMessage(mode) } : data.session ? { kind: "success", text: "Account created. Opening the club…" } : { kind: "success", text: "Check your email to confirm your account." }); if (data.session) setTimeout(() => { close(); window.location.replace(destination); }, 500); return; }
+    const { data, error } = await client.auth.signInWithPassword({ email, password }); const destination = data.user ? await authenticatedLandingDestination(client, data.user.id, next) : next; setLoading(false); if (error) return setNotice({ kind: "error", text: authErrorMessage(mode) }); close(); window.location.replace(destination);
   }
   // ======================================================
   // GOOGLE OAUTH

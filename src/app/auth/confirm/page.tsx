@@ -8,6 +8,7 @@ import { useSearchParams } from "next/navigation";
 import { Suspense } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { safeAuthDestination } from "@/lib/auth-redirect";
+import { authenticatedLandingDestination } from "@/lib/profile-onboarding";
 
 // ======================================================
 // EMAIL/PASSWORD AUTH — CONFIRMATION LINK VALIDATION
@@ -67,8 +68,11 @@ function ConfirmAuthEmailPage() {
   async function confirm() {
     const client = getSupabaseBrowserClient();
     if (!client) return;
-    const { error } = await client.auth.verifyOtp({ token_hash: tokenHash, type: type as "signup" | "invite" | "magiclink" | "recovery" | "email_change" | "email" });
-    window.location.replace(error ? "/?authError=callback" : next);
+    const { data, error } = await client.auth.verifyOtp({ token_hash: tokenHash, type: type as "signup" | "invite" | "magiclink" | "recovery" | "email_change" | "email" });
+    const destination = !error && type !== "recovery" && data.user
+      ? await authenticatedLandingDestination(client, data.user.id, next)
+      : next;
+    window.location.replace(error ? "/?authError=callback" : destination);
   }
 
   return (
