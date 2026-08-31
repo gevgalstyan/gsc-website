@@ -22,6 +22,7 @@ type Profile = {
 };
 
 type Notice = { kind: "error" | "success"; text: string } | null;
+const debugProfile = process.env.NODE_ENV === "development";
 
 // ======================================================
 // MEMBER PROFILE
@@ -125,8 +126,9 @@ export function ProfileForm({
       replacePreview(initialAvatarUrl);
       setNotice({
         kind: "error",
-        text: error instanceof AvatarImageError ? error.message : error instanceof Error ? `Photo upload failed: ${error.message}` : "We couldn’t upload your photo. Please try again.",
+        text: error instanceof AvatarImageError ? error.message : "We couldn’t upload your photo. Please try again.",
       });
+      if (debugProfile && error instanceof Error) console.debug("[gsc:profile] avatar upload failed", { message: error.message });
     } finally {
       setUploading(false);
       if (cropUrl) URL.revokeObjectURL(cropUrl);
@@ -186,7 +188,7 @@ export function ProfileForm({
       ? await client.from("profiles").update({ display_name: clean("display_name"), telegram_username: telegram, english_level: clean("english_level"), ...(onboarding ? { onboarding_completed: true } : {}) }).eq("id", userId)
       : { error: new Error("Profile updates are temporarily unavailable.") };
     setSaving(false);
-    if (error) { setNotice({ kind: "error", text: `We couldn’t save your profile: ${error.message}` }); return; }
+    if (error) { setNotice({ kind: "error", text: "We couldn’t save your profile. Please check the fields and try again." }); if (debugProfile) console.debug("[gsc:profile] save failed", { message: error.message }); return; }
     if (onboarding) {
       setNotice({ kind: "success", text: "Profile complete. Opening the club…" });
       window.setTimeout(() => window.location.replace("/"), 450);

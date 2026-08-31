@@ -12,6 +12,7 @@ import { ChevronDown } from "lucide-react";
 import { NotificationBell } from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
 import type { ViewerNotification } from "@/lib/viewer";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 const sections = [
   { href: "#overview", label: "Overview" },
@@ -39,6 +40,7 @@ export function MemberDashboardHeader({
   const [active, setActive] = useState("#overview");
   const itemRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const initial = name.trim().charAt(0).toUpperCase() || "G";
+  async function signOut() { await getSupabaseBrowserClient()?.auth.signOut(); window.location.replace("/"); }
 
   useEffect(() => {
     function updateFromHash() {
@@ -71,7 +73,7 @@ export function MemberDashboardHeader({
             <Link href="#settings">Profile</Link>
             <Link href="#bookings">Meetups &amp; bookings</Link>
             {isAdmin && <Link href="/admin">Admin dashboard</Link>}
-            <form action="/auth/signout" method="post"><button type="submit">Log out</button></form>
+            <button type="button" onClick={() => void signOut()}>Log out</button>
           </div>
         </details>
       </div>

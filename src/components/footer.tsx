@@ -5,18 +5,22 @@ import Link from "next/link";
 import { Instagram, Send } from "lucide-react";
 import { useEffect, useState } from "react";
 import { socialLinks } from "@/lib/site-data";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 export function Footer() {
   const [socialsInteracted, setSocialsInteracted] = useState(false);
   const [settings, setSettings] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const controller = new AbortController();
-    fetch("/api/public-content", { signal: controller.signal, cache: "force-cache" })
-      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Settings unavailable")))
-      .then((payload: { content?: Record<string, string> }) => setSettings(payload.content ?? {}))
-      .catch(() => undefined);
-    return () => controller.abort();
+    const client = getSupabaseBrowserClient();
+    if (!client) return;
+    let active = true;
+    void client.from("site_content").select("key,value,published_value").eq("is_public", true).eq("published_is_enabled", true)
+      .then(({ data }) => {
+        if (!active || !data) return;
+        setSettings(Object.fromEntries(data.map((item) => [item.key, item.published_value ?? item.value])));
+      });
+    return () => { active = false; };
   }, []);
 
   const logo = settings["settings.logo"]?.startsWith("/") || settings["settings.logo"]?.startsWith("https://vmvsxxtaqtvaotrooafq.supabase.co/storage/v1/object/public/site-media/") ? settings["settings.logo"] : "/gsc-logo.jpg";
