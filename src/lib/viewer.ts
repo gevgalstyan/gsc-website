@@ -8,8 +8,12 @@ export type ViewerRole = "loggedOut" | "member" | "admin";
 
 export type ViewerNotification = {
   id: string;
+  kind: string;
   title: string;
   body: string;
+  meetup_id: string | null;
+  booking_id: string | null;
+  target_url: string | null;
   read_at: string | null;
   created_at: string;
 };

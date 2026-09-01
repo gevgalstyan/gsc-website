@@ -25,7 +25,7 @@ export function useBrowserViewer(fallback: Viewer = loggedOutViewer, enabled = t
       const [profile, role, notifications] = await Promise.all([
         supabase.from("profiles").select("display_name,avatar_path,avatar_url").eq("id", session.user.id).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", session.user.id).maybeSingle(),
-        supabase.from("notifications").select("id,title,body,read_at,created_at").eq("user_id", session.user.id).order("created_at", { ascending: false }).limit(12),
+        supabase.from("notifications").select("id,kind,title,body,meetup_id,booking_id,target_url,read_at,created_at").eq("user_id", session.user.id).order("created_at", { ascending: false }).limit(20),
       ]);
       let avatarUrl = profile.data?.avatar_url ?? null;
       if (profile.data?.avatar_path) {

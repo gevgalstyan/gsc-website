@@ -23,6 +23,7 @@ import { socialLinks } from "@/lib/site-data";
 import type { Viewer } from "@/lib/viewer";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useBrowserViewer } from "@/hooks/use-browser-viewer";
+import { fetchUpcomingPublishedMeetups } from "@/lib/meetup-data";
 
 function meetupDate(meetup: PublishedMeetup) {
   const date = new Date(meetup.starts_at);
@@ -68,12 +69,12 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
     const client = getSupabaseBrowserClient();
     if (!client) { setPublicDataState("error"); return; }
     Promise.all([
-      client.from("meetups").select("id,title,description,starts_at,ends_at,timezone,location_name,address,capacity,price_minor,currency,status,booking_opens_at,booking_closes_at,confirmed_booking_count,category,image_url").eq("status", "published").gte("starts_at", new Date().toISOString()).order("starts_at"),
+      fetchUpcomingPublishedMeetups(client, browserViewer.userId),
       client.from("site_content").select("key,value,published_value").eq("is_public", true).eq("published_is_enabled", true),
     ])
       .then(([meetups, contentRows]) => {
-        if (meetups.error || contentRows.error) throw new Error("Public content request failed");
-        setPublicMeetups((meetups.data ?? []).map((item: Omit<PublishedMeetup, "member_booking_status">) => ({ ...item, member_booking_status: null })) as PublishedMeetup[]);
+        if (contentRows.error) throw new Error("Public content request failed");
+        setPublicMeetups(meetups as PublishedMeetup[]);
         setPublicContent(Object.fromEntries((contentRows.data ?? []).map((item: { key: string; value: string; published_value: string | null }) => [item.key, item.published_value ?? item.value])));
         setPublicDataState("ready");
       })
@@ -81,7 +82,7 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
       .finally(() => window.clearTimeout(timeout));
 
     return () => { controller.abort(); window.clearTimeout(timeout); };
-  }, [deferPublicData, publicDataAttempt]);
+  }, [browserViewer.userId, deferPublicData, publicDataAttempt]);
 
   function retryPublicData() {
     setPublicDataState("loading");
@@ -148,7 +149,7 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
                 <div className="meetup-icon">{index === 0 ? <MessageCircle /> : index === 1 ? <Coffee /> : <Star />}</div>
                 <h3>{meetup.title}</h3><p>{meetup.description || "An English conversation meetup from Galstyan’s Speaking Club."}</p>
                 <ul><li><MapPin />{meetup.location_name}</li><li><Users />{Math.max(0, meetup.capacity - meetup.confirmed_booking_count)} places left</li><li><Ticket />{meetupPrice(meetup)}</li></ul>
-                <Link className="button button-card" href="/meetups">See meetup details <ArrowRight /></Link>
+                <Link className="button button-card" href={`/meetups/?id=${meetup.id}`}>See meetup details <ArrowRight /></Link>
               </article>;
             })}
           </div> : <div className="meetup-empty"><CalendarDays /><div><h3>{publicDataState === "loading" ? "Loading upcoming meetups…" : publicDataState === "error" ? "Meetups are taking a moment." : "No upcoming meetup yet."}</h3><p>{publicDataState === "error" ? "Couldn’t load this section. Try again, or join Telegram for announcements." : "We’ll let you know when the next one is published. Join Telegram for the first real date, venue, and booking details."}</p>{publicDataState === "error" ? <button className="text-link" type="button" onClick={retryPublicData}>Try again <ArrowRight /></button> : <a className="text-link" href={socialLinks[0].href} target="_blank" rel="noreferrer">Join the announcement channel <ArrowRight /></a>}</div></div>}

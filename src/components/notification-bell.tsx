@@ -5,8 +5,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Bell, Check, CheckCheck } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { notificationTarget } from "@/lib/notification-target";
 
-type Notification = { id: string; title: string; body: string; read_at: string | null; created_at: string };
+type Notification = { id: string; kind: string; title: string; body: string; meetup_id: string | null; booking_id: string | null; target_url: string | null; read_at: string | null; created_at: string };
 
 // ======================================================
 // NOTIFICATIONS
@@ -15,6 +16,7 @@ export function NotificationBell({ initialNotifications }: { initialNotification
   const [items, setItems] = useState(initialNotifications);
   const [open, setOpen] = useState(false);
   const [notice, setNotice] = useState("");
+  const [now] = useState(() => Date.now());
   const wrapRef = useRef<HTMLDivElement>(null);
   const unread = items.filter((item) => !item.read_at).length;
 
@@ -61,5 +63,19 @@ export function NotificationBell({ initialNotifications }: { initialNotification
     setItems((current) => current.map((item) => item.read_at ? item : { ...item, read_at: readAt }));
   }
 
-  return <div className="notification-wrap" ref={wrapRef}><button className="notification-trigger" type="button" aria-expanded={open} aria-haspopup="dialog" aria-label={unread ? `${unread} unread notifications` : "Notifications"} onClick={() => setOpen(!open)}><Bell size={18} />{unread > 0 && <span>{unread}</span>}</button>{open && <div className="notification-popover" role="dialog" aria-label="Notifications"><div className="notification-popover-heading"><strong>Club updates</strong>{unread > 0 && <button type="button" onClick={markAllRead}><CheckCheck size={15} />Mark all read</button>}</div>{notice && <p className="notification-error" role="status">{notice}</p>}{items.length ? items.slice(0, 6).map((item) => <button className={`notification-item ${item.read_at ? "read" : ""}`} key={item.id} type="button" onClick={() => markRead(item.id)}><span><b>{item.title}</b><small>{item.body}</small></span>{!item.read_at && <Check size={15} />}</button>) : <p className="notification-empty">No new club updates. We’ll keep this space useful, not noisy.</p>}</div>}</div>;
+  async function openNotification(item: Notification) {
+    await markRead(item.id);
+    const target = notificationTarget(item);
+    if (target) window.location.assign(target);
+  }
+
+  function timestamp(value: string) {
+    const seconds = Math.max(0, Math.floor((now - new Date(value).getTime()) / 1000));
+    if (seconds < 60) return "Just now";
+    if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+    if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+    return new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" }).format(new Date(value));
+  }
+
+  return <div className="notification-wrap" ref={wrapRef}><button className="notification-trigger" type="button" aria-expanded={open} aria-haspopup="dialog" aria-label={unread ? `${unread} unread notifications` : "Notifications"} onClick={() => setOpen(!open)}><Bell size={18} />{unread > 0 && <span>{unread}</span>}</button>{open && <div className="notification-popover" role="dialog" aria-label="Notifications"><div className="notification-popover-heading"><strong>Club updates</strong>{unread > 0 && <button type="button" onClick={markAllRead}><CheckCheck size={15} />Mark all read</button>}</div>{notice && <p className="notification-error" role="status">{notice}</p>}{items.length ? items.slice(0, 8).map((item) => <button className={`notification-item ${item.read_at ? "read" : ""}`} key={item.id} type="button" onClick={() => void openNotification(item)} aria-label={`${item.title}. ${item.body}. ${timestamp(item.created_at)}`}><span><b>{item.title}</b><small>{item.body}</small><time dateTime={item.created_at}>{timestamp(item.created_at)}</time></span>{!item.read_at && <Check size={15} />}</button>) : <p className="notification-empty">No new club updates. We’ll keep this space useful, not noisy.</p>}</div>}</div>;
 }
