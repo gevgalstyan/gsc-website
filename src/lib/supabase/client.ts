@@ -28,13 +28,15 @@ export function getSupabaseBrowserClient() {
   }
 
   // Static hosting has no server cookie bridge. Keep the one canonical client
-  // in browser localStorage and exchange OAuth codes explicitly in the callback.
+  // in browser localStorage. OAuth is always PKCE; the callback performs the
+  // code exchange explicitly so no SDK instance can consume it twice.
   browserClient = createClient(url, key, {
     global: { fetch: fetchWithTimeout },
     auth: {
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: false,
+      flowType: "pkce",
       storage: window.localStorage,
     },
   });
