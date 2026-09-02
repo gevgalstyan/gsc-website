@@ -8,7 +8,7 @@ import { getViewer } from "@/lib/viewer";
 
 export const revalidate = 60;
 
-export const generateMetadata = () => editablePageMetadata("contact", "Join an English Speaking Club in Sergiyev Posad", "Contact Galstyan’s Speaking Club about English conversation practice, upcoming meetups, and joining the local community in Sergiyev Posad.", "/contact");
+export const generateMetadata = () => editablePageMetadata("contact", "Contact", "Contact Galstyan’s Speaking Club about English conversation practice, upcoming meetups, and joining the local community in Sergiev Posad.", "/contact");
 
 export default async function ContactPage() {
   const [content, viewer] = await Promise.all([getPublicContent(), getViewer()]);
@@ -31,7 +31,7 @@ export default async function ContactPage() {
           {content["settings.contact_email"] && <div><MessageCircle /><span><strong>Email</strong><a href={`mailto:${content["settings.contact_email"]}`}>{content["settings.contact_email"]}</a></span></div>}
         </div>
       </section>
-      <section className="section public-section public-note-panel"><span className="eyebrow">A clear local answer</span><h2>{content["contact.local_heading"] || "Looking for an English club in Sergiyev Posad?"}</h2><p>Galstyan’s Speaking Club is a local conversation community for people who want to practice English through real communication and meetups.</p></section>
+      <section className="section public-section public-note-panel"><span className="eyebrow">A clear local answer</span><h2>{content["contact.local_heading"] || "Looking for an English club in Sergiev Posad?"}</h2><p>Galstyan’s Speaking Club is a local conversation community for people who want to practice English through real communication and meetups.</p></section>
     </PublicPageShell>
   );
 }

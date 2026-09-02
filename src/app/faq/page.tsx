@@ -10,8 +10,8 @@ export const revalidate = 60;
 
 export const generateMetadata = () => editablePageMetadata(
   "faq",
-  "Frequently Asked Questions",
-  "Answers about joining Galstyan’s Speaking Club, English levels, meetups, booking, pricing, loyalty, member accounts, and English conversation practice in Sergiyev Posad.",
+  "FAQ",
+  "Answers about joining Galstyan’s Speaking Club, English levels, meetups, booking, pricing, loyalty, member accounts, and English conversation practice in Sergiev Posad.",
   "/faq",
 );
 
@@ -24,7 +24,7 @@ export default async function FaqPage() {
     mainEntity: items.map((item) => ({ "@type": "Question", name: item.question, acceptedAnswer: { "@type": "Answer", text: item.answer } })),
   };
   return <>
-    <PublicPageShell eyebrow="FAQ" title="Good questions deserve clear answers" intro={content["faq.intro"] || "Everything we can say accurately today about English practice, published meetups, member accounts, loyalty progress, and the GSC community in Sergiyev Posad."} breadcrumbLabel="FAQ" breadcrumbPath="/faq">
+    <PublicPageShell eyebrow="FAQ" title="Good questions deserve clear answers" intro={content["faq.intro"] || "Everything we can say accurately today about English practice, published meetups, member accounts, loyalty progress, and the GSC community in Sergiev Posad."} breadcrumbLabel="FAQ" breadcrumbPath="/faq">
       <section className="section public-section faq-page-section">
         <div className="section-heading">
           <div>

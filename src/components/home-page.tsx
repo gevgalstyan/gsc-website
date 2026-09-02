@@ -120,7 +120,7 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
 
         <section className="manifesto">
           <div><span className="eyebrow">This isn&apos;t a lesson</span><h2>A local English speaking club in <em>Sergiev Posad.</em></h2></div>
-          <div><p>GSC is a space to stop overthinking and start speaking. No textbooks, no tests, no pressure to be perfect.</p><p>Meet people from Sergiev Posad, practice spoken English, and find a reason to use your English in real conversation.</p><Link href="#community">Meet the community <ArrowRight /></Link></div>
+          <div><p>Galstyan’s Speaking Club is an English conversation club in Sergiev Posad hosted by Gevorg Galstyan. It is a space to stop overthinking and start speaking — no textbooks, no tests, and no pressure to be perfect.</p><p>Meet people from Sergiev Posad, practice spoken English, and find a reason to use your English in real conversation.</p><Link href="/about">Meet the club host <ArrowRight /></Link></div>
         </section>
 
         <section className="section local-intro" aria-labelledby="local-intro-title">

@@ -1,7 +1,7 @@
 /** Generates the public XML sitemap consumed by search engines. */
 
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "@/lib/seo";
+import { absoluteUrl } from "@/lib/seo";
 export const dynamic = "force-static";
 
 // ======================================================
@@ -24,7 +24,7 @@ const publicPages = [
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return publicPages.map(({ path, priority, changeFrequency }) => ({
-    url: `${SITE_URL}${path}`,
+    url: absoluteUrl(path || "/"),
     lastModified: new Date("2026-08-14"),
     changeFrequency,
     priority,

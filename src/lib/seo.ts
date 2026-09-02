@@ -9,16 +9,18 @@
 export const SITE_URL = "https://galstyansspeakingclub.ru";
 export const SITE_NAME = "Galstyan’s Speaking Club";
 export const SITE_DESCRIPTION =
-  "Galstyan’s Speaking Club is an English speaking and conversation club in Sergiev Posad for friendly practice, real meetups, and a welcoming local community.";
+  "Galstyan’s Speaking Club is an English conversation club in Sergiev Posad, hosted by Gevorg Galstyan, for friendly spoken-English practice, real meetups, and a welcoming local community.";
 
 export function pageMetadata(title: string, description: string, path: string) {
-  const url = absoluteUrl(path);
+  const canonicalPath = canonicalPathname(path);
+  const url = absoluteUrl(canonicalPath);
+  const socialTitle = title.includes(SITE_NAME) ? title : `${title} | ${SITE_NAME}`;
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: { canonical: canonicalPath },
     openGraph: {
-      title: `${title} | ${SITE_NAME}`,
+      title: socialTitle,
       description,
       url,
       siteName: SITE_NAME,
@@ -28,7 +30,7 @@ export function pageMetadata(title: string, description: string, path: string) {
     },
     twitter: {
       card: "summary_large_image" as const,
-      title: `${title} | ${SITE_NAME}`,
+      title: socialTitle,
       description,
       images: [absoluteUrl("/social-preview.jpg")],
     },
@@ -36,7 +38,13 @@ export function pageMetadata(title: string, description: string, path: string) {
 }
 
 export function absoluteUrl(path = "/") {
-  return new URL(path, SITE_URL).toString();
+  if (/^https:\/\//.test(path)) return path;
+  return new URL(canonicalPathname(path), SITE_URL).toString();
+}
+
+function canonicalPathname(path: string) {
+  if (path === "/" || /\/[^/]+\.[^/]+$/.test(path)) return path;
+  return path.endsWith("/") ? path : `${path}/`;
 }
 
 // ======================================================
@@ -51,6 +59,12 @@ export const organizationSchema = {
   url: SITE_URL,
   logo: absoluteUrl("/gsc-logo.jpg"),
   description: SITE_DESCRIPTION,
+  founder: {
+    "@type": "Person",
+    "@id": `${SITE_URL}/about/#gevorg-galstyan`,
+    name: "Gevorg Galstyan",
+    url: absoluteUrl("/about/"),
+  },
   areaServed: [
     {
       "@type": "City",

@@ -35,6 +35,12 @@ export const faqItems: readonly FaqItem[] = [
     links: [{ label: "How it works", href: "/how-it-works" }],
   },
   {
+    category: "About the club",
+    question: "Who hosts Galstyan’s Speaking Club?",
+    answer: "Galstyan’s Speaking Club is founded and hosted by Gevorg Galstyan. He created the club in Sergiev Posad to make spoken-English practice more social, regular, and welcoming.",
+    links: [{ label: "Meet Gevorg Galstyan", href: "/about" }],
+  },
+  {
     category: "Joining",
     question: "How do I join?",
     answer: "Start by checking the upcoming meetups and booking a place when a suitable meetup is open. If you need help before your first visit, contact the host and ask about the next available format.",
@@ -129,7 +135,7 @@ export const faqItems: readonly FaqItem[] = [
   {
     category: "Pricing and loyalty",
     question: "How does the loyalty program work?",
-    answer: "The member system tracks loyalty progress from qualifying paid attended meetups. When enough qualifying visits are recorded, the member can unlock a free meetup according to the club rules shown in the app.",
+    answer: "The member system tracks qualifying paid attended meetups. Six qualifying paid visits unlock one free meetup; your account shows the current progress and any available rewards.",
     links: [{ label: "Membership", href: "/membership" }],
   },
   {
@@ -140,13 +146,13 @@ export const faqItems: readonly FaqItem[] = [
   {
     category: "Location and format",
     question: "Where are meetups held?",
-    answer: "Galstyan’s Speaking Club is based in Sergiyev Posad. The exact venue can depend on the published meetup, so check the meetup details or contact the host before attending.",
+    answer: "Galstyan’s Speaking Club is based in Sergiev Posad. The exact venue can depend on the published meetup, so check the meetup details or contact the host before attending.",
     links: [{ label: "Contact us", href: "/contact" }],
   },
   {
     category: "Location and format",
     question: "Are meetups online or offline?",
-    answer: "GSC is presented as a local club for real group meetups in Sergiyev Posad. If a special format is offered, rely on the published meetup details for that event.",
+    answer: "GSC is presented as a local club for real group meetups in Sergiev Posad. If a special format is offered, rely on the published meetup details for that event.",
   },
   {
     category: "Member account",

@@ -3,21 +3,24 @@ import Link from "next/link";
 import { ArrowRight, Check, MapPin, MessageCircle, Users } from "lucide-react";
 import { AuthAwareCta } from "@/components/auth-aware-cta";
 import { PublicPageShell } from "@/components/public-page-shell";
+import { StructuredData } from "@/components/structured-data";
+import { absoluteUrl, SITE_URL } from "@/lib/seo";
 import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
 import { getViewer } from "@/lib/viewer";
 
 export const revalidate = 60;
 
-export const generateMetadata = () => editablePageMetadata("about", "About Galstyan’s Speaking Club", "Learn about Galstyan’s Speaking Club, an English-speaking community for real conversation practice in Sergiev Posad, Moscow Region.", "/about");
+export const generateMetadata = () => editablePageMetadata("about", "About Gevorg Galstyan", "Meet Gevorg Galstyan, founder and host of Galstyan’s Speaking Club — an English conversation community in Sergiev Posad.", "/about");
 
 export default async function AboutPage() {
   const [content, viewer] = await Promise.all([getPublicContent(), getViewer()]);
   const hostName = content["about.host.name"] || "Gevorg Galstyan";
-  const hostLocation = content["about.host.location"] || "I’m from Yerevan, Armenia 🇦🇲 and currently live in Sergiyev Posad.";
-  const hostBio = (content["about.host.bio"] || "I’m Gevorg Galstyan, the host of our meetups.\n\nI’ve been studying English for years, and I genuinely love the whole English-speaking vibe — the people, the conversations, the confidence, and the atmosphere.\n\nThat’s exactly why I created Galstyan’s Speaking Club.\n\nCome join us, practice English with real people, meet new friends, and don’t worry about your level.\n\nYou don’t need perfect English to start.\n\nEven my English is not native-level, and I still make mistakes. But I understand native speakers well and can express myself confidently.\n\nPractice makes perfect.").split(/\n\n+/);
+  const hostLocation = content["about.host.location"] || "I’m from Yerevan, Armenia 🇦🇲 and currently live in Sergiev Posad.";
+  const hostBio = (content["about.host.bio"] || "My name is Gevorg Galstyan, and I’m the host of Galstyan’s Speaking Club.\n\nI’ve been studying English for years, and I genuinely love the people, conversations, confidence, and atmosphere that come with using a language together.\n\nThat’s why I created Galstyan’s Speaking Club: a welcoming place in Sergiev Posad to practise spoken English and build community through real conversation.\n\nCome join us, practise English with real people, meet new friends, and don’t worry about your level.\n\nYou don’t need perfect English to start.\n\nEven my English is not native-level, and I still make mistakes. But I understand native speakers well and can express myself confidently.\n\nPractice makes perfect.").split(/\n\n+/);
   const requestedPhoto = content["about.host.photo"] || "/gevorg-galstyan-host.jpg";
   const hostPhoto = requestedPhoto.startsWith("/") || requestedPhoto.startsWith("https://vmvsxxtaqtvaotrooafq.supabase.co/storage/v1/object/public/site-media/") ? requestedPhoto : "/gevorg-galstyan-host.jpg";
   return (
+    <>
     <PublicPageShell
       eyebrow="About the club"
       title={content["about.hero.title"] || "A local English-speaking community in Sergiev Posad"}
@@ -51,7 +54,7 @@ export default async function AboutPage() {
 
           <div className="host-profile-copy">
             <span className="eyebrow">Meet the host</span>
-            <h2 id="host-profile-heading">Let’s get to know <em>each other.</em></h2>
+            <h2 id="host-profile-heading">Meet <em>Gevorg Galstyan.</em></h2>
             <div className="host-profile-text">
               {hostBio[0] && <p>{hostBio[0]}</p>}
               {hostLocation && <p>{hostLocation}</p>}
@@ -79,5 +82,17 @@ export default async function AboutPage() {
         <aside className="language-note" lang="ru"><strong>Коротко по-русски:</strong> Galstyan’s Speaking Club — разговорный клуб английского языка в Сергиевом Посаде для живой практики и общения.</aside>
       </section>
     </PublicPageShell>
+    <StructuredData data={{
+      "@context": "https://schema.org",
+      "@type": "Person",
+      "@id": `${SITE_URL}/about/#gevorg-galstyan`,
+      name: "Gevorg Galstyan",
+      url: absoluteUrl("/about/"),
+      image: absoluteUrl(hostPhoto),
+      jobTitle: "Host of Galstyan’s Speaking Club",
+      worksFor: { "@id": `${SITE_URL}/#organization` },
+      homeLocation: { "@type": "City", name: "Sergiev Posad" },
+    }} />
+    </>
   );
 }

@@ -8,7 +8,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Menu, UserCircle, X } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { NotificationBell } from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -29,6 +29,7 @@ export function Header({ onAuth, viewer, liveViewer }: { onAuth?: () => void; vi
   const drawerRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const router = useRouter();
   const isAuthenticated = browserViewer.role !== "loggedOut";
 
   // Locks background scrolling and traps keyboard focus while the mobile drawer is open.
@@ -95,7 +96,7 @@ export function Header({ onAuth, viewer, liveViewer }: { onAuth?: () => void; vi
   }
   async function signOut() {
     await getSupabaseBrowserClient()?.auth.signOut();
-    window.location.assign("/");
+    router.replace("/");
   }
 
   function isActive(href: string) {
@@ -121,7 +122,7 @@ export function Header({ onAuth, viewer, liveViewer }: { onAuth?: () => void; vi
     <header className="site-header">
       <div className="header-inner">
         <Link className="wordmark" href="/" aria-label="GSC home">
-          <Image src="/gsc-logo.jpg" alt="Galstyan's Speaking Club logo" width={48} height={48} loading="eager" />
+          <Image src="/gsc-logo.jpg" alt="Galstyan’s Speaking Club logo" width={48} height={48} loading="eager" />
           <span><b>Galstyan&apos;s</b><small>Speaking Club</small></span>
         </Link>
         <nav className="desktop-nav" aria-label="Main navigation">

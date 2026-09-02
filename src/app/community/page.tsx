@@ -6,7 +6,7 @@ import { getViewer } from "@/lib/viewer";
 
 export const revalidate = 60;
 
-export const generateMetadata = () => editablePageMetadata("community", "The GSC English Speaking Community", "Meet people, practice conversational English, and build speaking confidence with a friendly local English community in Sergiev Posad.", "/community");
+export const generateMetadata = () => editablePageMetadata("community", "English Speaking Community in Sergiev Posad", "Meet people, practise conversational English, and build speaking confidence with Galstyan’s Speaking Club — a friendly local community in Sergiev Posad.", "/community");
 
 export default async function CommunityPage() {
   const [content, viewer] = await Promise.all([getPublicContent(), getViewer()]);

@@ -9,7 +9,7 @@ import { getViewer } from "@/lib/viewer";
 
 export const revalidate = 60;
 
-export const generateMetadata = () => editablePageMetadata("home", "English Speaking Club in Sergiev Posad", "Join Galstyan’s Speaking Club for friendly English conversation practice, real meetups, and a welcoming local community in Sergiev Posad.", "/");
+export const generateMetadata = () => editablePageMetadata("home", "Galstyan’s Speaking Club — English Speaking Club in Sergiev Posad", "Join Galstyan’s Speaking Club in Sergiev Posad, hosted by Gevorg Galstyan. Practice spoken English through friendly meetups, conversation questions, and real community.", "/");
 
 export default async function Page() {
   // The homepage has authored fallbacks and fetches optional editable data after
