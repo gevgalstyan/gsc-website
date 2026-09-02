@@ -52,6 +52,8 @@ export function ProfileForm({
   const [cropX, setCropX] = useState(0);
   const [cropY, setCropY] = useState(0);
   const [cropZoom, setCropZoom] = useState(1);
+  const [deletionRequestOpen, setDeletionRequestOpen] = useState(false);
+  const [deletionConfirmed, setDeletionConfirmed] = useState(false);
   const busy = saving || uploading;
 
   useEffect(() => () => {
@@ -227,5 +229,19 @@ export function ProfileForm({
       <button className="button button-primary" disabled={busy}>{saving ? "Saving…" : onboarding ? "Complete profile" : "Save profile"}</button>
       {notice && <p className={`form-status ${notice.kind}`} role="status" aria-live="polite">{notice.text}</p>}
     </form>
+    {!onboarding && <section className="account-deletion-request" aria-labelledby="deletion-request-title">
+      <div>
+        <p className="dashboard-kicker">Account and data</p>
+        <h2 id="deletion-request-title">Request account deletion</h2>
+        <p>A deletion request is reviewed by the club before any account or member data is removed. Your bookings, attendance history, rewards, and question progress may no longer be available afterwards.</p>
+      </div>
+      {!deletionRequestOpen ? <button className="button button-outline-dark button-compact" type="button" onClick={() => setDeletionRequestOpen(true)}>Request deletion</button> : <div className="deletion-confirmation">
+        <label><input type="checkbox" checked={deletionConfirmed} onChange={(event) => setDeletionConfirmed(event.target.checked)} />I understand that this is a deletion request and that the club will verify it before acting.</label>
+        <div className="account-actions">
+          <a className="button button-outline-dark button-compact" href="https://t.me/GalstyansSpeakingClub" target="_blank" rel="noreferrer" aria-disabled={!deletionConfirmed} onClick={(event) => { if (!deletionConfirmed) event.preventDefault(); }}>Open Telegram to request deletion</a>
+          <button className="button button-compact" type="button" onClick={() => { setDeletionRequestOpen(false); setDeletionConfirmed(false); }}>Cancel</button>
+        </div>
+      </div>}
+    </section>}
   </>;
 }
