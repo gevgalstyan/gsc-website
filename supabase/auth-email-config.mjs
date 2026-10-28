@@ -14,7 +14,7 @@ function actionButton(href, label) {
 }
 
 function confirmationLink(type, next) {
-  return `${siteUrl}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=${type}&amp;next=${encodeURIComponent(next)}`;
+  return `${siteUrl}/auth/confirm/?token_hash={{ .TokenHash }}&amp;type=${type}&amp;next=${encodeURIComponent(next)}`;
 }
 
 function emailShell({ preheader, heading, content }) {

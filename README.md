@@ -13,3 +13,7 @@ npm run build
 ```
 
 Copy `.env.example` when setting up a local environment. Never commit secret values.
+
+For the static production branch, see [Timeweb deployment](docs/TIMEWEB-DEPLOYMENT.md).
+Run `npm run build:production` with public Supabase build variables, then deploy
+only `out/` after review and approval.

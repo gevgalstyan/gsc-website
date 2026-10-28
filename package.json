@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:production": "node scripts/validate-production-env.mjs && npm run build && npm run validate:static",
+    "validate:static": "node scripts/validate-static-export.mjs",
     "start": "next start",
     "lint": "eslint .",
     "type-check": "tsc --noEmit",
