@@ -21,7 +21,7 @@ export function useBrowserViewer(fallback: Viewer = loggedOutViewer, enabled = t
     async function resolve(session: Session | null, source: string) {
       const current = ++revision;
       log(source, { origin: window.location.origin, sessionPresent: Boolean(session), userIdPresent: Boolean(session?.user.id) });
-      if (!session) { if (active) setViewer(loggedOutViewer); return; }
+      if (!session?.user.email_confirmed_at) { if (active) setViewer(loggedOutViewer); return; }
       const [profile, role, notifications] = await Promise.all([
         supabase.from("profiles").select("display_name,avatar_path,avatar_url").eq("id", session.user.id).maybeSingle(),
         supabase.from("user_roles").select("role").eq("user_id", session.user.id).maybeSingle(),

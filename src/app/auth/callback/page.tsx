@@ -4,7 +4,8 @@ import { Suspense, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { safeAuthDestination } from "@/lib/auth-redirect";
-import { authenticatedLandingDestination } from "@/lib/profile-onboarding";
+import Link from "next/link";
+import styles from "@/components/email-auth.module.css";
 
 const debugAuth = process.env.NODE_ENV === "development";
 function logCallback(event: string, detail?: unknown) {
@@ -59,11 +60,11 @@ function AuthCallbackPage() {
 
     const client = getSupabaseBrowserClient();
     const code = params.get("code");
-    const next = safeAuthDestination(params.get("next"));
+    const next = safeAuthDestination(params.get("next"), "/account/");
     const legacyHashCallback = readLegacyHashCallback();
     // A fragment is never useful to the rendered callback page. Remove it as
     // soon as it has been read, even if an existing session ultimately wins.
-    if (legacyHashCallback.hasCredentials) cleanCallbackUrl();
+    cleanCallbackUrl();
     logCallback("loaded", {
       path: window.location.pathname,
       codePresent: Boolean(code),
@@ -71,59 +72,62 @@ function AuthCallbackPage() {
     });
 
     void (async () => {
-      if (!client) { setMessage("Member access is not configured."); return; }
+      try {
+        if (!client) { setMessage("Member access is not configured."); return; }
 
-      const before = await client.auth.getSession();
-      logCallback("session-before", { exists: Boolean(before.data.session) });
+        const before = await client.auth.getSession();
+        logCallback("session-before", { exists: Boolean(before.data.session) });
 
-      let session = before.data.session;
-      if (legacyHashCallback.session && !session) {
-        logCallback("legacy-hash-recovery-started");
-        const { data, error } = await client.auth.setSession({
-          access_token: legacyHashCallback.session.accessToken,
-          refresh_token: legacyHashCallback.session.refreshToken,
-        });
-        const afterLegacyRecovery = await client.auth.getSession();
-        session = data.session ?? afterLegacyRecovery.data.session;
-        logCallback("legacy-hash-recovery-complete", {
-          success: !error,
-          hasSession: Boolean(session),
-          error: error?.message,
-        });
-      }
-
-      if (!code) {
-        if (session) {
-          logCallback("redirect-existing-session");
-          cleanCallbackUrl();
-          window.location.replace(await authenticatedLandingDestination(client, session.user.id, next));
-        } else {
-          setMessage("This sign-in link is invalid or has expired.");
+        let session = before.data.session;
+        if (legacyHashCallback.session && !session) {
+          logCallback("legacy-hash-recovery-started");
+          const { data, error } = await client.auth.setSession({
+            access_token: legacyHashCallback.session.accessToken,
+            refresh_token: legacyHashCallback.session.refreshToken,
+          });
+          const afterLegacyRecovery = await client.auth.getSession();
+          session = data.session ?? afterLegacyRecovery.data.session;
+          logCallback("legacy-hash-recovery-complete", {
+            success: !error,
+            hasSession: Boolean(session),
+            error: error?.message,
+          });
         }
-        return;
-      }
 
-      logCallback("pkce-exchange-started");
-      const { data, error } = await client.auth.exchangeCodeForSession(code);
-      logCallback("exchange-complete", { success: !error, hasSession: Boolean(data.session), error: error?.message });
-      const after = await client.auth.getSession();
-      logCallback("session-after", { exists: Boolean(after.data.session) });
+        if (!code) {
+          if (session) {
+            logCallback("redirect-existing-session");
+            cleanCallbackUrl();
+            window.location.replace(next.startsWith("/reset-password") ? "/reset-password/" : `/auth/verified/?next=${encodeURIComponent(next)}`);
+          } else {
+            setMessage("This sign-in link is invalid or has expired.");
+          }
+          return;
+        }
 
-      // A successful exchange can establish storage before a transient return
-      // error is observed. A usable session always wins over the expired-code UI.
-      if (data.session || after.data.session) {
-        cleanCallbackUrl();
-        const userId = (data.session ?? after.data.session)?.user.id;
-        window.location.replace(userId ? await authenticatedLandingDestination(client, userId, next) : next);
-        return;
-      }
-      setMessage("This sign-in link is invalid or has expired.");
+        logCallback("pkce-exchange-started");
+        const { data, error } = await client.auth.exchangeCodeForSession(code);
+        logCallback("exchange-complete", { success: !error, hasSession: Boolean(data.session), error: error?.message });
+        const after = await client.auth.getSession();
+        logCallback("session-after", { exists: Boolean(after.data.session) });
+
+        // A successful exchange can establish storage before a transient return
+        // error is observed. A usable session always wins over the expired-code UI.
+        if (data.session || after.data.session) {
+          cleanCallbackUrl();
+          const userId = (data.session ?? after.data.session)?.user.id;
+          if (!(data.session ?? after.data.session)?.user.email_confirmed_at) { await client.auth.signOut({ scope: "local" }); setMessage("Verify your email before accessing the member area."); return; }
+          window.location.replace(userId ? next.startsWith("/reset-password") ? "/reset-password/" : `/auth/verified/?next=${encodeURIComponent(next)}` : "/login/");
+          return;
+        }
+        setMessage("This sign-in link is invalid or has expired.");
+      } catch { setMessage("We couldn’t complete sign-in. Please request a new email and try again."); }
     })();
   // Params are read once: an OAuth code must never be exchanged twice.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <main className="auth-page"><section className="account-card"><h1>Member access</h1><p role="status">{message}</p></section></main>;
+  return <main className={styles.page}><section className={styles.panel}><h1>Secure member access</h1><p className={styles.intro} role="status">{message}</p><Link className={styles.textButton} href="/verify-email/">Log In / Request a new email</Link></section></main>;
 }
 
 export default function CallbackPage() {

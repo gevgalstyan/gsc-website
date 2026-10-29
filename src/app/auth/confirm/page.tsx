@@ -1,110 +1,31 @@
-/** Branded, no-index confirmation screen for Supabase email verification links. */
-
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { safeAuthDestination } from "@/lib/auth-redirect";
-import { authenticatedLandingDestination } from "@/lib/profile-onboarding";
-
-// ======================================================
-// EMAIL/PASSWORD AUTH — CONFIRMATION LINK VALIDATION
-// ======================================================
-const confirmationTypes = new Set([
-  "signup",
-  "invite",
-  "magiclink",
-  "recovery",
-  "email_change",
-  "email",
-]);
-
-const copyByType: Record<string, { title: string; description: string; action: string }> = {
-  signup: {
-    title: "Confirm your email",
-    description: "One final step activates your Galstyan’s Speaking Club member profile.",
-    action: "Confirm my email",
-  },
-  invite: {
-    title: "Accept your invitation",
-    description: "Confirm the invitation to open your Galstyan’s Speaking Club member profile.",
-    action: "Accept invitation",
-  },
-  magiclink: {
-    title: "Continue to your account",
-    description: "Use this secure one-time link to sign in to your member profile.",
-    action: "Sign in securely",
-  },
-  recovery: {
-    title: "Reset your password",
-    description: "Confirm this request, then choose a new password for your account.",
-    action: "Continue to password reset",
-  },
-  email_change: {
-    title: "Confirm your new email",
-    description: "Confirm this change to update the email address on your member profile.",
-    action: "Confirm email change",
-  },
-  email: {
-    title: "Confirm your email",
-    description: "Confirm this address to continue securely.",
-    action: "Confirm my email",
-  },
-};
-
-function ConfirmAuthEmailPage() {
+import styles from "@/components/email-auth.module.css";
+const types = new Set(["signup", "invite", "magiclink", "recovery", "email_change", "email"]);
+function ConfirmEmail() {
   const params = useSearchParams();
-  const tokenHash = params.get("token_hash")?.trim() ?? "";
-  const type = params.get("type")?.trim() ?? "";
-  const requestedNext = params.get("next")?.trim() ?? "";
-  const next = type === "recovery"
-    ? safeAuthDestination(requestedNext, "/reset-password")
-    : safeAuthDestination(requestedNext);
-  const valid = /^[A-Za-z0-9_-]{20,}$/.test(tokenHash) && confirmationTypes.has(type);
-  const copy = copyByType[type] ?? copyByType.email;
+  // Capture once, then remove one-time credentials from browser history.
+  const [link] = useState(() => ({ token: params.get("token_hash") ?? "", type: params.get("type") ?? "", next: safeAuthDestination(params.get("next"), "/account/") }));
+  const [message, setMessage] = useState(""); const [busy, setBusy] = useState(false); const lock = useRef(false);
+  const valid = /^[A-Za-z0-9_-]{20,}$/.test(link.token) && types.has(link.type);
+  useEffect(() => { window.history.replaceState({}, "", window.location.pathname); }, []);
   async function confirm() {
-    const client = getSupabaseBrowserClient();
-    if (!client) return;
-    const { data, error } = await client.auth.verifyOtp({ token_hash: tokenHash, type: type as "signup" | "invite" | "magiclink" | "recovery" | "email_change" | "email" });
-    const destination = !error && type !== "recovery" && data.user
-      ? await authenticatedLandingDestination(client, data.user.id, next)
-      : next;
-    window.location.replace(error ? "/?authError=callback" : destination);
+    if (!valid || lock.current) return;
+    lock.current = true; setBusy(true); setMessage("");
+    try {
+      const client = getSupabaseBrowserClient();
+      if (!client) { setMessage("Member access is being configured. Please try again later."); return; }
+      const { data, error } = await client.auth.verifyOtp({ token_hash: link.token, type: link.type as "signup" | "invite" | "magiclink" | "recovery" | "email_change" | "email" });
+      if (error || !data.session || !data.user?.email_confirmed_at) { setMessage("This verification link is invalid or expired. Request a new email below."); return; }
+      window.location.replace(link.type === "recovery" ? "/reset-password/" : `/auth/verified/?next=${encodeURIComponent(link.next)}`);
+    } catch { setMessage("We couldn’t verify your email. Check your connection and try again."); }
+    finally { lock.current = false; setBusy(false); }
   }
-
-  return (
-    <main className="auth-page">
-      <section className="account-card auth-confirm-card">
-        <Image
-          className="auth-confirm-logo"
-          src="/gsc-logo.jpg"
-          alt="Galstyan’s Speaking Club"
-          width={64}
-          height={64}
-          priority
-        />
-        <span className="eyebrow">GSC member space</span>
-        <h1>{valid ? copy.title : "This link is not valid"}</h1>
-        {valid ? (
-          <>
-            <p>{copy.description}</p>
-            <button className="button button-primary" type="button" onClick={confirm}>{copy.action}</button>
-            <small>This extra click protects one-time links from email security scanners.</small>
-          </>
-        ) : (
-          <>
-            <p>The link is incomplete or has expired. Return to the club and request a new email.</p>
-            <Link className="button button-primary" href="/?auth=login">Return to member access</Link>
-          </>
-        )}
-      </section>
-    </main>
-  );
+  return <main className={styles.page}><section className={styles.panel}><Image className={styles.logo} src="/gsc-logo.jpg" alt="Galstyan’s Speaking Club" width={62} height={62} /><span className={styles.eyebrow}>GSC member space</span><h1>{valid ? link.type === "recovery" ? "Reset your password" : "Verify your email" : "Verification link not valid"}</h1><p className={styles.intro}>{valid ? "Confirm below to continue securely. This extra click protects your one-time link from email scanners." : "The link is incomplete or expired. Please request a fresh email."}</p>{valid && <button type="button" className={styles.primary} disabled={busy} onClick={() => void confirm()}>{busy ? "Verifying…" : link.type === "recovery" ? "Continue to reset password" : "Verify Email"}</button>}{message && <p className={styles.notice} role="status">{message}</p>}<Link className={styles.textButton} href={link.type === "recovery" ? "/forgot-password/" : "/verify-email/"}>Request a new email / Log In</Link></section></main>;
 }
-
-export default function ConfirmPage() {
-  return <Suspense fallback={<main className="auth-page"><section className="account-card"><p>Loading secure confirmation…</p></section></main>}><ConfirmAuthEmailPage /></Suspense>;
-}
+export default function Page() { return <Suspense fallback={<main className={styles.page}>Loading secure verification…</main>}><ConfirmEmail /></Suspense>; }

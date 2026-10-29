@@ -13,3 +13,9 @@ npm run build
 ```
 
 Copy `.env.example` when setting up a local environment. Never commit secret values.
+
+## Email registration and static hosting
+
+See [Email Auth setup](docs/EMAIL-AUTH-SETUP.md) for the required Supabase migration,
+Turnstile, SMTP/templates, redirects, automated tests and approval gates.
+Production email access is not ready until those settings and live flows are verified.

@@ -1,0 +1,148 @@
+import { readFile } from "node:fs/promises";
+import { expect, test, type Page } from "@playwright/test";
+const pageErrors = new WeakMap<Page, string[]>();
+test.afterEach(async ({ page }) => expect(pageErrors.get(page) ?? []).toEqual([]));
+const backend = "https://gsc-auth-test.supabase.co";
+const user = { id: "22222222-2222-2222-2222-222222222222", aud: "authenticated", role: "authenticated", email: "member@example.invalid", email_confirmed_at: "2026-10-29T00:00:00Z", created_at: "2026-10-29T00:00:00Z", app_metadata: { provider: "email", providers: ["email"] }, user_metadata: {} };
+const jwt = `${Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString("base64url")}.${Buffer.from(JSON.stringify({ sub: user.id, exp: Math.floor(Date.now()/1000)+3600, aud: "authenticated", role: "authenticated" })).toString("base64url")}.test-signature`;
+const session = { access_token: jwt, refresh_token: "test-refresh-not-real", token_type: "bearer", expires_in: 3600, user };
+async function captcha(page: Page) { await page.getByRole("button", { name: "Complete test CAPTCHA", exact: true }).click(); }
+async function registration(page: Page) {
+  await page.getByLabel("First name", { exact: true }).fill("Ani");
+  await page.getByLabel("Surname", { exact: true }).fill("Test");
+  await page.getByLabel("Age", { exact: true }).fill("0");
+  await page.getByLabel("Nationality", { exact: true }).fill("Armenia");
+  await page.getByLabel("Gender", { exact: true }).selectOption("Prefer not to say");
+  await page.getByLabel("Email address", { exact: true }).fill(user.email);
+  await page.getByLabel("Password", { exact: true }).fill("TestPassword123!");
+  await page.getByLabel("Confirm password", { exact: true }).fill("TestPassword123!");
+  await page.getByRole("checkbox").check();
+}
+test.beforeEach(async ({ page }) => {
+  pageErrors.set(page, []); page.on("pageerror", (error) => pageErrors.get(page)?.push(error.message));
+  await page.route("**/*", async (route) => {
+    const url = route.request().url();
+    if (url.startsWith("http://127.0.0.1:4173")) return route.continue();
+    if (url.startsWith("https://challenges.cloudflare.com/turnstile/v0/api.js")) return route.fulfill({ contentType: "application/javascript", body: `window.turnstile={render:(el,opts)=>{const b=document.createElement('button');b.type='button';b.textContent='Complete test CAPTCHA';b.onclick=()=>opts.callback('mock-captcha-token');el.append(b);return 'test-widget'},remove:()=>{}};` });
+    if (url.startsWith(backend)) {
+      if (route.request().method() === "OPTIONS") return route.fulfill({ status: 200, headers: { "access-control-allow-origin": "*", "access-control-allow-headers": "*", "access-control-allow-methods": "*" } });
+      return route.fulfill({ status: 200, json: [] });
+    }
+    return route.abort();
+  });
+});
+test("registration validates all fields, preserves privacy, sends CAPTCHA, and prevents duplicates", async ({ page }) => {
+  let calls = 0;
+  await page.route(`${backend}/auth/v1/signup**`, async (route) => {
+    calls++; const data = route.request().postDataJSON();
+    expect(data.data.first_name).toBe("Ani"); expect(data.data.surname).toBe("Test"); expect(data.data.age).toBe(0);
+    expect(data.data.terms_accepted).toBe(true); expect(data.data.role).toBeUndefined(); expect(data.gotrue_meta_security.captcha_token).toBe("mock-captcha-token");
+    await new Promise((r) => setTimeout(r, 200));
+    await route.fulfill({ json: { user: { ...user, email_confirmed_at: null }, session: null } });
+  });
+  await page.goto("/signup/");
+  await expect(page.getByText(/Continue with Google/)).toHaveCount(0);
+  await captcha(page); await page.getByRole("button", { name: "Sign Up", exact: true }).click();
+  await expect(page.getByText("Enter your first name.", { exact: true })).toBeVisible(); expect(calls).toBe(0);
+  await registration(page);
+  await page.getByLabel("Confirm password", { exact: true }).fill("mismatch"); await page.getByRole("button", { name: "Sign Up", exact: true }).click();
+  await expect(page.getByText("Passwords do not match.", { exact: true })).toBeVisible(); expect(calls).toBe(0);
+  await page.getByLabel("Confirm password", { exact: true }).fill("TestPassword123!");
+  await page.getByRole("button", { name: "Show password", exact: true }).click(); await expect(page.getByLabel("Password", { exact: true })).toHaveAttribute("type", "text");
+  await page.getByRole("button", { name: "Sign Up", exact: true }).evaluate((el: HTMLButtonElement) => { el.click(); el.click(); });
+  await expect(page.getByRole("heading", { name: "Check your email" })).toBeVisible(); expect(calls).toBe(1);
+  await expect(page.getByRole("button", { name: /Resend in/ })).toBeDisabled();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+});
+test("login and recovery pass CAPTCHA and handle unconfirmed accounts", async ({ page }) => {
+  await page.route(`${backend}/auth/v1/token**`, async (route) => {
+    expect(route.request().postDataJSON().gotrue_meta_security.captcha_token).toBe("mock-captcha-token");
+    await route.fulfill({ status: 400, headers: { "x-supabase-api-version": "2024-01-01", "access-control-expose-headers": "X-Supabase-Api-Version" }, json: { code: "email_not_confirmed", msg: "Email not confirmed" } });
+  });
+  await page.goto("/login/"); await page.getByLabel("Email address").fill(user.email); await page.getByLabel("Password", { exact: true }).fill("TestPassword123!");
+  await expect(page.getByRole("button", { name: "Log In", exact: true })).toBeDisabled(); await captcha(page);
+  await page.getByRole("button", { name: "Log In", exact: true }).click(); await expect(page.getByText(/Please verify your email/)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Resend verification email", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Forgot password?", exact: true }).click();
+  await page.route(`${backend}/auth/v1/recover**`, async (route) => {
+    expect(route.request().postDataJSON().gotrue_meta_security.captcha_token).toBe("mock-captcha-token");
+    expect(route.request().url()).toContain("redirect_to=");
+    await route.fulfill({ json: {} });
+  });
+  await page.getByLabel("Email address").fill(user.email); await captcha(page); await page.getByRole("button", { name: "Send reset link", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Check your email" })).toBeVisible();
+});
+test("verification displays success and blocks external next destinations", async ({ page }) => {
+  await page.route(`${backend}/auth/v1/verify**`, async (route) => { expect(route.request().postDataJSON().type).toBe("signup"); await route.fulfill({ json: session }); });
+  await page.route(`${backend}/auth/v1/user**`, (route) => route.fulfill({ json: user }));
+  await page.goto("/auth/confirm/?token_hash="+"x".repeat(30)+"&type=signup&next=https://attacker.invalid/");
+  await expect(page).not.toHaveURL(/token_hash/);
+  await page.getByRole("button", { name: "Verify Email", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Email verified", exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Open my member dashboard" })).toHaveAttribute("href", "/account/");
+});
+test("invalid verification and reset links provide recovery actions", async ({ page }) => {
+  await page.goto("/auth/confirm/?token_hash=invalid&type=signup");
+  await expect(page.getByRole("heading", { name: "Verification link not valid" })).toBeVisible();
+  await page.goto("/reset-password/"); await expect(page.getByText(/This reset link is invalid or expired/)).toBeVisible();
+  await expect(page.getByRole("link", { name: "Request a new reset link" })).toHaveAttribute("href", "/forgot-password/");
+});
+test("recovery verification allows matching password update then requires login", async ({ page }) => {
+  await page.route(`${backend}/auth/v1/verify**`, (route) => route.fulfill({ json: session }));
+  let updates = 0;
+  await page.route(`${backend}/auth/v1/user**`, async (route) => {
+    if (route.request().method() === "PUT") { updates++; expect(route.request().postDataJSON().password).toBe("NewPassword123!"); }
+    await route.fulfill({ json: user });
+  });
+  await page.route(`${backend}/auth/v1/logout**`, (route) => route.fulfill({ status: 204 }));
+  await page.goto("/auth/confirm/?token_hash="+"r".repeat(30)+"&type=recovery"); await page.getByRole("button", { name: "Continue to reset password" }).click();
+  await page.getByLabel("New password", { exact: true }).fill("NewPassword123!"); await page.getByLabel("Confirm password", { exact: true }).fill("mismatch");
+  await page.getByRole("button", { name: "Update password" }).click(); await expect(page.getByText("Passwords do not match.")).toBeVisible(); expect(updates).toBe(0);
+  await page.getByLabel("Confirm password", { exact: true }).fill("NewPassword123!"); await page.getByRole("button", { name: "Update password" }).click();
+  await expect(page.getByText(/Your password has been updated/)).toBeVisible(); expect(updates).toBe(1);
+  await expect(page.getByRole("link", { name: "Log In", exact: true })).toBeVisible();
+});
+test("verification resend enforces cooldown and forwards the security token", async ({ page }) => {
+  await page.clock.install(); let requests = 0;
+  await page.route(`${backend}/auth/v1/resend**`, async (route) => {
+    requests++; const body = route.request().postDataJSON(); expect(body.type).toBe("signup"); expect(body.gotrue_meta_security.captcha_token).toBe("mock-captcha-token"); await route.fulfill({ json: {} });
+  });
+  await page.goto("/verify-email/"); await page.getByLabel("Email address").fill(user.email); await captcha(page); await page.getByRole("button", { name: "Send verification email" }).click();
+  await expect(page.getByRole("heading", { name: "Check your email" })).toBeVisible(); await expect(page.getByRole("button", { name: /Resend in/ })).toBeDisabled();
+  await captcha(page); await page.clock.fastForward(61000);
+  await page.getByRole("button", { name: "Resend verification email", exact: true }).click(); expect(requests).toBe(2);
+});
+test("successful email login goes to a same-site member destination", async ({ page }) => {
+  await page.route(`${backend}/rest/v1/profiles**`, (route) => route.fulfill({ json: { id: user.id, display_name: "Test member", onboarding_completed: true, created_at: user.created_at } }));
+  await page.route(`${backend}/auth/v1/token**`, (route) => route.fulfill({ json: session }));
+  await page.route(`${backend}/auth/v1/user**`, (route) => route.fulfill({ json: user }));
+  await page.goto("/login/?next=//attacker.invalid/"); await page.getByLabel("Email address").fill(user.email); await page.getByLabel("Password", { exact: true }).fill("TestPassword123!"); await captcha(page); await page.getByRole("button", { name: "Log In", exact: true }).click();
+  await expect(page).toHaveURL(/127\.0\.0\.1:4173\/account\//);
+});
+test("CAPTCHA failures are friendly and require a new token", async ({ page }) => {
+  await page.route(`${backend}/auth/v1/signup**`, (route) => route.fulfill({ status: 400, json: { error_code: "captcha_failed", msg: "Failed" } }));
+  await page.goto("/signup/"); await registration(page); await captcha(page); await page.getByRole("button", { name: "Sign Up", exact: true }).click();
+  await expect(page.getByText("The security check failed. Please complete it again and retry.")).toBeVisible(); await expect(page.getByRole("button", { name: "Sign Up", exact: true })).toBeDisabled();
+});
+test("signup stays within a narrow mobile viewport and supports reduced motion", async ({ page }, info) => {
+  await page.setViewportSize({ width: 320, height: 800 }); await page.emulateMedia({ reducedMotion: "reduce" }); await page.goto("/signup/");
+  await expect(page.getByLabel("First name", { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: info.outputPath("signup-mobile.png"), fullPage: true });
+});
+
+test("all static exports load with browser hydration and local assets", async ({ page }) => {
+  const manifest = JSON.parse(await readFile(".next/prerender-manifest.json", "utf8"));
+  for (const route of Object.keys(manifest.routes)) {
+    if (route === "/_global-error") continue;
+    const target = route === "/" || route.includes(".") ? route : route + "/";
+    const response = await page.goto(target, { waitUntil: "networkidle" });
+    expect(response?.status(), route).toBe(200);
+    if (!route.includes(".")) expect(await page.locator("body").innerText(), route).not.toBe("");
+  }
+});
+test("a broken CAPTCHA widget fails closed with a friendly message", async ({ page }) => {
+  await page.route("https://challenges.cloudflare.com/turnstile/v0/api.js**", (route) => route.fulfill({ contentType: "application/javascript", body: "window.turnstile={render:()=>{throw new Error('test widget failure')},remove:()=>{}};" }));
+  await page.goto("/signup/"); await expect(page.getByText("The security check could not start. Please reload and try again later.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Sign Up", exact: true })).toBeDisabled();
+});

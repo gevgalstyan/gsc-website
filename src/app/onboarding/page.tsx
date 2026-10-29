@@ -15,7 +15,7 @@ export default function OnboardingPage() {
   const [message, setMessage] = useState("Preparing your welcome…");
   useEffect(() => { const client = getSupabaseBrowserClient(); if (!client) { setMessage("Member access is not configured."); return; } void (async () => {
     const { data: userData } = await client.auth.getUser(); const user = userData.user;
-    if (!user) { window.location.replace("/?auth=login&next=/onboarding/"); return; }
+    if (!user?.email_confirmed_at) { window.location.replace("/?auth=login&next=/onboarding/"); return; }
     const { data, error } = await client.from("profiles").select("display_name,avatar_path,avatar_url,telegram_username,english_level,onboarding_completed").eq("id", user.id).maybeSingle();
     if (error) { setMessage("We couldn’t load your profile. Please refresh and try again."); return; }
     if (isProfileOnboardingComplete(data)) { window.location.replace("/"); return; }
