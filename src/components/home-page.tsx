@@ -24,6 +24,7 @@ import type { Viewer } from "@/lib/viewer";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import { useBrowserViewer } from "@/hooks/use-browser-viewer";
 import { fetchUpcomingPublishedMeetups } from "@/lib/meetup-data";
+import styles from "./home-page.module.css";
 
 function meetupDate(meetup: PublishedMeetup) {
   const date = new Date(meetup.starts_at);
@@ -100,7 +101,7 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
             {publicContent["home.hero.title"] === "English Speaking Club in Sergiev Posad" || !publicContent["home.hero.title"] ? <h1>English<br /><em>Speaking Club</em><small> in Sergiev Posad</small></h1> : <h1>{publicContent["home.hero.title"]}</h1>}
             <p className="hero-lead">{publicContent["home.hero.subtitle"] || publicContent["homepage.hero.lead"] || "A friendly English conversation club in Sergiev Posad. Practice spoken English with real people."}</p>
             <div className="hero-buttons">
-              <AuthAwareCta kind="join" role={browserViewer.role} loggedOutLabel={publicContent["home.hero.cta"] || "Join the club"} loggedOutHref={publicContent["home.hero.cta_url"] || "/?auth=register"} adminDestination="admin" onLoggedOutAuth={() => setAuthOpen(true)} />
+              <AuthAwareCta kind="join" role={browserViewer.role} className={`button button-primary${browserViewer.role === "loggedOut" ? ` ${styles.joinPulse}` : ""}`} loggedOutLabel={publicContent["home.hero.cta"] || "Join the club"} loggedOutHref={publicContent["home.hero.cta_url"] || "/?auth=register"} adminDestination="admin" onLoggedOutAuth={() => setAuthOpen(true)} />
               <Link className="button button-quiet" href="/meetups">Explore meetups <ArrowDown /></Link>
             </div>
             <div className="hero-proof">
