@@ -146,3 +146,36 @@ test("a broken CAPTCHA widget fails closed with a friendly message", async ({ pa
   await page.goto("/signup/"); await expect(page.getByText("The security check could not start. Please reload and try again later.")).toBeVisible();
   await expect(page.getByRole("button", { name: "Sign Up", exact: true })).toBeDisabled();
 });
+test("auto-confirmed signup never falsely promises a verification email", async ({ page }) => {
+  await page.route(`${backend}/auth/v1/signup**`, (route) => route.fulfill({ json: session }));
+  await page.route(`${backend}/auth/v1/logout**`, (route) => route.fulfill({ status: 204 }));
+  await page.goto("/signup/"); await registration(page); await captcha(page); await page.getByRole("button", { name: "Sign Up", exact: true }).click();
+  await expect(page.getByText(/Email verification is unavailable right now/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Check your email" })).toHaveCount(0);
+});
+test("SMTP recipient restrictions give an actionable error, not a false email success", async ({ page }) => {
+  await page.route(`${backend}/auth/v1/signup**`, (route) => route.fulfill({ status: 400, json: { error_code: "email_address_not_authorized", msg: "Recipient restricted" } }));
+  await page.goto("/signup/"); await registration(page); await captcha(page); await page.getByRole("button", { name: "Sign Up", exact: true }).click();
+  await expect(page.getByText("Email access is unavailable right now. Please contact the club for help.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Check your email" })).toHaveCount(0);
+});
+test("verified members retain their dashboard and can save only requested profile fields", async ({ page }) => {
+  const profile = { id: user.id, display_name: "Existing member", first_name: "Ani", surname: "Test", age: 20, nationality: "Armenia", gender: "Prefer not to say", email: user.email, onboarding_completed: true, created_at: user.created_at };
+  await page.route(`${backend}/auth/v1/token**`, (route) => route.fulfill({ json: session }));
+  await page.route(`${backend}/auth/v1/user**`, (route) => route.fulfill({ json: user }));
+  let updates = 0;
+  await page.route(`${backend}/rest/v1/profiles**`, async (route) => {
+    if (route.request().method() === "PATCH") {
+      updates++; const fields = route.request().postDataJSON();
+      expect(fields.first_name).toBe("Updated"); expect(fields.surname).toBe("Test"); expect(fields.age).toBe(20);
+      expect(fields.email).toBeUndefined(); expect(fields.role).toBeUndefined();
+      await route.fulfill({ json: { id: user.id } });
+    } else await route.fulfill({ json: profile });
+  });
+  await page.goto("/login/"); await page.getByLabel("Email address").fill(user.email); await page.getByLabel("Password", { exact: true }).fill("TestPassword123!"); await captcha(page); await page.getByRole("button", { name: "Log In", exact: true }).click();
+  await expect(page).toHaveURL(/\/account\//);
+  const details = page.getByRole("region", { name: "Personal details" });
+  await expect(details.getByLabel("First name", { exact: true })).toHaveValue("Ani");
+  await details.getByLabel("First name", { exact: true }).fill("Updated"); await details.getByRole("button", { name: "Save personal details" }).click();
+  await expect(details.getByText("Personal details saved.")).toBeVisible(); expect(updates).toBe(1);
+});

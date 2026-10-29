@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./email-auth.module.css";
 type Turnstile = { render: (element: HTMLElement, options: Record<string, unknown>) => string; remove: (id: string) => void };
 declare global { interface Window { turnstile?: Turnstile } }
-export const CAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+export const CAPTCHA_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim();
+export const AUTH_UNAVAILABLE_MESSAGE = "Registration and sign-in are temporarily unavailable. No request or verification email has been sent. Please contact the club for help.";
 export function AuthCaptcha({ onToken }: { onToken: (token: string) => void }) {
   const element = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
@@ -34,6 +35,6 @@ export function AuthCaptcha({ onToken }: { onToken: (token: string) => void }) {
     });
     return () => { cancelled = true; if (widget) window.turnstile?.remove(widget); };
   }, [ready, onToken, compact]);
-  if (!CAPTCHA_SITE_KEY) return <p className={styles.notice} role="status">Secure sign-in is being configured. Please try again later.</p>;
+  if (!CAPTCHA_SITE_KEY) return <p className={styles.notice} role="status">{AUTH_UNAVAILABLE_MESSAGE}</p>;
   return <div className={styles.captcha}><Script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" strategy="afterInteractive" onReady={() => setReady(true)} onError={() => { onToken(""); setError("The security check could not load. Please reload and try again."); }} /><div ref={element} />{error && <p className={styles.error} role="alert">{error}</p>}</div>;
 }

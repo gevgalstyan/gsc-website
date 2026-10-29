@@ -43,8 +43,10 @@ after upload, and Timeweb does not load `vercel.json` automatically.
 
 Google/Telegram flags are unused by the new email interface. `CRON_SECRET` and
 Supabase management tokens are not needed by this static application. Build-time
-validation refuses non-publishable Supabase keys. `npm run build:auth-production`
-requires all three public variables but does not establish live readiness.
+validation refuses non-publishable Supabase keys and public CAPTCHA test keys. Both
+`npm run build` and `npm run build:auth-production` require all three public variables
+by default but do not establish live readiness. See [Registration recovery](REGISTRATION-RECOVERY.md)
+for diagnostics and the missing-CAPTCHA deployment checklist.
 
 ## Database migration — approval required
 

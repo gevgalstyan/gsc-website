@@ -1,14 +1,11 @@
 import nextEnv from "@next/env";
+import { authConfigurationErrors } from "./auth-configuration.mjs";
 nextEnv.loadEnvConfig(process.cwd(), false);
-const url = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
-const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim();
-const captcha = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY?.trim();
-if (url || key) {
-  if (!url || !key) throw new Error("Configure both public Supabase build variables together.");
-  let project;
-  try { project = new URL(url); } catch { throw new Error("Use a valid HTTPS Supabase project origin."); }
-  if (project.protocol !== "https:" || project.username || project.password || project.search || project.hash || project.pathname !== "/") throw new Error("Use an HTTPS Supabase project origin.");
-  if (!key.startsWith("sb_publishable_")) throw new Error("Only a Supabase publishable key may be included in this browser build. Never use a secret or service-role key.");
+const testBuild = process.env.GSC_AUTH_BUILD_MODE === "test" && !process.argv.includes("--require-auth");
+const errors = authConfigurationErrors(process.env, { testBuild });
+if (errors.length) {
+  console.error("Auth build configuration is incomplete; no deployable build will be produced.");
+  for (const error of errors) console.error(`- ${error}`);
+  process.exit(1);
 }
-if (process.argv.includes("--require-auth") && (!url || !key || !captcha)) throw new Error("Production email access requires NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY and NEXT_PUBLIC_TURNSTILE_SITE_KEY.");
-console.log(url && captcha ? "Public Auth build configuration is present. Live delivery, CAPTCHA, redirects and permissions still require staging tests." : "Public-only build: email access is unavailable until Supabase and Turnstile are configured.");
+console.log(testBuild ? "MOCK AUTH BUILD — for automated tests only. Never deploy out/." : "Public Auth build configuration is present. Real CAPTCHA, email delivery, redirects and permissions still require verification.");
