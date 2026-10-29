@@ -43,7 +43,7 @@ export function MeetupBookingButton({
       const client = getSupabaseBrowserClient();
       if (!client) throw new Error("Member access is not configured.");
       const { data: sessionData } = await client.auth.getSession();
-      if (!sessionData.session) {
+      if (!sessionData.session?.user.email_confirmed_at) {
         setNotice("Please log in to book a place.");
       } else {
         const result = booked

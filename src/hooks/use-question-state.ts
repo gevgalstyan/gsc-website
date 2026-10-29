@@ -355,13 +355,13 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
       if (!active) return;
       // The browser session is available synchronously from Supabase storage;
       // getUser is still used by queries/RLS but must not delay state selection.
-      if (data.session?.user) void loadUser(data.session.user.id); else loadGuest();
+      if (data.session?.user.email_confirmed_at) void loadUser(data.session.user.id); else loadGuest();
     }).catch(() => {
       if (active) loadGuest();
     });
     const { data: authListener } = client.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
       if (!active) return;
-      if (session?.user) void loadUser(session.user.id); else loadGuest();
+      if (session?.user.email_confirmed_at) void loadUser(session.user.id); else loadGuest();
     });
     return () => {
       active = false;
@@ -388,7 +388,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
       if (document.visibilityState === "visible" && navigator.onLine) refresh();
     }, cloudPollIntervalMs);
     void client.auth.getSession().then(async ({ data }: { data: { session: Session | null } }) => {
-      if (!active || !data.session) return;
+      if (!active || !data.session?.user.email_confirmed_at) return;
       await client.realtime.setAuth(data.session.access_token);
       if (!active) return;
       channel = client.channel(`question-state:${accountId}`, { config: { private: true } })

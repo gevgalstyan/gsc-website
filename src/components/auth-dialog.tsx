@@ -1,66 +1,29 @@
 "use client";
-
-/**
- * Modal for email/password authentication, password recovery, and Google OAuth.
- * Supabase owns the session; this component owns only form and accessibility state.
- * Risk: HIGH. Redirect URLs and auth calls affect account access.
- */
-import { LockKeyhole, X } from "lucide-react";
-import { FormEvent, useEffect, useRef, useState } from "react";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
-import { authCallbackUrl, safeAuthDestination } from "@/lib/auth-redirect";
-import { authenticatedLandingDestination } from "@/lib/profile-onboarding";
-type Mode = "login" | "register" | "forgot";
-type Notice = { kind: "error" | "success"; text: string } | null;
-const googleEnabled = process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED === "true";
-const telegramEnabled = process.env.NEXT_PUBLIC_TELEGRAM_AUTH_ENABLED === "true";
-
-// ======================================================
-// AUTHENTICATION — HUMAN-READABLE ERRORS
-// ======================================================
-function authErrorMessage(mode: Mode) {
-  if (mode === "login") return "We couldn’t sign you in. Check your email and password, then try again.";
-  if (mode === "register") return "We couldn’t create your account. Check the details or try signing in instead.";
-  return "We couldn’t send the reset email. Please check the address and try again.";
-}
-
-// ======================================================
-// EMAIL/PASSWORD AUTH — SESSION ENTRY
-// ======================================================
+/** Static-safe email access modal. Provider configuration remains in Supabase. */
+import { X } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { EmailAuthForm, type AuthMode } from "./email-auth-form";
 export function AuthDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [mode, setMode] = useState<Mode>("login"); const [notice, setNotice] = useState<Notice>(null); const [loading, setLoading] = useState(false); const [googleLoading, setGoogleLoading] = useState(false);
-  const dialogRef = useRef<HTMLElement>(null); const closeRef = useRef<HTMLButtonElement>(null);
-  function close() { setNotice(null); setLoading(false); setGoogleLoading(false); onClose(); }
-  function requestedDestination() { return safeAuthDestination(new URLSearchParams(window.location.search).get("next")); }
+  const dialogRef = useRef<HTMLElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
-    if (!open) return; const previous = document.activeElement as HTMLElement | null; const overflow = document.body.style.overflow; document.body.style.overflow = "hidden"; closeRef.current?.focus();
-    function onKey(event: KeyboardEvent) { if (event.key === "Escape") return close(); if (event.key !== "Tab" || !dialogRef.current) return; const items = dialogRef.current.querySelectorAll<HTMLElement>('a[href],button:not([disabled]),input:not([disabled]),[tabindex]:not([tabindex="-1"])'); if (!items.length) return; const first = items[0], last = items[items.length - 1]; if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); } else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); } }
-    window.addEventListener("keydown", onKey); return () => { document.body.style.overflow = overflow; window.removeEventListener("keydown", onKey); previous?.focus(); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open]);
-  function changeMode(next: Mode) { setMode(next); setNotice(null); }
-  async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); setNotice(null); setLoading(true); const form = new FormData(event.currentTarget); const email = String(form.get("email") ?? "").trim(); const password = String(form.get("password") ?? ""); const client = getSupabaseBrowserClient();
-    if (!client) { setLoading(false); setNotice({ kind: "error", text: "Member access is being configured. Please join us on Telegram for announcements." }); return; }
-    if (mode === "forgot") { const { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: authCallbackUrl("/reset-password") }); setLoading(false); setNotice(error ? { kind: "error", text: authErrorMessage(mode) } : { kind: "success", text: "If an account exists, a password-reset email is on its way." }); return; }
-    if (password.length < 8) { setLoading(false); setNotice({ kind: "error", text: "Use at least 8 characters for your password." }); return; }
-    const next = requestedDestination();
-    if (mode === "register") { const displayName = String(form.get("display_name") ?? "").trim(); const { data, error } = await client.auth.signUp({ email, password, options: { emailRedirectTo: authCallbackUrl(next), data: { full_name: displayName } } }); const destination = data.session ? await authenticatedLandingDestination(client, data.session.user.id, next) : next; setLoading(false); setNotice(error ? { kind: "error", text: authErrorMessage(mode) } : data.session ? { kind: "success", text: "Account created. Opening the club…" } : { kind: "success", text: "Check your email to confirm your account." }); if (data.session) setTimeout(() => { close(); window.location.replace(destination); }, 500); return; }
-    const { data, error } = await client.auth.signInWithPassword({ email, password }); const destination = data.user ? await authenticatedLandingDestination(client, data.user.id, next) : next; setLoading(false); if (error) return setNotice({ kind: "error", text: authErrorMessage(mode) }); close(); window.location.replace(destination);
-  }
-  // ======================================================
-  // GOOGLE OAUTH
-  // ======================================================
-  async function googleLogin() {
-    setLoading(true); setGoogleLoading(true); setNotice(null); const client = getSupabaseBrowserClient();
-    if (!client) { setLoading(false); setGoogleLoading(false); setNotice({ kind: "error", text: "Member access is being configured. Please join us on Telegram for announcements." }); return; }
-    const { data, error } = await client.auth.signInWithOAuth({
-      provider: "google",
-      options: { redirectTo: authCallbackUrl(requestedDestination()), skipBrowserRedirect: true },
-    });
-    if (error || !data.url) { setLoading(false); setGoogleLoading(false); setNotice({ kind: "error", text: "Google login could not be opened. Please try again." }); return; }
-    window.location.assign(data.url);
-  }
-  if (!open) return null; const title = mode === "login" ? "Welcome back" : mode === "register" ? "Join the club" : "Reset password";
-  return <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && close()}><section ref={dialogRef} className="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title" aria-describedby="auth-description"><button ref={closeRef} className="dialog-close" onClick={close} aria-label="Close"><X /></button><div className="auth-mark"><LockKeyhole /></div><span className="eyebrow">GSC member space</span><h2 id="auth-title">{title}</h2><p id="auth-description" className="muted">{mode === "forgot" ? "Enter your email and we’ll send a secure reset link." : "Your member profile, protected by Supabase."}</p>{mode !== "forgot" && <div className="auth-tabs" role="tablist" aria-label="Authentication mode"><button type="button" role="tab" aria-selected={mode === "login"} className={mode === "login" ? "active" : ""} onClick={() => changeMode("login")}>Login</button><button type="button" role="tab" aria-selected={mode === "register"} className={mode === "register" ? "active" : ""} onClick={() => changeMode("register")}>Register</button></div>}<form onSubmit={submit} aria-busy={loading}>{mode === "register" && <label>Display name<input name="display_name" autoComplete="name" maxLength={80} required /></label>}<label>Email address<input name="email" type="email" autoComplete="email" required /></label>{mode !== "forgot" && <label>Password<input name="password" type="password" minLength={8} autoComplete={mode === "login" ? "current-password" : "new-password"} required /></label>}<button className="button button-primary" type="submit" disabled={loading}>{loading ? "Please wait…" : mode === "login" ? "Login" : mode === "register" ? "Create account" : "Send reset link"}</button></form>{mode === "login" && <button className="auth-text-button" type="button" onClick={() => changeMode("forgot")}>Forgot password?</button>}{mode === "forgot" && <button className="auth-text-button" type="button" onClick={() => changeMode("login")}>Back to login</button>}{googleEnabled && <button className="google-button" disabled={loading} onClick={googleLogin}>{googleLoading ? "Opening Google…" : "Continue with Google"}</button>}{telegramEnabled && <button className="google-button" disabled title="Telegram OIDC integration is not yet available">Continue with Telegram</button>}{notice && <div className={`form-status ${notice.kind}`} role="status" aria-live="polite">{notice.text}</div>}<p className="privacy-note">By continuing, you agree to our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p></section></div>;
+    if (!open) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden"; closeRef.current?.focus();
+    function keyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") { onClose(); return; }
+      if (event.key !== "Tab" || !dialogRef.current) return;
+      const items = Array.from(dialogRef.current.querySelectorAll<HTMLElement>('a[href],button:not(:disabled),input:not(:disabled),select:not(:disabled),iframe,[tabindex]:not([tabindex="-1"])')).filter((el) => el.getClientRects().length);
+      if (!items.length) return;
+      if (event.shiftKey && document.activeElement === items[0]) { event.preventDefault(); items[items.length - 1].focus(); }
+      else if (!event.shiftKey && document.activeElement === items[items.length - 1]) { event.preventDefault(); items[0].focus(); }
+    }
+    window.addEventListener("keydown", keyDown);
+    return () => { document.body.style.overflow = overflow; window.removeEventListener("keydown", keyDown); previous?.focus(); };
+  }, [open, onClose]);
+  if (!open) return null;
+  const requested = new URLSearchParams(window.location.search).get("auth");
+  const initialMode: AuthMode = requested === "register" ? "register" : requested === "forgot" ? "forgot" : "login";
+  return <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && onClose()}><section ref={dialogRef} style={{ position: "relative", width: "min(560px, 100%)", maxHeight: "92svh", overflowY: "auto", borderRadius: 24 }} role="dialog" aria-modal="true" aria-labelledby="auth-title" aria-describedby="auth-description"><button ref={closeRef} type="button" className="dialog-close" style={{ zIndex: 1 }} onClick={onClose} aria-label="Close"><X /></button><EmailAuthForm initialMode={initialMode} /></section></div>;
 }

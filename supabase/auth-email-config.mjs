@@ -14,7 +14,7 @@ function actionButton(href, label) {
 }
 
 function confirmationLink(type, next) {
-  return `${siteUrl}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=${type}&amp;next=${encodeURIComponent(next)}`;
+  return `${siteUrl}/auth/confirm/?token_hash={{ .TokenHash }}&amp;type=${type}&amp;next=${encodeURIComponent(next)}`;
 }
 
 function emailShell({ preheader, heading, content }) {
@@ -76,7 +76,9 @@ export const authEmailConfig = {
     content:
       paragraph("Thanks for joining Galstyan’s Speaking Club.") +
       paragraph("Confirm your email address to activate your member profile and get access to meetups, attendance history, loyalty progress, and your member account.") +
-      actionButton(confirmationLink("signup", "/account"), "Confirm my email") +
+      actionButton(confirmationLink("signup", "/account/"), "Verify Email") +
+      paragraph("Verification protects your member profile and confirms that this email address belongs to you.") +
+      paragraph(`If the button does not work, open this verification link: <a href="${confirmationLink("signup", "/account/")}">Verify your email address</a>.`) +
       paragraph("We’re a local English-speaking community in Sergiyev Posad where people meet, talk, practice English, and build confidence through real conversations.") +
       hostBlock() +
       paragraph("If you did not create this account, you can safely ignore this email."),

@@ -11,7 +11,7 @@ export function AdminClientPage() {
   const router = useRouter(); const [data, setData] = useState<AdminData | null>(null); const [notice, setNotice] = useState("Checking member access…");
   useEffect(() => { const client = getSupabaseBrowserClient(); if (!client) { setNotice("Member access is not configured."); return; } void (async () => {
     const { data: userData } = await client.auth.getUser(); const user = userData.user;
-    if (!user) { router.replace("/?auth=login"); return; }
+    if (!user?.email_confirmed_at) { router.replace("/?auth=login"); return; }
     const { data: role } = await client.from("user_roles").select("role").eq("user_id", user.id).maybeSingle();
     if (role?.role !== "admin") { router.replace("/account"); return; }
     const results = await Promise.all([

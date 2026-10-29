@@ -5,6 +5,7 @@
  * Profile rows live in Supabase; prepared photos live in profile-avatars Storage.
  */
 
+import { MemberPersonalDetails } from "./member-personal-details";
 import Image from "next/image";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { Camera, Trash2 } from "lucide-react";
@@ -202,6 +203,7 @@ export function ProfileForm({
   const initials = displayName.trim().charAt(0).toUpperCase() || "G";
 
   return <>
+    <MemberPersonalDetails userId={userId} />
     <div className="avatar-editor" aria-busy={uploading}>
       <button className="avatar-picker" type="button" onClick={() => inputRef.current?.click()} disabled={busy} aria-label={avatarUrl ? "Change profile photo" : "Upload profile photo"}>
         {avatarUrl

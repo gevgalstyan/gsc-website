@@ -14,7 +14,7 @@ type AccountData = { id: string; profile: { display_name: string | null; avatar_
 export default function AccountPage() {
   const router = useRouter(); const [data, setData] = useState<AccountData | null>(null); const [message, setMessage] = useState("Loading your member dashboard…");
   useEffect(() => { const client = getSupabaseBrowserClient(); if (!client) { setMessage("Member access is not configured."); return; } void (async () => {
-    const { data: userData } = await client.auth.getUser(); const user = userData.user; if (!user) { router.replace("/?auth=login"); return; }
+    const { data: userData } = await client.auth.getUser(); const user = userData.user; if (!user?.email_confirmed_at) { router.replace("/?auth=login"); return; }
     const [profile, attendance, bookings, progress, favorites, rewards] = await Promise.all([
       client.from("profiles").select("display_name,avatar_path,avatar_url,telegram_username,english_level,onboarding_completed,created_at").eq("id", user.id).maybeSingle(), client.from("attendance").select("id,status,payment_status,recorded_at").eq("user_id", user.id).order("recorded_at", { ascending: false }), client.from("meetup_bookings").select("id,status,meetups(id,title,starts_at,location_name)").eq("user_id", user.id).order("booked_at", { ascending: false }), client.from("question_progress").select("question_id").eq("user_id", user.id), client.from("question_favorites").select("question_id").eq("user_id", user.id).eq("is_favorite", true), client.from("loyalty_rewards").select("id,status").eq("user_id", user.id),
     ]);
