@@ -1,0 +1,24 @@
+.joinPulse::before {
+  content: "";
+  flex: 0 0 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px var(--surface-1);
+  /* Balance the dot and the button's existing 10px gap to preserve its size
+     and text position, including when the mobile button fills its row. */
+  margin-inline-start: -14px;
+  margin-inline-end: -2px;
+  animation: joinPulse 2.4s ease-in-out infinite;
+}
+
+@keyframes joinPulse {
+  0%, 100% { opacity: .65; transform: scale(.85); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .joinPulse::before {
+    animation: none;
+  }
+}
