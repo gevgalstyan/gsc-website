@@ -11,7 +11,9 @@ import { AuthProfileFields } from "./auth-profile-fields";
 import styles from "./email-auth.module.css";
 export type AuthMode = "login" | "register" | "forgot" | "verify";
 const cooldownKey = "gsc:email-resend-after";
-function authError(code?: string) {
+function authError(code?: string, status?: number) {
+  if (status && status >= 500) return "The authentication service could not complete this request. No email delivery has been confirmed. Please try again later or contact the club.";
+  if (code === "unexpected_failure" || code === "email_send_failed") return "The email service could not complete this request. Please contact the club or try again later.";
   if (code === "captcha_failed") return "The security check failed. Please complete it again and retry.";
   if (code === "over_email_send_rate_limit" || code === "over_request_rate_limit") return "Too many requests. Please wait a minute before trying again.";
   if (code === "email_address_not_authorized" || code === "email_provider_disabled" || code === "signup_disabled") return "Email access is unavailable right now. Please contact the club for help.";
@@ -67,12 +69,13 @@ export function EmailAuthForm({ initialMode = "login" }: { initialMode?: AuthMod
         const result = recovery
           ? await client.auth.resetPasswordForEmail(address, { redirectTo: authCallbackUrl("/reset-password/"), captchaToken: token })
           : await client.auth.resend({ type: "signup", email: address, options: { emailRedirectTo: authCallbackUrl(destination()), captchaToken: token } });
-        if (result.error) { setNotice(authError(result.error.code)); return; }
+        if (result.error) { setNotice(authError(result.error.code, result.error.status)); return; }
         setSent(recovery ? "recovery" : "signup"); setNotice("If this address is eligible, a new email is on its way. Check your spam folder too."); return;
       }
       if (mode === "register") {
         const { data, error } = await client.auth.signUp({ email: address, password, options: { captchaToken: token, emailRedirectTo: authCallbackUrl(destination()), data: { ...details, age: Number(details.age), full_name: `${details.first_name} ${details.surname}`.slice(0, 80), terms_accepted: true, terms_version: TERMS_VERSION, registration_version: "gsc-email-v1" } } });
-        if (error) { setNotice(authError(error.code)); return; }
+        if (error) { setNotice(authError(error.code, error.status)); return; }
+        if (!data.user?.id) { setNotice("The sign-up service returned an incomplete response. Please try again or contact the club."); return; }
         // Never retain a signup session if confirmation was accidentally disabled.
         if (data.session) {
           await client.auth.signOut({ scope: "local" });
@@ -82,18 +85,18 @@ export function EmailAuthForm({ initialMode = "login" }: { initialMode?: AuthMod
         setSent("signup"); coolDown(); return;
       }
       const { data, error } = await client.auth.signInWithPassword({ email: address, password, options: { captchaToken: token } });
-      if (error) { setNotice(authError(error.code)); setCanResend(error.code === "email_not_confirmed"); return; }
+      if (error) { setNotice(authError(error.code, error.status)); setCanResend(error.code === "email_not_confirmed"); return; }
       if (!data.user?.email_confirmed_at) { await client.auth.signOut({ scope: "local" }); setNotice("Verify your email before accessing the member area."); setCanResend(true); return; }
       window.location.replace(destination());
     } catch { setNotice("We couldn’t reach the sign-in service. Check your connection and try again."); }
     finally { lock.current = false; setBusy(false); resetCaptcha(); }
   }
   function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); void request(mode === "verify", new FormData(event.currentTarget)); }
-  const title = sent ? "Check your email" : mode === "register" ? "Join the club" : mode === "forgot" ? "Forgot your password?" : mode === "verify" ? "Resend verification email" : "Welcome back";
+  const title = sent ? "Request received" : mode === "register" ? "Join the club" : mode === "forgot" ? "Forgot your password?" : mode === "verify" ? "Resend verification email" : "Welcome back";
   return <div className={styles.panel}>
     <Image className={styles.logo} src="/gsc-logo.jpg" alt="Galstyan’s Speaking Club" width={62} height={62} />
     <span className={styles.eyebrow}>GSC member space</span><h2 id="auth-title">{title}</h2>
-    <p id="auth-description" className={styles.intro}>{sent ? `If ${email} is eligible, we’ll send a secure ${sent === "signup" ? "verification" : "password reset"} link. Check your inbox and spam folder.` : mode === "register" ? "Real conversations start here. Create your member account." : mode === "forgot" ? "We’ll send a secure link to help you choose a new password." : mode === "verify" ? "Enter your email and complete the security check to request a fresh verification link." : "Your community, meetups, and member profile await."}</p>
+    <p id="auth-description" className={styles.intro}>{sent ? `Your request was received. If ${email} is eligible, check your inbox and spam folder for a ${sent === "signup" ? "verification" : "password reset"} link. For privacy, this response does not confirm that an account was created or an email was sent.` : mode === "register" ? "Real conversations start here. Create your member account." : mode === "forgot" ? "We’ll send a secure link to help you choose a new password." : mode === "verify" ? "Enter your email and complete the security check to request a fresh verification link." : "Your community, meetups, and member profile await."}</p>
     {!configurationReady && <p className={styles.notice} role="status">{AUTH_UNAVAILABLE_MESSAGE} <Link href="/contact/">Contact the club</Link></p>}
     {!sent && <form key={mode} onSubmit={submit} noValidate className={styles.form} aria-busy={busy}>
       <fieldset disabled={busy || !configurationReady}>
@@ -105,7 +108,7 @@ export function EmailAuthForm({ initialMode = "login" }: { initialMode?: AuthMod
       {configurationReady && <AuthCaptcha key={captchaRound} onToken={setToken} />}
       <button className={styles.primary} type="submit" disabled={busy || !configurationReady || !token}>{busy ? "Please wait…" : mode === "register" ? "Sign Up" : mode === "login" ? "Log In" : mode === "verify" ? "Send verification email" : "Send reset link"}</button>
     </form>}
-    {sent && <><p className={styles.notice}>Links are private and single-use. Open only the most recent email.</p>{configurationReady && <AuthCaptcha key={captchaRound} onToken={setToken} />}<button className={styles.primary} type="button" onClick={() => void request(true)} disabled={busy || !configurationReady || seconds > 0 || !token}>{busy ? "Sending…" : seconds ? `Resend in ${seconds}s` : sent === "signup" ? "Resend verification email" : "Resend reset email"}</button><button type="button" className={styles.textButton} onClick={() => changeMode(mode)} disabled={busy}>Use a different email</button></>}
+    {sent && <><p className={styles.notice}>Already joined with Google or another provider? Use <Link href="/forgot-password/">Forgot password</Link> for your existing account. This keeps your profile and club history together. Do not create a replacement account.</p><p className={styles.notice}>Links are private and single-use. Open only the most recent email.</p>{configurationReady && <AuthCaptcha key={captchaRound} onToken={setToken} />}<button className={styles.primary} type="button" onClick={() => void request(true)} disabled={busy || !configurationReady || seconds > 0 || !token}>{busy ? "Sending…" : seconds ? `Resend in ${seconds}s` : sent === "signup" ? "Resend verification email" : "Resend reset email"}</button><button type="button" className={styles.textButton} onClick={() => changeMode(mode)} disabled={busy}>Use a different email</button></>}
     {canResend && !sent && <button type="button" className={styles.textButton} onClick={() => void request(true)} disabled={busy || !configurationReady || seconds > 0 || !token}>{seconds ? `Resend in ${seconds}s` : "Resend verification email"}</button>}
     {notice && <p className={styles.notice} role="status" aria-live="polite">{notice}</p>}
     <nav className={styles.links} aria-label="Member access">{mode !== "login" || sent ? <button type="button" onClick={() => changeMode("login")} disabled={busy}>Back to Log In</button> : <><button type="button" onClick={() => changeMode("register")} disabled={busy}>New here? Sign Up</button><button type="button" onClick={() => changeMode("forgot")} disabled={busy}>Forgot password?</button><button type="button" onClick={() => changeMode("verify")} disabled={busy}>Need a new verification link?</button></>}</nav>

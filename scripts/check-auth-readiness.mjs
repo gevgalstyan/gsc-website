@@ -18,7 +18,8 @@ async function inspect(label, endpoint, headers) {
   try {
     const response = await fetch(endpoint, { headers, redirect: "error", signal: AbortSignal.timeout(15000) });
     if (!response.ok) { report([`${label}: HTTP ${response.status}; settings remain unverified.`]); return null; }
-    return await response.json();
+    try { return await response.json(); }
+    catch { report([`${label}: response was not valid JSON; check deployed routes and static-host fallback rules. Settings remain unverified.`]); return null; }
   } catch (error) {
     const denied = /403|forbidden/i.test(String(error.cause?.message ?? ""));
     report([`${label}: ${denied ? "proxy/network access denied" : "network/TLS request failed"}; settings remain unverified. No credentials were printed.`]);

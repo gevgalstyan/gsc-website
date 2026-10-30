@@ -19,6 +19,7 @@ type LegacyHashSession = {
 
 type LegacyHashCallback = {
   hasCredentials: boolean;
+  hasError: boolean;
   session: LegacyHashSession | null;
 };
 
@@ -35,6 +36,7 @@ function readLegacyHashCallback(): LegacyHashCallback {
   const refreshToken = params.get("refresh_token");
   return {
     hasCredentials: Boolean(accessToken || refreshToken),
+    hasError: params.has("error") || params.has("error_code"),
     session: accessToken && refreshToken ? { accessToken, refreshToken } : null,
   };
 }
@@ -74,28 +76,29 @@ function AuthCallbackPage() {
     void (async () => {
       try {
         if (!client) { setMessage("Member access is not configured."); return; }
+        if (params.has("error") || params.has("error_code") || legacyHashCallback.hasError) { setMessage("This sign-in link is invalid or has expired."); return; }
 
         const before = await client.auth.getSession();
         logCallback("session-before", { exists: Boolean(before.data.session) });
 
         let session = before.data.session;
-        if (legacyHashCallback.session && !session) {
+        if (legacyHashCallback.session) {
           logCallback("legacy-hash-recovery-started");
           const { data, error } = await client.auth.setSession({
             access_token: legacyHashCallback.session.accessToken,
             refresh_token: legacyHashCallback.session.refreshToken,
           });
           const afterLegacyRecovery = await client.auth.getSession();
+          if (error || !data.session) { setMessage("This sign-in link is invalid or has expired."); return; }
           session = data.session ?? afterLegacyRecovery.data.session;
           logCallback("legacy-hash-recovery-complete", {
             success: !error,
             hasSession: Boolean(session),
-            error: error?.message,
           });
         }
 
         if (!code) {
-          if (session) {
+          if (session?.user.email_confirmed_at) {
             logCallback("redirect-existing-session");
             cleanCallbackUrl();
             window.location.replace(next.startsWith("/reset-password") ? "/reset-password/" : `/auth/verified/?next=${encodeURIComponent(next)}`);
@@ -107,13 +110,12 @@ function AuthCallbackPage() {
 
         logCallback("pkce-exchange-started");
         const { data, error } = await client.auth.exchangeCodeForSession(code);
-        logCallback("exchange-complete", { success: !error, hasSession: Boolean(data.session), error: error?.message });
+        logCallback("exchange-complete", { success: !error, hasSession: Boolean(data.session), errorCode: error?.code });
         const after = await client.auth.getSession();
         logCallback("session-after", { exists: Boolean(after.data.session) });
 
-        // A successful exchange can establish storage before a transient return
-        // error is observed. A usable session always wins over the expired-code UI.
-        if (data.session || after.data.session) {
+        // An existing session must never hide an invalid or expired one-time code.
+        if (!error && data.session && after.data.session) {
           cleanCallbackUrl();
           const userId = (data.session ?? after.data.session)?.user.id;
           if (!(data.session ?? after.data.session)?.user.email_confirmed_at) { await client.auth.signOut({ scope: "local" }); setMessage("Verify your email before accessing the member area."); return; }
@@ -127,7 +129,7 @@ function AuthCallbackPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <main className={styles.page}><section className={styles.panel}><h1>Secure member access</h1><p className={styles.intro} role="status">{message}</p><Link className={styles.textButton} href="/verify-email/">Log In / Request a new email</Link></section></main>;
+  return <main className={styles.page}><section className={styles.panel}><h1>Secure member access</h1><p className={styles.intro} role="status">{message}</p><Link className={styles.textButton} href="/login/">Log In</Link><Link className={styles.textButton} href="/forgot-password/">Request a new password reset link</Link><Link className={styles.textButton} href="/verify-email/">Request a new verification email</Link></section></main>;
 }
 
 export default function CallbackPage() {

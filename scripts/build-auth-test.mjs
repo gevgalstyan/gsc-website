@@ -9,4 +9,5 @@ const result = spawnSync("npm", ["run", "build"], { stdio: "inherit", env: {
   NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: fixture === "missing-supabase" ? "" : "sb_publishable_browser-test-only",
   NEXT_PUBLIC_TURNSTILE_SITE_KEY: fixture === "missing-captcha" ? "" : "1x00000000000000000000AA",
 } });
+if (result.error) { console.error(`Build process could not run (${result.error.code ?? "unknown"}).`); process.exit(1); }
 process.exit(result.status ?? 1);
