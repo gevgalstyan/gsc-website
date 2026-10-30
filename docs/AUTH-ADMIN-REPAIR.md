@@ -1,5 +1,9 @@
 # Authentication and administrator repair
 
+For the subsequent cross-browser verification and branded-template changes, see
+[the current email repair guide](BRANDED-AUTH-EMAILS.md). The former broad Auth
+configuration script now stages a local template-only payload and makes no remote changes.
+
 ## Findings and evidence
 
 - The email form calls Supabase `auth.signUp` with the Turnstile token and checks `error` before accepting the response. A completed Turnstile widget proves only that the browser obtained a token; Supabase still validates it.

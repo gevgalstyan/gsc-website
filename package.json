@@ -17,7 +17,11 @@
     "build:auth-production": "node scripts/build-auth-production.mjs",
     "auth:check": "node --use-env-proxy scripts/check-auth-readiness.mjs",
     "postbuild": "node scripts/write-auth-build-status.mjs",
-    "test:auth:configuration": "node scripts/test-auth-configuration.mjs"
+    "test:auth:configuration": "node scripts/test-auth-configuration.mjs",
+    "emails:generate": "node scripts/generate-auth-emails.mjs",
+    "emails:check": "node scripts/generate-auth-emails.mjs --check",
+    "emails:preview": "node scripts/preview-auth-emails.mjs",
+    "test:emails:browser": "playwright test --config playwright.emails.config.ts"
   },
   "dependencies": {
     "@supabase/ssr": "0.8.0",

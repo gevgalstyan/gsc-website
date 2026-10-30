@@ -25,3 +25,8 @@ test("management inspection requires redirects, SMTP and server-side Turnstile c
   assert.deepEqual(managementAuthSettingsErrors({ site_url: "https://galstyansspeakingclub.ru", uri_allow_list: "https://galstyansspeakingclub.ru/auth/callback/**", security_captcha_enabled: true, security_captcha_provider: "turnstile", security_captcha_secret: "SENSITIVE", smtp_host: "example.invalid", smtp_user: "SENSITIVE", smtp_pass: "SENSITIVE", smtp_admin_email: "example@example.invalid" }), []);
   assert.ok(!JSON.stringify(managementAuthSettingsErrors({ smtp_pass: "SENSITIVE" })).includes("SENSITIVE"));
 });
+
+test("production-wide redirect rule also covers the static callback", () => {
+ const errors = managementAuthSettingsErrors({uri_allow_list:"https://galstyansspeakingclub.ru/**"});
+ assert.ok(!errors.some(error => error.includes("callback")));
+});

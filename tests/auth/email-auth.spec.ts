@@ -83,7 +83,7 @@ test("verification displays success and blocks external next destinations", asyn
 });
 test("invalid verification and reset links provide recovery actions", async ({ page }) => {
   await page.goto("/auth/confirm/?token_hash=invalid&type=signup");
-  await expect(page.getByRole("heading", { name: "Verification link not valid" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Verification link incomplete" })).toBeVisible();
   await page.goto("/reset-password/"); await expect(page.getByText(/This reset link is invalid or expired/)).toBeVisible();
   await expect(page.getByRole("link", { name: "Request a new reset link" })).toHaveAttribute("href", "/forgot-password/");
 });
@@ -203,8 +203,8 @@ test("expired recovery token does not allow a password change", async ({ page })
   await page.route(`${backend}/auth/v1/user**`, async (route) => { if (route.request().method() === "PUT") writes++; await route.fulfill({ json: user }); });
   await page.goto("/auth/confirm/?token_hash="+"r".repeat(30)+"&type=recovery");
   await page.getByRole("button", { name: "Continue to reset password" }).click();
-  await expect(page.getByText(/verification link is invalid or expired/)).toBeVisible();
-  await expect(page.getByRole("link", { name: "Request a new email / Log In" })).toHaveAttribute("href", "/forgot-password/");
+  await expect(page.getByText(/This link has expired or has already been used/)).toBeVisible();
+  await expect(page.getByRole("link", { name: "Request a new reset email" })).toHaveAttribute("href", "/forgot-password/");
   expect(writes).toBe(0);
 });
 
@@ -253,16 +253,17 @@ test("ordinary member admin entry never loads directory or administrator dataset
 });
 
 test("an expired callback never reuses a signed-in session to accept a reset link", async ({ page }) => {
+  await page.route(`${backend}/rest/v1/profiles**`, route => route.fulfill({json:{id:user.id,display_name:"Existing member",onboarding_completed:true,created_at:user.created_at}}));
   await page.route(`${backend}/auth/v1/token**`, (route) => route.fulfill({ json: session }));
   await page.route(`${backend}/auth/v1/user**`, (route) => route.fulfill({ json: user }));
   await page.goto("/login/"); await page.getByLabel("Email address").fill(user.email); await page.getByLabel("Password", { exact: true }).fill("TestPassword123!"); await captcha(page); await page.getByRole("button", { name: "Log In", exact: true }).click();
   await expect(page).toHaveURL(/\/account\//);
   await page.goto("/auth/callback/?error=access_denied&error_code=otp_expired&next=/reset-password/");
-  await expect(page.getByText("This sign-in link is invalid or has expired.")).toBeVisible();
+  await expect(page.getByText(/This link has expired or has already been used/)).toBeVisible();
   await expect(page).toHaveURL(/\/auth\/callback\/$/);
   await page.route(`${backend}/auth/v1/token**`, (route) => route.fulfill({ status: 400, json: { error_code: "bad_code_verifier", msg: "Invalid" } }));
   await page.goto("/auth/callback/?code=expired-test-code&next=/reset-password/");
-  await expect(page.getByText("This sign-in link is invalid or has expired.")).toBeVisible();
+  await expect(page.getByText(/browser where you started/)).toBeVisible();
   await expect(page).toHaveURL(/\/auth\/callback\/$/);
 });
 test("recovery email errors never claim an email was sent", async ({ page }) => {
@@ -281,4 +282,90 @@ test("admin errors name the unavailable dataset and allow a fresh retry", async 
   await page.route(`${backend}/rest/v1/rpc/admin_member_directory`, (route) => route.fulfill({ json: [] }));
   await page.getByRole("button", { name: "Retry loading dashboard" }).click();
   await expect(page.getByRole("heading", { name: "Club overview" })).toBeVisible();
+});
+
+test("a fresh browser diagnoses missing PKCE storage without treating it as token expiry", async ({ page }) => {
+  let exchanges=0;
+  await page.route(`${backend}/auth/v1/token**`, async route => { exchanges++; await route.fulfill({status:400,json:{error_code:"bad_code_verifier"}}); });
+  await page.goto("/auth/callback/?code=fake-confirmation-code");
+  await expect(page.getByText(/browser where you started/)).toBeVisible();
+  await expect(page).not.toHaveURL(/code=/); expect(exchanges).toBe(0);
+});
+test("fresh-browser token-hash confirmation resists prefetch and works without PKCE storage",async ({page})=>{
+  let verifies=0;
+  await page.route(`${backend}/auth/v1/verify**`,async route=>{
+    verifies++; expect(route.request().postDataJSON().token_hash).toBe("c".repeat(64)); await route.fulfill({json:session});
+  });
+  await page.route(`${backend}/auth/v1/user**`,route=>route.fulfill({json:user}));
+  await page.goto("/auth/confirm/?token_hash="+"c".repeat(64)+"&type=signup");
+  await expect(page.getByRole("button",{name:"Verify Email",exact:true})).toBeVisible();
+  await page.waitForTimeout(150); expect(verifies).toBe(0); // mounting and rendering never consumes the token
+  await expect(page).not.toHaveURL(/token_hash/);
+  await page.getByRole("button",{name:"Verify Email",exact:true}).click();
+  await expect(page.getByRole("heading",{name:"Email verified",exact:true})).toBeVisible(); expect(verifies).toBe(1);
+  await page.reload(); await expect(page.getByRole("heading",{name:"Email verified",exact:true})).toBeVisible(); // session restoration
+});
+test("token-hash callback alias and reused links expose safe recovery actions",async ({page})=>{
+  let verifies=0;
+  await page.route(`${backend}/auth/v1/verify**`,async route=>{verifies++;await route.fulfill({status:403,json:{error_code:"otp_expired",msg:"Expired"}});});
+  await page.goto("/auth/callback/?token_hash="+"d".repeat(64)+"&type=signup");
+  expect(verifies).toBe(0); await page.getByRole("button",{name:"Verify Email",exact:true}).click();
+  await expect(page.getByText(/expired or has already been used/)).toBeVisible();
+  await expect(page.getByRole("link",{name:"Request a new verification email",exact:true})).toHaveAttribute("href","/verify-email/");
+  await expect(page.getByRole("link",{name:"Log In",exact:true})).toBeVisible();
+});
+test("secure email change acknowledges a first confirmation without claiming a session",async ({page})=>{
+  await page.route(`${backend}/auth/v1/verify**`,route=>route.fulfill({json:{message:"Confirmation accepted",session:null,user:null}}));
+  await page.goto("/auth/confirm/?token_hash="+"e".repeat(64)+"&type=email_change");
+  await page.getByRole("button",{name:"Confirm email change",exact:true}).click();
+  await expect(page.getByText(/confirmation was recorded/)).toBeVisible();
+  await expect(page.getByRole("button",{name:"Confirm email change",exact:true})).toHaveCount(0);
+});
+test("same-browser PKCE callbacks and legacy recovery sessions remain compatible",async ({page})=>{
+  await page.addInitScript(()=>localStorage.setItem("sb-gsc-auth-test-auth-token-code-verifier",JSON.stringify("fake-browser-verifier")));
+  let exchanges=0;
+  await page.route(`${backend}/auth/v1/token**`,async route=>{
+    exchanges++;expect(route.request().postDataJSON().code_verifier).toBe("fake-browser-verifier");await route.fulfill({json:session});
+  });
+  await page.route(`${backend}/auth/v1/user**`,route=>route.fulfill({json:user}));
+  await page.goto("/auth/callback/?code=fake-same-browser-code");
+  await expect(page.getByRole("heading",{name:"Email verified",exact:true})).toBeVisible(); expect(exchanges).toBe(1);
+  await page.goto(`/auth/callback/#access_token=${session.access_token}&refresh_token=${session.refresh_token}&type=recovery`);
+  await expect(page).toHaveURL(/\/reset-password\/$/);
+  await expect(page.getByLabel("New password",{exact:true})).toBeVisible();
+});
+test("an existing Google member can set a password on the same user without signing up again",async ({page})=>{
+  const google={...user,app_metadata:{provider:"google",providers:["google"]}};
+  let signups=0;let updates=0;
+  await page.route(`${backend}/auth/v1/signup**`,async route=>{signups++;await route.abort();});
+  await page.route(`${backend}/auth/v1/verify**`,route=>route.fulfill({json:{...session,user:google}}));
+  await page.route(`${backend}/auth/v1/user**`,async route=>{
+    if(route.request().method()==="PUT"){updates++;expect(route.request().postDataJSON()).toMatchObject({password:"GoogleMemberPassword123!"});expect(route.request().postDataJSON().email).toBeUndefined();}
+    await route.fulfill({json:google});
+  });
+  await page.route(`${backend}/auth/v1/logout**`,route=>route.fulfill({status:204}));
+  await page.goto("/auth/confirm/?token_hash="+"g".repeat(64)+"&type=recovery");
+  await page.getByRole("button",{name:"Continue to reset password"}).click();
+  await page.getByLabel("New password",{exact:true}).fill("GoogleMemberPassword123!");await page.getByLabel("Confirm password",{exact:true}).fill("GoogleMemberPassword123!");
+  await page.getByRole("button",{name:"Update password",exact:true}).click();
+  await expect(page.getByText(/Your password has been updated/)).toBeVisible();expect(updates).toBe(1);expect(signups).toBe(0);
+});
+test("logout clears the persisted session and protects the member dashboard again",async ({page})=>{
+  await page.route(`${backend}/auth/v1/token**`,route=>route.fulfill({json:session}));
+  await page.route(`${backend}/auth/v1/user**`,route=>route.fulfill({json:user}));
+  await page.route(`${backend}/rest/v1/profiles**`,route=>route.fulfill({json:{id:user.id,display_name:"Existing member",onboarding_completed:true,created_at:user.created_at}}));
+  await page.route(`${backend}/auth/v1/logout**`,route=>route.fulfill({status:204}));
+  await page.goto("/login/");await page.getByLabel("Email address").fill(user.email);await page.getByLabel("Password",{exact:true}).fill("TestPassword123!");await captcha(page);await page.getByRole("button",{name:"Log In",exact:true}).click();
+  await expect(page).toHaveURL(/\/account\//);
+  await page.getByRole("button",{name:"Log out",exact:true}).click();
+  await expect(page).toHaveURL("http://127.0.0.1:4173/");
+  expect(await page.evaluate(()=>localStorage.getItem("sb-gsc-auth-test-auth-token"))).toBeNull();
+  await page.goto("/account/");await expect(page).not.toHaveURL(/\/account\/?$/);
+});
+test("blocked browser storage gives recovery guidance without consuming a token",async ({page})=>{
+  await page.addInitScript(()=>{Object.defineProperty(window,"localStorage",{get(){throw new DOMException("Storage blocked","SecurityError");}});});
+  let verifies=0;await page.route(`${backend}/auth/v1/verify**`,async route=>{verifies++;await route.abort();});
+  await page.goto("/auth/confirm/?token_hash="+"s".repeat(64)+"&type=signup");
+  await page.getByRole("button",{name:"Verify Email",exact:true}).click();
+  await expect(page.getByText(/Allow storage for this site/)).toBeVisible();expect(verifies).toBe(0);
 });

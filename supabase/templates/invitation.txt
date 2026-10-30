@@ -1,0 +1,23 @@
+GALSTYAN’S SPEAKING CLUB
+
+You’re invited
+
+{{ with .Data }}{{ with .first_name }}Hi {{ . }},{{ else }}Hi there,{{ end }}{{ else }}Hi there,{{ end }}
+
+You’ve been invited to join Galstyan’s Speaking Club.
+
+Accept this invitation on our website and choose a password for your member account.
+
+ACCEPT MY INVITATION: {{ .SiteURL }}/auth/confirm/?token_hash={{ .TokenHash }}&type=invite&next=%2Freset-password%2F
+
+Your next step is a friendly conversation in Sergiev Posad.
+
+If you weren’t expecting this invitation, ignore this email. Never forward your invitation link.
+
+Gevorg Galstyan
+
+Founder & Host · Galstyan’s Speaking Club
+
+Sergiev Posad, Russia
+
+{{ .SiteURL }}

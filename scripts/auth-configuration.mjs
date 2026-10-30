@@ -32,7 +32,7 @@ export function publicAuthSettingsErrors(settings) {
 export function managementAuthSettingsErrors(settings) {
   const errors = [];
   if (settings.site_url?.replace(/\/$/, "") !== "https://galstyansspeakingclub.ru") errors.push("Set the Supabase Auth Site URL to the canonical production origin.");
-  if (!settings.uri_allow_list?.includes("https://galstyansspeakingclub.ru/auth/callback")) errors.push("Allow the production Auth callback URL and its recovery query variant.");
+  if (!settings.uri_allow_list?.split(",").some((entry) => entry.trim() === "https://galstyansspeakingclub.ru/**" || entry.trim().startsWith("https://galstyansspeakingclub.ru/auth/callback"))) errors.push("Allow the production Auth callback URL and its recovery query variant.");
   if (settings.security_captcha_enabled !== true || settings.security_captcha_provider !== "turnstile" || !settings.security_captcha_secret) errors.push("Enable Cloudflare Turnstile in Supabase Auth and configure its secret in Supabase only.");
   if (!settings.smtp_host || !settings.smtp_user || !settings.smtp_pass || !settings.smtp_admin_email) errors.push("Custom SMTP is missing or cannot be verified. Supabase's default email service restricts recipients and is not sufficient for open club registration.");
   return errors;

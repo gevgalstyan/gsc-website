@@ -27,6 +27,12 @@ export function getSupabaseBrowserClient() {
     return browserClient;
   }
 
+  // Safari/content blockers may deny storage access. Fail closed instead of
+  // crashing the form or silently creating a non-persistent member session.
+  let storage: Storage;
+  try { storage = window.localStorage; storage.getItem("gsc:storage-check"); }
+  catch { return null; }
+
   // Static hosting has no server cookie bridge. Keep the one canonical client
   // in browser localStorage. OAuth is always PKCE; the callback performs the
   // code exchange explicitly so no SDK instance can consume it twice.
@@ -37,7 +43,7 @@ export function getSupabaseBrowserClient() {
       autoRefreshToken: true,
       detectSessionInUrl: false,
       flowType: "pkce",
-      storage: window.localStorage,
+      storage,
     },
   });
   return browserClient;

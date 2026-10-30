@@ -123,8 +123,10 @@ https://galstyansspeakingclub.ru/auth/confirm/?token_hash={{ .TokenHash }}&type=
 `supabase/auth-email-config.mjs` also prepares recovery, invite and other templates.
 Recovery uses type=recovery and next=/reset-password; the static verification page
 verifies the token and opens `/reset-password/`. Do not use the removed server
-`/auth/confirm/complete` endpoint. Do not run the management update script without
-approval; it can change provider and SMTP settings as well as templates.
+`/auth/confirm/complete` endpoint. The legacy update command now stages only a
+template JSON file for review; it makes no remote changes. See
+[the current template installation guide](BRANDED-AUTH-EMAILS.md) for all seven
+HTML/text templates, subjects, previews, and cross-browser diagnostics.
 
 Configure custom SMTP with a verified sender/domain through Supabase (for example,
 Resend's SMTP credentials). Store the SMTP password only in Supabase or the approved

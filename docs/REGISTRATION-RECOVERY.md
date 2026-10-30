@@ -66,8 +66,9 @@ Verify in the Dashboard (this task could not retrieve live settings):
   redirects and serves the exported callback/confirmation directories directly.
 
 Google controls remain absent from the interface. Existing provider settings are
-not changed by this fix. Do not use the broad management update script as a quick
-fix: it can change provider/SMTP settings in addition to templates.
+not changed by this fix. The old management-update command now only stages a
+template JSON payload locally; it cannot repair provider/SMTP settings. Use the
+[current branded-email installation guide](BRANDED-AUTH-EMAILS.md) for manual setup.
 
 ## 4. Configure and test actual email delivery
 

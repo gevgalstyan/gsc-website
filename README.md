@@ -23,3 +23,9 @@ Production email access is not ready until those settings and live flows are ver
 For blocked Sign Up / missing CAPTCHA, follow the [production registration recovery checklist](docs/REGISTRATION-RECOVERY.md).
 The default production build requires all three public Auth settings; `vercel.json` is not a Timeweb environment configuration.
 Run `npm run auth:check` for read-only, value-redacting diagnostics.
+
+For iPhone/cross-browser verification and the branded email system, see
+[verification repair and Dashboard installation](docs/BRANDED-AUTH-EMAILS.md) and
+[desktop/mobile email previews](docs/email-previews/README.md).
+Run `npm run emails:check` to validate generated templates. `npm run emails:preview`
+uses an optional local Go compiler and fake data; it does not send email.

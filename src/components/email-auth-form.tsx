@@ -59,7 +59,7 @@ export function EmailAuthForm({ initialMode = "login" }: { initialMode?: AuthMod
     if (Object.keys(validation).length) { setErrors(validation); setNotice("Please check the highlighted fields."); return; }
     if ((resend || mode === "forgot" || mode === "verify") && seconds > 0) { setNotice(`Please wait ${seconds} seconds before requesting another email.`); return; }
     const client = getSupabaseBrowserClient();
-    if (!client) { setNotice("Member access is being configured. Please try again later."); return; }
+    if (!client) { setNotice("Member access needs browser storage. Allow storage for this site, or try another browser."); return; }
     if (!CAPTCHA_SITE_KEY || !token) { setNotice("Please complete the security check before continuing."); return; }
     lock.current = true; setBusy(true);
     try {
