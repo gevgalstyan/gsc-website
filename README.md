@@ -29,3 +29,9 @@ For iPhone/cross-browser verification and the branded email system, see
 [desktop/mobile email previews](docs/email-previews/README.md).
 Run `npm run emails:check` to validate generated templates. `npm run emails:preview`
 uses an optional local Go compiler and fake data; it does not send email.
+
+For the member/admin profile-schema regression, responsive dashboard navigation,
+loyalty card and iPhone-photo handling, see
+[the dashboard investigation and deployment guide](docs/MEMBER-ADMIN-DASHBOARD-REPAIR.md).
+`npm run dashboard:check-schema` performs only zero-row public schema probes;
+production administrator access still requires a real authorized session to verify.

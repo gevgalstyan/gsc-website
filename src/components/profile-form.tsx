@@ -9,7 +9,7 @@ import { MemberPersonalDetails } from "./member-personal-details";
 import Image from "next/image";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { Camera, Trash2 } from "lucide-react";
-import { AvatarImageError, prepareAvatarImage } from "@/lib/avatar-image";
+import { AvatarImageError, prepareAvatarImage, validateAvatarSource } from "@/lib/avatar-image";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 const AVATAR_BUCKET = "profile-avatars";
@@ -46,6 +46,7 @@ export function ProfileForm({
   const [displayName, setDisplayName] = useState(initialProfile.display_name ?? "");
   const [englishLevel, setEnglishLevel] = useState(initialProfile.english_level ?? "");
   const [notice, setNotice] = useState<Notice>(null);
+  const [noticeArea,setNoticeArea] = useState<"photo"|"profile">("profile");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [cropFile, setCropFile] = useState<File | null>(null);
@@ -71,19 +72,13 @@ export function ProfileForm({
     setAvatarUrl(url);
   }
 
-  function choosePhoto(event: ChangeEvent<HTMLInputElement>) {
+  async function choosePhoto(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
-    setNotice(null);
-    if (!new Set(["image/jpeg", "image/png", "image/webp"]).has(file.type)) {
-      setNotice({ kind: "error", text: "Please choose a JPEG, PNG, or WebP image." });
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      setNotice({ kind: "error", text: "That photo is larger than 5 MB. Please choose a smaller image." });
-      return;
-    }
+    setNoticeArea("photo"); setNotice(null);
+    try { await validateAvatarSource(file); }
+    catch (error) { setNotice({ kind:"error", text:error instanceof AvatarImageError ? error.message : "We couldn’t read the photo. Try a JPEG file." }); return; }
     if (cropUrl) URL.revokeObjectURL(cropUrl);
     setCropFile(file);
     setCropUrl(URL.createObjectURL(file));
@@ -97,7 +92,7 @@ export function ProfileForm({
   // ======================================================
   async function saveCroppedPhoto() {
     if (!cropFile) return;
-    setUploading(true);
+    setNoticeArea("photo"); setUploading(true);
     setNotice(null);
     try {
       const blob = await prepareAvatarImage(cropFile, { x: cropX, y: cropY, zoom: cropZoom });
@@ -107,13 +102,14 @@ export function ProfileForm({
       const path = `${userId}/avatar.webp`;
       const { error: uploadError } = await client.storage.from(AVATAR_BUCKET).upload(path, blob, {
         cacheControl: "0",
-        contentType: "image/webp",
+        contentType: blob.type,
         upsert: true,
       });
       if (uploadError) throw uploadError;
 
       if (avatarPath !== path) {
-        const { error: profileError } = await client.from("profiles").update({ avatar_path: path }).eq("id", userId);
+        const profileResult = await client.from("profiles").update({ avatar_path: path }).eq("id", userId).select("id").maybeSingle();
+        const profileError = profileResult.error || (!profileResult.data ? new Error("Profile record could not be updated") : null);
         if (profileError) {
           await client.storage.from(AVATAR_BUCKET).remove([path]);
           throw profileError;
@@ -129,9 +125,9 @@ export function ProfileForm({
       replacePreview(initialAvatarUrl);
       setNotice({
         kind: "error",
-        text: error instanceof AvatarImageError ? error.message : "We couldn’t upload your photo. Please try again.",
+        text: error instanceof AvatarImageError ? error.message : (error && typeof error === "object" && ("statusCode" in error) && ["401","403"].includes(String(error.statusCode)) ? "Photo access was denied. Log in again and retry; the club may need to check private photo permissions." : "We couldn’t finish updating your photo. Check your connection and refresh to check the saved photo before retrying."),
       });
-      if (debugProfile && error instanceof Error) console.debug("[gsc:profile] avatar upload failed", { message: error.message });
+
     } finally {
       setUploading(false);
       if (cropUrl) URL.revokeObjectURL(cropUrl);
@@ -148,7 +144,7 @@ export function ProfileForm({
 
   async function removePhoto() {
     if (!avatarPath) return;
-    setUploading(true);
+    setNoticeArea("photo"); setUploading(true);
     setNotice(null);
     const client = getSupabaseBrowserClient();
     if (!client) {
@@ -176,7 +172,7 @@ export function ProfileForm({
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setSaving(true);
+    setNoticeArea("profile"); setSaving(true);
     setNotice(null);
     const data = new FormData(event.currentTarget);
     const clean = (key: string) => String(data.get(key) ?? "").trim() || null;
@@ -187,9 +183,10 @@ export function ProfileForm({
       return;
     }
     const client = getSupabaseBrowserClient();
-    const { error } = client
-      ? await client.from("profiles").update({ display_name: clean("display_name"), telegram_username: telegram, english_level: clean("english_level"), ...(onboarding ? { onboarding_completed: true } : {}) }).eq("id", userId)
-      : { error: new Error("Profile updates are temporarily unavailable.") };
+    const result = client
+      ? await client.from("profiles").update({ display_name: clean("display_name"), telegram_username: telegram, english_level: clean("english_level"), ...(onboarding ? { onboarding_completed: true } : {}) }).eq("id", userId).select("id").maybeSingle()
+      : { error: new Error("Profile updates are temporarily unavailable."), data: null };
+    const error = result.error || (!result.data ? new Error("Profile record was not saved") : null);
     setSaving(false);
     if (error) { setNotice({ kind: "error", text: "We couldn’t save your profile. Please check the fields and try again." }); if (debugProfile) console.debug("[gsc:profile] save failed", { message: error.message }); return; }
     if (onboarding) {
@@ -213,7 +210,7 @@ export function ProfileForm({
       </button>
       <div className="avatar-editor-copy">
         <strong>Profile photo</strong>
-        <span>JPEG, PNG or WebP. Maximum 5 MB.</span>
+        <span>JPEG, PNG or WebP · up to 5 MB. For iPhone HEIC photos, export as JPEG first.</span>
         <div className="avatar-actions">
           <button className="button button-outline-dark button-compact" type="button" onClick={() => inputRef.current?.click()} disabled={busy}>
             <Camera size={16} />{uploading ? "Uploading…" : avatarPath || avatarUrl ? "Change photo" : "Upload photo"}
@@ -221,15 +218,17 @@ export function ProfileForm({
           {avatarPath && <button className="avatar-remove" type="button" onClick={removePhoto} disabled={busy}><Trash2 size={16} />Remove photo</button>}
         </div>
       </div>
-      <input ref={inputRef} className="sr-only" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" onChange={choosePhoto} disabled={busy} aria-label="Choose a profile photo" />
+      <input ref={inputRef} className="sr-only" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,.jpg,.jpeg,.png,.webp,.heic,.heif" onChange={event=>void choosePhoto(event)} disabled={busy} aria-label="Choose a profile photo" />
     </div>
+    {noticeArea==="photo" && notice && <p className={`form-status ${notice.kind}`} role="status" aria-live="polite">{notice.text}</p>}
+    {uploading && <p className="form-status" role="status">Preparing and uploading your photo… Keep this page open.</p>}
     {cropFile && cropUrl && <div className="modal-backdrop" role="presentation"><section className="avatar-crop-dialog" role="dialog" aria-modal="true" aria-labelledby="avatar-crop-title"><span className="eyebrow">Profile photo</span><h2 id="avatar-crop-title">Frame your photo</h2><p>Move, zoom, and preview the square image before it is saved.</p><div className="avatar-crop-preview"><Image src={cropUrl} alt="Photo crop preview" width={280} height={280} unoptimized style={{ transform: `translate(${cropX * 12}%, ${cropY * 12}%) scale(${cropZoom})` }} /></div><label>Zoom<input type="range" min="1" max="2.5" step="0.05" value={cropZoom} onChange={(event) => setCropZoom(Number(event.target.value))} /></label><label>Horizontal position<input type="range" min="-1" max="1" step="0.05" value={cropX} onChange={(event) => setCropX(Number(event.target.value))} /></label><label>Vertical position<input type="range" min="-1" max="1" step="0.05" value={cropY} onChange={(event) => setCropY(Number(event.target.value))} /></label><div className="public-actions"><button className="button button-outline-dark" type="button" onClick={cancelCrop} disabled={uploading}>Cancel</button><button className="button button-primary" type="button" onClick={saveCroppedPhoto} disabled={uploading}>{uploading ? "Saving…" : "Save photo"}</button></div></section></div>}
     <form className="account-form" onSubmit={submit} aria-busy={saving}>
       <label>Display name<input name="display_name" value={displayName} onChange={(event) => setDisplayName(event.target.value)} maxLength={80} autoComplete="name" required={onboarding} disabled={busy} /></label>
       <label>Telegram username<input name="telegram_username" defaultValue={initialProfile.telegram_username ?? ""} pattern="@?[A-Za-z0-9_]{5,32}" placeholder="@username" disabled={busy} /></label>
       <label>English level<select name="english_level" value={englishLevel} onChange={(event) => setEnglishLevel(event.target.value)} disabled={busy}><option value="">Choose your level</option><option value="beginner">Beginner</option><option value="elementary">Elementary</option><option value="pre-intermediate">Pre-intermediate</option><option value="intermediate">Intermediate</option><option value="upper-intermediate">Upper-intermediate</option><option value="advanced">Advanced</option></select></label>
       <button className="button button-primary" disabled={busy}>{saving ? "Saving…" : onboarding ? "Complete profile" : "Save profile"}</button>
-      {notice && <p className={`form-status ${notice.kind}`} role="status" aria-live="polite">{notice.text}</p>}
+      {noticeArea==="profile" && notice && <p className={`form-status ${notice.kind}`} role="status" aria-live="polite">{notice.text}</p>}
     </form>
     {!onboarding && <section className="account-deletion-request" aria-labelledby="deletion-request-title">
       <div>
