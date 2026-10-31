@@ -357,6 +357,8 @@ test("logout clears the persisted session and protects the member dashboard agai
   await page.route(`${backend}/auth/v1/logout**`,route=>route.fulfill({status:204}));
   await page.goto("/login/");await page.getByLabel("Email address").fill(user.email);await page.getByLabel("Password",{exact:true}).fill("TestPassword123!");await captcha(page);await page.getByRole("button",{name:"Log In",exact:true}).click();
   await expect(page).toHaveURL(/\/account\//);
+  await expect(page.getByRole("heading",{name:"Existing member",exact:true})).toBeVisible();
+  const navToggle=page.getByRole("button",{name:"Open navigation",exact:true});if(await navToggle.isVisible())await navToggle.click();
   await page.getByRole("button",{name:"Log out",exact:true}).click();
   await expect(page).toHaveURL("http://127.0.0.1:4173/");
   expect(await page.evaluate(()=>localStorage.getItem("sb-gsc-auth-test-auth-token"))).toBeNull();
@@ -368,4 +370,122 @@ test("blocked browser storage gives recovery guidance without consuming a token"
   await page.goto("/auth/confirm/?token_hash="+"s".repeat(64)+"&type=signup");
   await page.getByRole("button",{name:"Verify Email",exact:true}).click();
   await expect(page.getByText(/Allow storage for this site/)).toBeVisible();expect(verifies).toBe(0);
+});
+
+test("admin legacy schema falls back once without changing records and keeps core tools available",async({page},info)=>{
+  await adminLogin(page);
+  await expect(page.getByRole("heading",{name:"Club overview"})).toBeVisible();
+  let extended=0,basic=0,writes=0;
+  await page.route(`${backend}/rest/v1/profiles**`,async route=>{
+    if(route.request().method()!=="GET")writes++;
+    const select=new URL(route.request().url()).searchParams.get("select")||"";
+    if(select.includes("first_name")){extended++;await route.fulfill({status:400,json:{code:"42703",message:"column profiles.first_name does not exist"}});}
+    else{basic++;await route.fulfill({json:[{id:user.id,display_name:"Existing administrator",created_at:user.created_at}]});}
+  });
+  await page.getByRole("button",{name:"Refresh data",exact:true}).click();
+  await expect(page.getByRole("heading",{name:"Club overview"})).toBeVisible();
+  await expect(page.getByText(/Additional registration fields need/)).toBeVisible();
+  expect(extended).toBe(1);expect(basic).toBe(1);expect(writes).toBe(0);
+  await page.getByRole("button",{name:"Details",exact:true}).click();
+  await expect(page.getByRole("region",{name:"Member details"}).getByText(/Existing administrator/)).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  await import("node:fs/promises").then(fs=>fs.mkdir("docs/dashboard-previews",{recursive:true}));
+  await page.evaluate(()=>window.scrollTo(0,0));
+  await page.screenshot({path:`docs/dashboard-previews/admin-${info.project.name}.png`,fullPage:true});
+});
+test("admin permission errors do not trigger schema fallback and retry actually reloads",async({page})=>{
+  await adminLogin(page);await expect(page.getByRole("heading",{name:"Club overview"})).toBeVisible();
+  let calls=0;let denied=true;
+  await page.route(`${backend}/rest/v1/profiles**`,async route=>{calls++;await route.fulfill(denied?{status:403,json:{code:"42501",message:"Denied"}}:{json:[]});});
+  await page.getByRole("button",{name:"Refresh data",exact:true}).click();
+  await expect(page.getByText(/database denied access/)).toBeVisible();expect(calls).toBe(1);
+  await expect(page.getByRole("heading",{name:"Club overview"})).toHaveCount(0);
+  await expect(page.getByRole("link",{name:"Back to the website",exact:true})).toHaveAttribute("href","/");
+  denied=false;await page.getByRole("button",{name:"Retry loading dashboard"}).click();
+  await expect(page.getByRole("heading",{name:"Club overview"})).toBeVisible();expect(calls).toBe(2);
+});
+
+const memberProfile={id:user.id,display_name:"Existing member",onboarding_completed:true,avatar_path:null,avatar_url:null,first_name:"Ani",surname:"Test",age:20,nationality:"Armenia",gender:"Prefer not to say",email:user.email,created_at:user.created_at};
+async function memberLogin(page:Page){
+ await page.route(`${backend}/auth/v1/token**`,route=>route.fulfill({json:session}));
+ await page.route(`${backend}/auth/v1/user**`,route=>route.fulfill({json:user}));
+ await page.route(`${backend}/rest/v1/profiles**`,route=>route.fulfill({json:memberProfile}));
+ await page.route(`${backend}/rest/v1/attendance**`,route=>route.fulfill({json:[{id:"paid",status:"attended",payment_status:"paid",recorded_at:user.created_at},{id:"absent",status:"no_show",payment_status:"paid",recorded_at:user.created_at},{id:"unpaid",status:"attended",payment_status:"unpaid",recorded_at:user.created_at}]}));
+ await page.goto("/login/");await page.getByLabel("Email address").fill(user.email);await page.getByLabel("Password",{exact:true}).fill("TestPassword123!");await captcha(page);await page.getByRole("button",{name:"Log In",exact:true}).click();
+ await expect(page.getByRole("heading",{name:"Existing member",exact:true})).toBeVisible();
+}
+test("member navigation, shared language and loyalty remain readable at every requested width",async({page},info)=>{
+ await memberLogin(page);
+ await expect(page.getByText("Your progress: 1 of 6 visits",{exact:true})).toBeVisible();
+ await expect(page.locator("article").filter({hasText:"Meetups attended"})).toContainText("2");
+ for(const width of [320,375,390,430,768,1280]){
+  await page.setViewportSize({width,height:900});
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),`overflow at ${width}`).toBe(true);
+  expect(await page.getByRole("heading",{name:"Your Loyalty Card",exact:true}).evaluate(node=>parseFloat(getComputedStyle(node).fontSize))).toBeLessThanOrEqual(28);
+ }
+ await page.getByLabel("Dashboard language",{exact:true}).selectOption("ru");
+ await expect(page.getByRole("heading",{name:"Карта лояльности",exact:true})).toBeVisible();
+ await expect(page.getByText("Твой прогресс: 1 из 6 встреч",{exact:true})).toBeVisible();
+ await page.reload();await expect(page.getByRole("heading",{name:"Карта лояльности",exact:true})).toBeVisible();
+ await page.getByLabel("Dashboard language",{exact:true}).selectOption("en");
+ await page.setViewportSize(info.project.name==="mobile"?{width:390,height:844}:{width:1280,height:900});
+ const menu=page.getByRole("button",{name:"Open navigation",exact:true});if(await menu.isVisible())await menu.click();
+ const navigation=page.getByRole("navigation",{name:"Member website navigation"});
+ await expect(navigation.getByRole("link",{name:"Home",exact:true})).toHaveAttribute("href","/");
+ await expect(navigation.getByRole("link",{name:"Speaking Club Meetups",exact:true})).toHaveAttribute("href","/meetups/");
+ await navigation.getByRole("link",{name:"Home",exact:true}).click();
+ expect(await page.evaluate(()=>Boolean(localStorage.getItem("sb-gsc-auth-test-auth-token")))).toBe(true);
+ await page.goto("/account/");await expect(page.getByRole("heading",{name:"Existing member",exact:true})).toBeVisible();
+ await import("node:fs/promises").then(fs=>fs.mkdir("docs/dashboard-previews",{recursive:true}));
+ await page.evaluate(()=>window.scrollTo(0,0));
+  await page.screenshot({path:`docs/dashboard-previews/member-${info.project.name}.png`,fullPage:true});
+});
+test("member legacy personal fields give honest guidance while normal profile settings still work",async({page})=>{
+ await memberLogin(page);
+ await page.route(`${backend}/rest/v1/profiles**`,async route=>{
+  if(route.request().method()==="PATCH")return route.fulfill({json:{id:user.id}});
+  const select=new URL(route.request().url()).searchParams.get("select")||"";
+  return route.fulfill(select.includes("first_name")?{status:400,json:{code:"42703",message:"column profiles.first_name does not exist"}}:{json:memberProfile});
+ });
+ await page.reload();await expect(page.getByText(/Additional personal fields are not enabled yet/)).toBeVisible();
+ await expect(page.getByText("Personal details are temporarily unavailable.",{exact:false})).toHaveCount(0);
+ await page.getByLabel("Display name",{exact:true}).fill("Updated member");await page.getByRole("button",{name:"Save profile",exact:true}).click();
+ await expect(page.getByText("Profile saved.",{exact:true})).toBeVisible();
+});
+test("photo picker explains HEIC errors and accepts actual PNG bytes with an empty MIME",async({page})=>{
+ await memberLogin(page);const input=page.getByLabel("Choose a profile photo",{exact:true});
+ await input.setInputFiles({name:"IMG.heic",mimeType:"image/heic",buffer:Buffer.concat([Buffer.from([0,0,0,24]),Buffer.from("ftypheic0000")])});
+ await expect(page.getByText(/This iPhone photo is HEIC\/HEIF/)).toBeVisible();
+ await input.setInputFiles({name:"fake.jpg",mimeType:"image/jpeg",buffer:Buffer.from("not an image")});
+ await expect(page.getByText(/couldn’t recognize this image/)).toBeVisible();
+ const png=Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6Fx0AAAAASUVORK5CYII=","base64");
+ await input.setInputFiles({name:"iphone-file",mimeType:"",buffer:png});
+ await expect(page.getByRole("dialog",{name:"Frame your photo"})).toBeVisible();
+ await page.getByRole("button",{name:"Cancel",exact:true}).click();
+});
+test("photo upload uses supported JPEG and the existing private object key, then survives refresh",async({page})=>{
+ await memberLogin(page);let savedPath:string|null=null;let uploads=0;
+ await page.route(`${backend}/storage/v1/object/profile-avatars/**`,async route=>{
+  uploads++;expect(route.request().url()).toContain(`${user.id}/avatar.webp`);expect(route.request().headers()["content-type"]).toContain("multipart/form-data");expect(route.request().postDataBuffer()?.toString("latin1")).toContain("Content-Type: image/jpeg");await route.fulfill({json:{Key:`profile-avatars/${user.id}/avatar.webp`}});
+ });
+ await page.route(`${backend}/storage/v1/object/sign/profile-avatars/**`,route=>route.fulfill({json:{signedURL:"/object/sign/profile-avatars/mock-avatar?token=fake-local-only"}}));
+ await page.route(`${backend}/rest/v1/profiles**`,async route=>{
+  if(route.request().method()==="PATCH"){savedPath=route.request().postDataJSON().avatar_path;return route.fulfill({json:{id:user.id}});}
+  return route.fulfill({json:{...memberProfile,avatar_path:savedPath}});
+ });
+ const png=Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6Fx0AAAAASUVORK5CYII=","base64");
+ await page.getByLabel("Choose a profile photo",{exact:true}).setInputFiles({name:"photo.png",mimeType:"image/png",buffer:png});
+ await page.getByRole("button",{name:"Save photo",exact:true}).click();
+ await expect(page.getByText("Your profile photo has been updated.",{exact:true})).toBeVisible();expect(uploads).toBe(1);expect(savedPath).toBe(`${user.id}/avatar.webp`);
+ await page.reload();await expect(page.getByRole("img",{name:"Your profile photo",exact:true})).toHaveAttribute("src",/mock-avatar/);
+});
+test("private Storage denial shows a readable error and never claims a photo was saved",async({page})=>{
+ await memberLogin(page);let profileWrites=0;
+ await page.route(`${backend}/storage/v1/object/profile-avatars/**`,route=>route.fulfill({status:403,json:{statusCode:"403",error:"Unauthorized",message:"Not allowed"}}));
+ await page.route(`${backend}/rest/v1/profiles**`,async route=>{if(route.request().method()==="PATCH")profileWrites++;await route.fulfill({json:memberProfile});});
+ const png=Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6Fx0AAAAASUVORK5CYII=","base64");
+ await page.getByLabel("Choose a profile photo",{exact:true}).setInputFiles({name:"photo.png",mimeType:"image/png",buffer:png});
+ await page.getByRole("button",{name:"Save photo",exact:true}).click();
+ await expect(page.getByText(/Photo access was denied/)).toBeVisible();
+ await expect(page.getByText("Your profile photo has been updated.",{exact:true})).toHaveCount(0);expect(profileWrites).toBe(0);
 });
