@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Your GSC account security code</title>
+<style>@media only screen and (max-width:480px){.email-padding{padding:28px 22px!important}.email-heading{font-size:28px!important;line-height:36px!important}}</style></head>
+<body style="margin:0;padding:0;background:#f5f6f8;font-family:Arial,Helvetica,sans-serif;color:#07101c">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;opacity:0">Enter this private one-time code for the action you requested.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#f5f6f8"><tr><td align="center" style="padding:24px 12px">
+<!--[if mso]><table role="presentation" width="600" align="center"><tr><td><![endif]-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="width:100%;max-width:600px;border:1px solid #e1e5eb;border-radius:12px">
+<tr><td style="padding:28px 30px;border-bottom:3px solid #ff5a1f">
+<img src="{{ .SiteURL }}/gsc-logo.jpg" width="48" height="48" alt="GSC" style="display:block;border:0;border-radius:8px;margin-bottom:14px">
+<p style="margin:0;font-size:13px;font-weight:bold;line-height:22px;letter-spacing:1px;color:#07101c">GALSTYAN’S SPEAKING CLUB</p>
+<p style="margin:5px 0 0;font-size:12px;line-height:20px;color:#586475">Real conversations. A welcoming community.</p></td></tr>
+<tr><td class="email-padding" style="padding:34px 30px">
+<h1 class="email-heading" style="margin:0 0 24px;font-size:32px;line-height:40px;letter-spacing:-0.5px;color:#07101c">Confirm it’s you</h1>
+<p style="margin:0 0 18px;font-size:16px;line-height:26px;color:#394454">{{ with .Data }}{{ with .first_name }}Hi {{ . }},{{ else }}Hi there,{{ end }}{{ else }}Hi there,{{ end }}</p><p style="margin:0 0 18px;font-size:16px;line-height:26px;color:#394454">A sensitive account action needs an extra security check.</p><p style="margin:0 0 18px;font-size:16px;line-height:26px;color:#394454">Enter this one-time code in the account form where you requested it:</p><p style="margin:24px 0;font-size:30px;line-height:42px;letter-spacing:6px;font-weight:bold;color:#07101c">{{ .Token }}</p><table role="presentation" cellpadding="0" cellspacing="0" style="margin:26px 0"><tr><td align="center" bgcolor="#ff5a1f" style="border-radius:8px"><a href="{{ .SiteURL }}/account/" style="display:inline-block;border:1px solid #ff5a1f;border-radius:8px;padding:16px 24px;font-family:Arial,Helvetica,sans-serif;font-weight:bold;font-size:15px;line-height:22px;color:#07101c;text-decoration:none">RETURN TO MY ACCOUNT</a></td></tr></table><p style="margin:0 0 18px;font-size:16px;line-height:26px;color:#394454">Return to the account form and enter this code. This email does not change your password by itself.</p>
+<p style="margin:28px 0 0;font-size:13px;line-height:22px;color:#586475;border-top:1px solid #e1e5eb;padding-top:20px">If you didn’t request this code, do not enter or share it. The club will never ask you to send this code by email or chat.</p>
+</td></tr><tr><td style="padding:24px 30px;background:#f8f9fb;border-top:1px solid #e1e5eb;font-size:13px;line-height:22px;color:#586475">
+<strong style="color:#07101c">Gevorg Galstyan</strong><br>Founder &amp; Host · Galstyan’s Speaking Club<br>Sergiev Posad, Russia<br><a href="{{ .SiteURL }}" style="color:#9b340b;text-decoration:underline">Visit our website</a></td></tr>
+</table><!--[if mso]></td></tr></table><![endif]-->
+</td></tr></table></body></html>

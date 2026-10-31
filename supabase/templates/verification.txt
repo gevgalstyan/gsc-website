@@ -1,0 +1,35 @@
+GALSTYAN’S SPEAKING CLUB
+
+Welcome to the club! 👋
+
+{{ with .Data }}{{ with .first_name }}Hi {{ . }},{{ else }}Hi there,{{ end }}{{ else }}Hi there,{{ end }}
+
+Thanks for joining Galstyan’s Speaking Club!
+
+We’re building a friendly English-speaking community in Sergiev Posad where people practice real conversations, meet interesting people, and build confidence.
+
+Whether you’re just starting your English journey or already speak fluently, there’s a place for you here.
+
+Please confirm your email address to activate your account.
+
+VERIFY MY EMAIL: {{ .SiteURL }}/auth/confirm/?token_hash={{ .TokenHash }}&type=signup&next=%2Faccount%2F
+
+Once verified, you can explore your member dashboard and discover upcoming speaking club meetings.
+
+Why join us?
+
+Real conversations. New connections. Every level is welcome.
+
+Loyalty rewards: Every 7th meeting is free.
+
+See you at the next conversation!
+
+If you didn’t create an account, you can safely ignore this email. Your verification link is private and single-use. Open the newest email if you request another link.
+
+Gevorg Galstyan
+
+Founder & Host · Galstyan’s Speaking Club
+
+Sergiev Posad, Russia
+
+{{ .SiteURL }}

@@ -1,0 +1,23 @@
+GALSTYAN’S SPEAKING CLUB
+
+Welcome back
+
+{{ with .Data }}{{ with .first_name }}Hi {{ . }},{{ else }}Hi there,{{ end }}{{ else }}Hi there,{{ end }}
+
+You requested a secure link to sign in to Galstyan’s Speaking Club.
+
+Use the button below to continue to your existing member account.
+
+SIGN IN TO MY ACCOUNT: {{ .SiteURL }}/auth/confirm/?token_hash={{ .TokenHash }}&type=magiclink&next=%2Faccount%2F
+
+You’ll confirm sign-in on our website. This link can be used once.
+
+If you didn’t request this sign-in, ignore this email. Never share or forward this link.
+
+Gevorg Galstyan
+
+Founder & Host · Galstyan’s Speaking Club
+
+Sergiev Posad, Russia
+
+{{ .SiteURL }}

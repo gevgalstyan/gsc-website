@@ -19,3 +19,13 @@ Copy `.env.example` when setting up a local environment. Never commit secret val
 See [Email Auth setup](docs/EMAIL-AUTH-SETUP.md) for the required Supabase migration,
 Turnstile, SMTP/templates, redirects, automated tests and approval gates.
 Production email access is not ready until those settings and live flows are verified.
+
+For blocked Sign Up / missing CAPTCHA, follow the [production registration recovery checklist](docs/REGISTRATION-RECOVERY.md).
+The default production build requires all three public Auth settings; `vercel.json` is not a Timeweb environment configuration.
+Run `npm run auth:check` for read-only, value-redacting diagnostics.
+
+For iPhone/cross-browser verification and the branded email system, see
+[verification repair and Dashboard installation](docs/BRANDED-AUTH-EMAILS.md) and
+[desktop/mobile email previews](docs/email-previews/README.md).
+Run `npm run emails:check` to validate generated templates. `npm run emails:preview`
+uses an optional local Go compiler and fake data; it does not send email.

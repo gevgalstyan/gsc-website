@@ -1,0 +1,25 @@
+GALSTYAN’S SPEAKING CLUB
+
+Confirm it’s you
+
+{{ with .Data }}{{ with .first_name }}Hi {{ . }},{{ else }}Hi there,{{ end }}{{ else }}Hi there,{{ end }}
+
+A sensitive account action needs an extra security check.
+
+Enter this one-time code in the account form where you requested it:
+
+Your one-time code: {{ .Token }}
+
+RETURN TO MY ACCOUNT: {{ .SiteURL }}/account/
+
+Return to the account form and enter this code. This email does not change your password by itself.
+
+If you didn’t request this code, do not enter or share it. The club will never ask you to send this code by email or chat.
+
+Gevorg Galstyan
+
+Founder & Host · Galstyan’s Speaking Club
+
+Sergiev Posad, Russia
+
+{{ .SiteURL }}

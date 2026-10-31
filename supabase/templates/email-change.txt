@@ -1,0 +1,23 @@
+GALSTYAN’S SPEAKING CLUB
+
+Confirm your email change
+
+{{ with .Data }}{{ with .first_name }}Hi {{ . }},{{ else }}Hi there,{{ end }}{{ else }}Hi there,{{ end }}
+
+A request was made to change your member-account email to {{ .NewEmail }}.
+
+Confirm only if you requested this change. When secure email change is enabled, you may need to confirm messages sent to both your current and new email addresses.
+
+CONFIRM EMAIL CHANGE: {{ .SiteURL }}/auth/confirm/?token_hash={{ .TokenHash }}&type=email_change&next=%2Faccount%2F
+
+Your existing account and club history stay with the same member profile.
+
+Didn’t request this? Do not confirm the change. Visit the club website directly to secure your account and contact the host.
+
+Gevorg Galstyan
+
+Founder & Host · Galstyan’s Speaking Club
+
+Sergiev Posad, Russia
+
+{{ .SiteURL }}

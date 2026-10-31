@@ -1,154 +1,49 @@
-/**
- * Branded Supabase Auth email templates and production callback allowlist.
- * Contains template markup only. Provider and SMTP secrets must stay in environment variables.
- */
-
-// ======================================================
-// AUTH EMAILS — SHARED TEMPLATE SHELL
-// ======================================================
+/** Supabase renders these Go HTML templates; Resend SMTP transports the result. No secrets. */
 const siteUrl = "https://galstyansspeakingclub.ru";
-const logoUrl = `${siteUrl}/gsc-logo.jpg`;
-
-function actionButton(href, label) {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:28px 0 24px"><tr><td align="center"><a href="${href}" style="display:inline-block;background:#ff5a1f;color:#ffffff;text-decoration:none;font-family:Arial,sans-serif;font-size:15px;font-weight:700;line-height:20px;padding:15px 26px;border-radius:999px">${label}</a></td></tr></table>`;
-}
-
-function confirmationLink(type, next) {
-  return `${siteUrl}/auth/confirm/?token_hash={{ .TokenHash }}&amp;type=${type}&amp;next=${encodeURIComponent(next)}`;
-}
-
-function emailShell({ preheader, heading, content }) {
+const greeting = '{{ with .Data }}{{ with .first_name }}Hi {{ . }},{{ else }}Hi there,{{ end }}{{ else }}Hi there,{{ end }}';
+const link = (type, next = "/account/") => `{{ .SiteURL }}/auth/confirm/?token_hash={{ .TokenHash }}&amp;type=${type}&amp;next=${encodeURIComponent(next)}`;
+const paragraph = (text) => `<p style="margin:0 0 18px;font-size:16px;line-height:26px;color:#394454">${text}</p>`;
+const button = (url, text) => `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:26px 0"><tr><td align="center" bgcolor="#ff5a1f" style="border-radius:8px"><a href="${url}" style="display:inline-block;border:1px solid #ff5a1f;border-radius:8px;padding:16px 24px;font-family:Arial,Helvetica,sans-serif;font-weight:bold;font-size:15px;line-height:22px;color:#07101c;text-decoration:none">${text}</a></td></tr></table>`;
+const fallback = (url) => paragraph(`Button not opening? <a href="${url}" style="color:#9b340b;text-decoration:underline">Open the secure link</a>. You will confirm the action on our website.`);
+function shell({ subject, preheader, heading, body, security }) {
   return `<!doctype html>
-<html lang="en">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${heading}</title>
-</head>
-<body style="margin:0;padding:0;background:#f4efe6;color:#07101c">
-  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent">${preheader}</div>
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#f4efe6">
-    <tr>
-      <td align="center" style="padding:28px 12px">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;border-collapse:collapse;background:#ffffff;border-radius:20px;overflow:hidden">
-          <tr>
-            <td align="center" style="background:#07101c;padding:30px 24px 26px">
-              <img src="${logoUrl}" width="64" height="64" alt="Galstyan’s Speaking Club" style="display:block;width:64px;height:64px;border:0;border-radius:50%;object-fit:cover">
-              <div style="margin-top:14px;font-family:Arial,sans-serif;font-size:18px;font-weight:700;line-height:24px;color:#ffffff">Galstyan’s Speaking Club</div>
-              <div style="margin-top:5px;font-family:Arial,sans-serif;font-size:13px;font-weight:700;letter-spacing:1.4px;line-height:20px;color:#ff7b47">ENGLISH ON.</div>
-            </td>
-          </tr>
-          <tr>
-            <td style="padding:38px 34px 30px;font-family:Arial,sans-serif">
-              <h1 style="margin:0 0 18px;font-family:Georgia,serif;font-size:32px;font-weight:600;line-height:40px;color:#07101c">${heading}</h1>
-              ${content}
-            </td>
-          </tr>
-          <tr>
-            <td align="center" style="padding:22px 24px;background:#f7f2e9;border-top:1px solid #e9e1d5;font-family:Arial,sans-serif;font-size:12px;line-height:19px;color:#6d7480">
-              <strong style="color:#07101c">Galstyan’s Speaking Club</strong><br>
-              Sergiyev Posad<br>
-              <a href="${siteUrl}" style="color:#6d7480;text-decoration:underline">galstyansspeakingclub.ru</a>
-            </td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
-</body>
-</html>`;
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>${subject}</title>
+<style>@media only screen and (max-width:480px){.email-padding{padding:28px 22px!important}.email-heading{font-size:28px!important;line-height:36px!important}}</style></head>
+<body style="margin:0;padding:0;background:#f5f6f8;font-family:Arial,Helvetica,sans-serif;color:#07101c">
+<div style="display:none;max-height:0;overflow:hidden;mso-hide:all;opacity:0">${preheader}</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#f5f6f8"><tr><td align="center" style="padding:24px 12px">
+<!--[if mso]><table role="presentation" width="600" align="center"><tr><td><![endif]-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#ffffff" style="width:100%;max-width:600px;border:1px solid #e1e5eb;border-radius:12px">
+<tr><td style="padding:28px 30px;border-bottom:3px solid #ff5a1f">
+<img src="{{ .SiteURL }}/gsc-logo.jpg" width="48" height="48" alt="GSC" style="display:block;border:0;border-radius:8px;margin-bottom:14px">
+<p style="margin:0;font-size:13px;font-weight:bold;line-height:22px;letter-spacing:1px;color:#07101c">GALSTYAN’S SPEAKING CLUB</p>
+<p style="margin:5px 0 0;font-size:12px;line-height:20px;color:#586475">Real conversations. A welcoming community.</p></td></tr>
+<tr><td class="email-padding" style="padding:34px 30px">
+<h1 class="email-heading" style="margin:0 0 24px;font-size:32px;line-height:40px;letter-spacing:-0.5px;color:#07101c">${heading}</h1>
+${paragraph(greeting)}${body}
+<p style="margin:28px 0 0;font-size:13px;line-height:22px;color:#586475;border-top:1px solid #e1e5eb;padding-top:20px">${security}</p>
+</td></tr><tr><td style="padding:24px 30px;background:#f8f9fb;border-top:1px solid #e1e5eb;font-size:13px;line-height:22px;color:#586475">
+<strong style="color:#07101c">Gevorg Galstyan</strong><br>Founder &amp; Host · Galstyan’s Speaking Club<br>Sergiev Posad, Russia<br><a href="{{ .SiteURL }}" style="color:#9b340b;text-decoration:underline">Visit our website</a></td></tr>
+</table><!--[if mso]></td></tr></table><![endif]-->
+</td></tr></table></body></html>\n`;
 }
-
-const paragraph = (text) => `<p style="margin:0 0 16px;font-family:Arial,sans-serif;font-size:16px;line-height:26px;color:#394454">${text}</p>`;
-
-function hostBlock() {
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:26px 0"><tr><td style="padding:20px 22px;background:#f7f2e9;border-left:4px solid #ff5a1f;font-family:Arial,sans-serif;color:#394454"><div style="font-size:12px;font-weight:700;letter-spacing:1.2px;line-height:18px;text-transform:uppercase;color:#7a6757">Hosted by</div><div style="margin-top:5px;font-size:17px;font-weight:700;line-height:24px;color:#07101c">Gevorg Galstyan</div><div style="margin-top:3px;font-size:14px;line-height:22px">Yerevan 🇦🇲 → Sergiyev Posad</div><div style="margin-top:12px;font-family:Georgia,serif;font-size:15px;font-style:italic;line-height:22px;color:#07101c">Practice makes perfect.</div></td></tr></table>`;
-}
-
-// ======================================================
-// EMAIL/PASSWORD AUTH — MESSAGE TEMPLATES
-// ======================================================
-export const authEmailConfig = {
-  mailer_subjects_confirmation: "Welcome to Galstyan’s Speaking Club — confirm your email",
-  mailer_templates_confirmation_content: emailShell({
-    preheader: "Confirm your email to activate your GSC member profile.",
-    heading: "Welcome to the club 👋",
-    content:
-      paragraph("Thanks for joining Galstyan’s Speaking Club.") +
-      paragraph("Confirm your email address to activate your member profile and get access to meetups, attendance history, loyalty progress, and your member account.") +
-      actionButton(confirmationLink("signup", "/account/"), "Verify Email") +
-      paragraph("Verification protects your member profile and confirms that this email address belongs to you.") +
-      paragraph(`If the button does not work, open this verification link: <a href="${confirmationLink("signup", "/account/")}">Verify your email address</a>.`) +
-      paragraph("We’re a local English-speaking community in Sergiyev Posad where people meet, talk, practice English, and build confidence through real conversations.") +
-      hostBlock() +
-      paragraph("If you did not create this account, you can safely ignore this email."),
-  }),
-
-  mailer_subjects_recovery: "Reset your Galstyan’s Speaking Club password",
-  mailer_templates_recovery_content: emailShell({
-    preheader: "Use this secure link to reset your GSC password.",
-    heading: "Reset your password",
-    content:
-      paragraph("We received a request to reset the password for your member account.") +
-      actionButton(confirmationLink("recovery", "/reset-password"), "Reset my password") +
-      paragraph("If you didn’t request this, you can safely ignore this email. Your password has not changed."),
-  }),
-
-  mailer_subjects_magic_link: "Your Galstyan’s Speaking Club sign-in link",
-  mailer_templates_magic_link_content: emailShell({
-    preheader: "Your secure one-time link to the GSC member space.",
-    heading: "Sign in securely",
-    content:
-      paragraph("Use this one-time link to sign in to your member profile.") +
-      actionButton(confirmationLink("magiclink", "/account"), "Continue to my account") +
-      paragraph("If you didn’t request this link, you can safely ignore this email."),
-  }),
-
-  mailer_subjects_email_change: "Confirm your new Galstyan’s Speaking Club email",
-  mailer_templates_email_change_content: emailShell({
-    preheader: "Confirm the new email address for your GSC account.",
-    heading: "Confirm your new email",
-    content:
-      paragraph("A request was made to change the email address on your member profile to {{ .NewEmail }}.") +
-      actionButton(confirmationLink("email_change", "/account"), "Confirm email change") +
-      paragraph("If you didn’t request this change, do not confirm it."),
-  }),
-
-  mailer_subjects_invite: "You’re invited to Galstyan’s Speaking Club",
-  mailer_templates_invite_content: emailShell({
-    preheader: "Accept your invitation to the GSC member space.",
-    heading: "You’re invited",
-    content:
-      paragraph("You’ve been invited to create a Galstyan’s Speaking Club member profile.") +
-      actionButton(confirmationLink("invite", "/account"), "Accept invitation") +
-      paragraph("If you weren’t expecting this invitation, you can safely ignore this email."),
-  }),
-
-  mailer_subjects_reauthentication: "{{ .Token }} is your Galstyan’s Speaking Club verification code",
-  mailer_templates_reauthentication_content: emailShell({
-    preheader: "Your one-time GSC account verification code.",
-    heading: "Verify it’s you",
-    content:
-      paragraph("Enter this one-time code to continue with the sensitive account action you requested.") +
-      `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;margin:26px 0"><tr><td align="center" style="padding:18px;background:#f7f2e9;border:1px solid #e9e1d5;border-radius:14px;font-family:Arial,sans-serif;font-size:30px;font-weight:800;letter-spacing:8px;color:#07101c">{{ .Token }}</td></tr></table>` +
-      paragraph("If you didn’t request this code, you can safely ignore this email."),
-  }),
-
-  mailer_notifications_password_changed_enabled: true,
-  mailer_subjects_password_changed_notification: "Your Galstyan’s Speaking Club password was changed",
-  mailer_templates_password_changed_notification_content: emailShell({
-    preheader: "Security notice for your GSC member account.",
-    heading: "Your password was changed",
-    content:
-      paragraph("The password for your Galstyan’s Speaking Club member account was changed.") +
-      paragraph("If you made this change, no action is needed. If you didn’t, return to the website and reset your password immediately."),
-  }),
-};
-
-// ======================================================
-// AUTHENTICATION — PRODUCTION REDIRECT ALLOWLIST
-// ======================================================
-export const productionAuthUrlConfig = {
-  site_url: siteUrl,
-  uri_allow_list: `${siteUrl}/**,https://www.galstyansspeakingclub.ru/**`,
-};
+const benefits = `<h2 style="margin:28px 0 16px;font-size:20px;line-height:28px;color:#07101c">Why join us?</h2>${paragraph("<strong>Real conversations</strong> — Practice English through meaningful discussions.")}${paragraph("<strong>New connections</strong> — Meet people who share your interests.")}${paragraph("<strong>Every level is welcome</strong> — Improve at your own pace, without classroom pressure.")}${paragraph("<strong>Loyalty rewards</strong> — Every 7th meeting is free.")}`;
+const definitions = [
+  { id: "confirmation", file: "verification", subject: "Welcome to Galstyan’s Speaking Club! Verify your email", preheader: "One quick confirmation, then your next conversation awaits.", heading: "Welcome to the club! 👋", type: "signup", next: "/account/", label: "VERIFY MY EMAIL", copy: ["Thanks for joining Galstyan’s Speaking Club!", "We’re building a friendly English-speaking community in Sergiev Posad where people practice real conversations, meet interesting people, and build confidence.", "Whether you’re just starting your English journey or already speak fluently, there’s a place for you here.", "Please confirm your email address to activate your account."], after: "Once verified, you can explore your member dashboard and discover upcoming speaking club meetings.", security: "If you didn’t create an account, you can safely ignore this email. Your verification link is private and single-use. Open the newest email if you request another link." },
+  { id: "recovery", file: "password-reset", subject: "Reset your Galstyan’s Speaking Club password", preheader: "A secure link to choose a new password for your existing account.", heading: "Choose a new password", type: "recovery", next: "/reset-password/", label: "RESET MY PASSWORD", copy: ["We received a request to reset your member-account password.", "Use the secure link below to choose a new password. Your profile, bookings, attendance, rewards, and account stay in place."], after: "You’ll confirm the request on our website before choosing your new password.", security: "If you didn’t request this, ignore this email. Your password has not changed. Never forward your reset link or share your password." },
+  { id: "email_change", file: "email-change", subject: "Confirm your GSC account email change", preheader: "Review a requested change to your member-account email.", heading: "Confirm your email change", type: "email_change", next: "/account/", label: "CONFIRM EMAIL CHANGE", copy: ["A request was made to change your member-account email to {{ .NewEmail }}.", "Confirm only if you requested this change. When secure email change is enabled, you may need to confirm messages sent to both your current and new email addresses."], after: "Your existing account and club history stay with the same member profile.", security: "Didn’t request this? Do not confirm the change. Visit the club website directly to secure your account and contact the host." },
+  { id: "magic_link", file: "magic-link", subject: "Your secure GSC sign-in link", preheader: "Continue to your member account with a private one-time link.", heading: "Welcome back", type: "magiclink", next: "/account/", label: "SIGN IN TO MY ACCOUNT", copy: ["You requested a secure link to sign in to Galstyan’s Speaking Club.", "Use the button below to continue to your existing member account."], after: "You’ll confirm sign-in on our website. This link can be used once.", security: "If you didn’t request this sign-in, ignore this email. Never share or forward this link." },
+  { id: "invite", file: "invitation", subject: "You’re invited to Galstyan’s Speaking Club", preheader: "Accept your invitation and set up secure access.", heading: "You’re invited", type: "invite", next: "/reset-password/", label: "ACCEPT MY INVITATION", copy: ["You’ve been invited to join Galstyan’s Speaking Club.", "Accept this invitation on our website and choose a password for your member account."], after: "Your next step is a friendly conversation in Sergiev Posad.", security: "If you weren’t expecting this invitation, ignore this email. Never forward your invitation link." },
+  { id: "reauthentication", file: "reauthentication", subject: "Your GSC account security code", preheader: "Enter this private one-time code for the action you requested.", heading: "Confirm it’s you", copy: ["A sensitive account action needs an extra security check.", "Enter this one-time code in the account form where you requested it:"], after: "Return to the account form and enter this code. This email does not change your password by itself.", security: "If you didn’t request this code, do not enter or share it. The club will never ask you to send this code by email or chat." },
+  { id: "password_changed_notification", file: "password-changed", subject: "Your GSC password was changed", preheader: "A security notice for your existing member account.", heading: "Your password was changed", copy: ["The password for your Galstyan’s Speaking Club account was changed.", "If this was you, no action is needed. If you didn’t make this change, visit our website directly, request a password reset, and contact the host."], after: "Your club history remains attached to your existing account.", security: "This is a security notification, not a password-reset link. Never send your password or verification codes to anyone." },
+];
+export const authEmails = definitions.map((definition) => {
+  const url = definition.type ? link(definition.type, definition.next) : "{{ .SiteURL }}/account/";
+  const code = definition.id === "reauthentication" ? '<p style="margin:24px 0;font-size:30px;line-height:42px;letter-spacing:6px;font-weight:bold;color:#07101c">{{ .Token }}</p>' : "";
+  const body = definition.copy.map(paragraph).join("") + code + button(url, definition.label ?? "RETURN TO MY ACCOUNT") + paragraph(definition.after) + (definition.type ? fallback(url) : "") + (definition.id === "confirmation" ? benefits + paragraph("See you at the next conversation!") : "");
+  const textUrl = url.replaceAll("&amp;", "&");
+  const text = ["GALSTYAN’S SPEAKING CLUB", definition.heading, greeting, ...definition.copy, ...(code ? ["Your one-time code: {{ .Token }}"] : []), `${definition.label ?? "RETURN TO MY ACCOUNT"}: ${textUrl}`, definition.after, ...(definition.id === "confirmation" ? ["Why join us?", "Real conversations. New connections. Every level is welcome.", "Loyalty rewards: Every 7th meeting is free.", "See you at the next conversation!"] : []), definition.security, "Gevorg Galstyan", "Founder & Host · Galstyan’s Speaking Club", "Sergiev Posad, Russia", "{{ .SiteURL }}"].join("\n\n")+"\n";
+  return { ...definition, html: shell({ ...definition, body }), text };
+});
+export const authEmailConfig = Object.fromEntries(authEmails.flatMap((email) => [[`mailer_subjects_${email.id}`, email.subject], [`mailer_templates_${email.id}_content`, email.html]]));
+export const productionAuthUrlConfig = { site_url: siteUrl, uri_allow_list: `${siteUrl}/**,https://www.galstyansspeakingclub.ru/**` };

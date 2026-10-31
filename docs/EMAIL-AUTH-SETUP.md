@@ -43,8 +43,10 @@ after upload, and Timeweb does not load `vercel.json` automatically.
 
 Google/Telegram flags are unused by the new email interface. `CRON_SECRET` and
 Supabase management tokens are not needed by this static application. Build-time
-validation refuses non-publishable Supabase keys. `npm run build:auth-production`
-requires all three public variables but does not establish live readiness.
+validation refuses non-publishable Supabase keys and public CAPTCHA test keys. Both
+`npm run build` and `npm run build:auth-production` require all three public variables
+by default but do not establish live readiness. See [Registration recovery](REGISTRATION-RECOVERY.md)
+for diagnostics and the missing-CAPTCHA deployment checklist.
 
 ## Database migration — approval required
 
@@ -121,8 +123,10 @@ https://galstyansspeakingclub.ru/auth/confirm/?token_hash={{ .TokenHash }}&type=
 `supabase/auth-email-config.mjs` also prepares recovery, invite and other templates.
 Recovery uses type=recovery and next=/reset-password; the static verification page
 verifies the token and opens `/reset-password/`. Do not use the removed server
-`/auth/confirm/complete` endpoint. Do not run the management update script without
-approval; it can change provider and SMTP settings as well as templates.
+`/auth/confirm/complete` endpoint. The legacy update command now stages only a
+template JSON file for review; it makes no remote changes. See
+[the current template installation guide](BRANDED-AUTH-EMAILS.md) for all seven
+HTML/text templates, subjects, previews, and cross-browser diagnostics.
 
 Configure custom SMTP with a verified sender/domain through Supabase (for example,
 Resend's SMTP credentials). Store the SMTP password only in Supabase or the approved
