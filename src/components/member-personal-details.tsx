@@ -37,5 +37,6 @@ export function MemberPersonalDetails({ userId }: { userId: string }) {
     } catch { setNotice("We couldn’t reach the profile service. Please try again."); }
     finally { lock.current = false; setBusy(false); }
   }
+  if (legacy) return null; // Optional fields are unavailable; the main profile editor remains usable.
   return <section className={styles.panel} style={{ maxWidth: "none", marginBottom: 24 }} aria-label="Personal details"><h2>Personal details</h2>{details && <form className={styles.form} noValidate onSubmit={save} aria-busy={busy}><p className={styles.intro}>Email: {email || "Available in your Auth account"}. Contact the club if you need help changing it.</p><fieldset disabled={busy}><AuthProfileFields errors={errors} initial={details} /></fieldset><button className={styles.primary} disabled={busy}>{busy ? "Saving…" : "Save personal details"}</button></form>}{notice && <p className={styles.notice} role="status">{notice}</p>}{!details && !legacy && <button className={styles.textButton} type="button" onClick={()=>setRevision(value=>value+1)}>Retry personal details</button>}</section>;
 }

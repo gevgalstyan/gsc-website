@@ -22,7 +22,8 @@
     "emails:check": "node scripts/generate-auth-emails.mjs --check",
     "emails:preview": "node scripts/preview-auth-emails.mjs",
     "test:emails:browser": "playwright test --config playwright.emails.config.ts",
-    "dashboard:check-schema": "node --use-env-proxy scripts/check-dashboard-schema.mjs"
+    "dashboard:check-schema": "node --use-env-proxy scripts/check-dashboard-schema.mjs",
+    "test:audit:browser": "playwright test --config playwright.audit.config.ts"
   },
   "dependencies": {
     "@supabase/ssr": "0.8.0",

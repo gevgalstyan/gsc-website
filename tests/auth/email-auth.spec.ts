@@ -384,6 +384,7 @@ test("admin legacy schema falls back once without changing records and keeps cor
   });
   await page.getByRole("button",{name:"Refresh data",exact:true}).click();
   await expect(page.getByRole("heading",{name:"Club overview"})).toBeVisible();
+  await page.getByText("Profile field availability",{exact:true}).click();
   await expect(page.getByText(/Additional registration fields need/)).toBeVisible();
   expect(extended).toBe(1);expect(basic).toBe(1);expect(writes).toBe(0);
   await page.getByRole("button",{name:"Details",exact:true}).click();
@@ -440,14 +441,15 @@ test("member navigation, shared language and loyalty remain readable at every re
  await page.evaluate(()=>window.scrollTo(0,0));
   await page.screenshot({path:`docs/dashboard-previews/member-${info.project.name}.png`,fullPage:true});
 });
-test("member legacy personal fields give honest guidance while normal profile settings still work",async({page})=>{
+test("member legacy schema keeps normal profile settings usable without exposing migration diagnostics",async({page})=>{
  await memberLogin(page);
  await page.route(`${backend}/rest/v1/profiles**`,async route=>{
   if(route.request().method()==="PATCH")return route.fulfill({json:{id:user.id}});
   const select=new URL(route.request().url()).searchParams.get("select")||"";
   return route.fulfill(select.includes("first_name")?{status:400,json:{code:"42703",message:"column profiles.first_name does not exist"}}:{json:memberProfile});
  });
- await page.reload();await expect(page.getByText(/Additional personal fields are not enabled yet/)).toBeVisible();
+ await page.reload();await expect(page.getByRole("heading",{name:"Account settings",exact:true})).toBeVisible();
+ await expect(page.getByRole("region",{name:"Personal details"})).toHaveCount(0);
  await expect(page.getByText("Personal details are temporarily unavailable.",{exact:false})).toHaveCount(0);
  await page.getByLabel("Display name",{exact:true}).fill("Updated member");await page.getByRole("button",{name:"Save profile",exact:true}).click();
  await expect(page.getByText("Profile saved.",{exact:true})).toBeVisible();
@@ -455,7 +457,7 @@ test("member legacy personal fields give honest guidance while normal profile se
 test("photo picker explains HEIC errors and accepts actual PNG bytes with an empty MIME",async({page})=>{
  await memberLogin(page);const input=page.getByLabel("Choose a profile photo",{exact:true});
  await input.setInputFiles({name:"IMG.heic",mimeType:"image/heic",buffer:Buffer.concat([Buffer.from([0,0,0,24]),Buffer.from("ftypheic0000")])});
- await expect(page.getByText(/This iPhone photo is HEIC\/HEIF/)).toBeVisible();
+ await expect(page.getByText(/This browser couldn’t decode that photo/)).toBeVisible();
  await input.setInputFiles({name:"fake.jpg",mimeType:"image/jpeg",buffer:Buffer.from("not an image")});
  await expect(page.getByText(/couldn’t recognize this image/)).toBeVisible();
  const png=Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAusB9Wl6Fx0AAAAASUVORK5CYII=","base64");

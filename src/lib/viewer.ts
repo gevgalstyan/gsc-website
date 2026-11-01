@@ -1,6 +1,6 @@
 /**
- * Resolves the current public-site viewer from the verified Supabase session.
- * This is the reusable server-side source for logged-out, member, and admin UI.
+ * Defines public viewer display data. Static rendering cannot read browser sessions;
+ * BrowserViewerProvider resolves member/admin presentation after hydration.
  */
 
 
@@ -19,6 +19,7 @@ export type ViewerNotification = {
 };
 
 export type Viewer = {
+  authLoading?: boolean;
   role: ViewerRole;
   userId: string | null;
   name: string;

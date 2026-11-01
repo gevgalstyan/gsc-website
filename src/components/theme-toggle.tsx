@@ -23,7 +23,7 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
     const next = currentTheme() === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = next;
     document.documentElement.style.colorScheme = next;
-    localStorage.setItem("gsc-theme", next);
+    try { localStorage.setItem("gsc-theme", next); } catch { /* Theme still works when Safari blocks storage. */ }
     window.dispatchEvent(new Event("gsc-theme-change"));
   }
 

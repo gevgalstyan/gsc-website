@@ -5,6 +5,7 @@
  * Calls the booking API and displays safe loading, blocked, and error states.
  */
 
+import { useBrowserViewer } from "@/hooks/use-browser-viewer";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -27,6 +28,8 @@ export function MeetupBookingButton({
   bookingState?: MeetupBookingState;
   authenticated?: boolean;
 }) {
+  const viewer = useBrowserViewer();
+  authenticated = !viewer.authLoading && viewer.role !== "loggedOut";
   const [booked, setBooked] = useState(initialBooked);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
@@ -73,5 +76,5 @@ export function MeetupBookingButton({
         : authenticated ? "Book my place" : "Sign in to book";
   const blocked = !booked && bookingState !== "open";
 
-  return <div className="booking-action"><button className="button button-primary" type="button" onClick={toggleBooking} disabled={busy || blocked}>{busy ? <LoaderCircle className="spin" /> : booked ? <TicketCheck /> : <ArrowRight />}{busy ? "Updating…" : booked ? "Booked ✓ · Cancel" : stateLabel}</button>{notice && <p className="form-status" role="status" aria-live="polite">{notice}{notice.startsWith("Please log in") && <> <Link href="/?auth=login">Log in</Link></>}</p>}</div>;
+  return <div className="booking-action"><button className="button button-primary" type="button" onClick={toggleBooking} disabled={busy || blocked || viewer.authLoading}>{busy ? <LoaderCircle className="spin" /> : booked ? <TicketCheck /> : <ArrowRight />}{viewer.authLoading ? "Checking member access…" : busy ? "Updating…" : booked ? "Booked ✓ · Cancel" : stateLabel}</button>{notice && <p className="form-status" role="status" aria-live="polite">{notice}{notice.startsWith("Please log in") && <> <Link href="/?auth=login">Log in</Link></>}</p>}</div>;
 }

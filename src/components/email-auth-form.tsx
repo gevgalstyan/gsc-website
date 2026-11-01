@@ -1,4 +1,5 @@
 "use client";
+import { useBrowserViewer } from "@/hooks/use-browser-viewer";
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
@@ -21,6 +22,7 @@ function authError(code?: string, status?: number) {
   return "We couldn’t complete that request. Check your details and try again. If you already have an account, log in or reset your password.";
 }
 export function EmailAuthForm({ initialMode = "login" }: { initialMode?: AuthMode }) {
+  const viewer = useBrowserViewer();
   const configurationReady = isSupabaseConfigured() && Boolean(CAPTCHA_SITE_KEY);
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const [email, setEmail] = useState("");
@@ -93,6 +95,8 @@ export function EmailAuthForm({ initialMode = "login" }: { initialMode?: AuthMod
   }
   function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); void request(mode === "verify", new FormData(event.currentTarget)); }
   const title = sent ? "Request received" : mode === "register" ? "Join the club" : mode === "forgot" ? "Forgot your password?" : mode === "verify" ? "Resend verification email" : "Welcome back";
+  if ((initialMode === "login" || initialMode === "register") && viewer.authLoading) return <div className={styles.panel}><p role="status">Checking member access…</p></div>;
+  if ((initialMode === "login" || initialMode === "register") && viewer.role !== "loggedOut") return <div className={styles.panel}><h1>You’re already signed in</h1><p className={styles.intro}>Your member space is ready.</p><Link className={styles.primary} href="/account/">Open my dashboard</Link></div>;
   return <div className={styles.panel}>
     <Image className={styles.logo} src="/gsc-logo.jpg" alt="Galstyan’s Speaking Club" width={62} height={62} />
     <span className={styles.eyebrow}>GSC member space</span><h2 id="auth-title">{title}</h2>

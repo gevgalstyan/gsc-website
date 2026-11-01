@@ -1,5 +1,7 @@
+"use client";
 /** Reusable CTA renderer for logged-out visitors, members, and administrators. */
 
+import { useBrowserViewer } from "@/hooks/use-browser-viewer";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { resolveAuthCta, type AuthCtaKind } from "@/lib/auth-ui";
@@ -25,6 +27,9 @@ export function AuthAwareCta({
   adminDestination?: "account" | "admin";
   onLoggedOutAuth?: () => void;
 }) {
+  const viewer = useBrowserViewer();
+  role = viewer.role;
+  if (viewer.authLoading) return <button className={className} type="button" disabled aria-busy="true">Checking member access…</button>;
   const cta = resolveAuthCta(kind, role, { loggedOutLabel, loggedOutHref, adminDestination });
   if (role === "loggedOut" && onLoggedOutAuth) {
     return <button className={className} type="button" onClick={onLoggedOutAuth}>{cta.label} <ArrowRight /></button>;

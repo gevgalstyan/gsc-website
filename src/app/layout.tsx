@@ -2,6 +2,7 @@
 
 import type { Metadata, Viewport } from "next";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/seo";
+import { BrowserViewerProvider } from "@/hooks/use-browser-viewer";
 import "./globals.css";
 import "./business-flow.css";
 import "./design-system.css";
@@ -59,5 +60,5 @@ export const metadata: Metadata = {
 export const viewport: Viewport = { themeColor: "#07101c", width: "device-width", initialScale: 1, viewportFit: "cover" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth"><head><script dangerouslySetInnerHTML={{ __html: canonicalOriginScript }} /><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head><body>{children}</body></html>;
+  return <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth"><head><script dangerouslySetInnerHTML={{ __html: canonicalOriginScript }} /><script dangerouslySetInnerHTML={{ __html: themeScript }} /></head><body><BrowserViewerProvider>{children}</BrowserViewerProvider></body></html>;
 }

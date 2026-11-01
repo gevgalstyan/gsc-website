@@ -9,7 +9,7 @@ import { MemberPersonalDetails } from "./member-personal-details";
 import Image from "next/image";
 import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { Camera, Trash2 } from "lucide-react";
-import { AvatarImageError, prepareAvatarImage, validateAvatarSource } from "@/lib/avatar-image";
+import { AvatarImageError, prepareAvatarImage, validateAvatarSource, loadAvatarImage } from "@/lib/avatar-image";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 const AVATAR_BUCKET = "profile-avatars";
@@ -77,7 +77,7 @@ export function ProfileForm({
     event.target.value = "";
     if (!file) return;
     setNoticeArea("photo"); setNotice(null);
-    try { await validateAvatarSource(file); }
+    try { await validateAvatarSource(file); await loadAvatarImage(file); }
     catch (error) { setNotice({ kind:"error", text:error instanceof AvatarImageError ? error.message : "We couldn’t read the photo. Try a JPEG file." }); return; }
     if (cropUrl) URL.revokeObjectURL(cropUrl);
     setCropFile(file);
@@ -99,6 +99,8 @@ export function ProfileForm({
       replacePreview(URL.createObjectURL(blob));
       const client = getSupabaseBrowserClient();
       if (!client) throw new Error("Profile photos are temporarily unavailable.");
+      // Legacy object name is enforced by existing database constraints and RLS.
+      // Storage serves the JPEG using its explicit MIME type, not this suffix.
       const path = `${userId}/avatar.webp`;
       const { error: uploadError } = await client.storage.from(AVATAR_BUCKET).upload(path, blob, {
         cacheControl: "0",
@@ -111,7 +113,7 @@ export function ProfileForm({
         const profileResult = await client.from("profiles").update({ avatar_path: path }).eq("id", userId).select("id").maybeSingle();
         const profileError = profileResult.error || (!profileResult.data ? new Error("Profile record could not be updated") : null);
         if (profileError) {
-          await client.storage.from(AVATAR_BUCKET).remove([path]);
+          // Never delete a stable avatar object on an ambiguous profile-write failure.
           throw profileError;
         }
       }
@@ -122,7 +124,7 @@ export function ProfileForm({
       setAvatarPath(path);
       setNotice({ kind: "success", text: "Your profile photo has been updated." });
     } catch (error) {
-      replacePreview(initialAvatarUrl);
+      replacePreview(avatarUrl);
       setNotice({
         kind: "error",
         text: error instanceof AvatarImageError ? error.message : (error && typeof error === "object" && ("statusCode" in error) && ["401","403"].includes(String(error.statusCode)) ? "Photo access was denied. Log in again and retry; the club may need to check private photo permissions." : "We couldn’t finish updating your photo. Check your connection and refresh to check the saved photo before retrying."),
@@ -210,7 +212,7 @@ export function ProfileForm({
       </button>
       <div className="avatar-editor-copy">
         <strong>Profile photo</strong>
-        <span>JPEG, PNG or WebP · up to 5 MB. For iPhone HEIC photos, export as JPEG first.</span>
+        <span>JPEG, PNG, WebP or HEIC · up to 20 MB. Photos are prepared as JPEG; HEIC requires browser support.</span>
         <div className="avatar-actions">
           <button className="button button-outline-dark button-compact" type="button" onClick={() => inputRef.current?.click()} disabled={busy}>
             <Camera size={16} />{uploading ? "Uploading…" : avatarPath || avatarUrl ? "Change photo" : "Upload photo"}

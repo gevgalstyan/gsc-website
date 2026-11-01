@@ -24,8 +24,8 @@ test("photo signatures handle empty/misleading picker MIME and names without tru
   assert.equal(await validateAvatarSource(png),"image/png");
   await assert.rejects(validateAvatarSource(new File(["not an image"],"photo.jpg",{type:"image/jpeg"})),/genuine JPEG/);
 });
-test("HEIC, empty files, and oversized files give explicit format/size errors",async()=>{
-  await assert.rejects(validateAvatarSource(new File([new Uint8Array([0,0,0,24]),"ftypheic0000"],"photo.heic",{type:"image/heic"})),/Most Compatible/);
+test("HEIC reaches the browser decoder while empty and oversized files are rejected",async()=>{
+  assert.equal(await validateAvatarSource(new File([new Uint8Array([0,0,0,24]),"ftypheic0000"],"photo.heic",{type:"image/heic"})),"image/heic");
   await assert.rejects(validateAvatarSource(new File([],"empty.jpg")),/empty/);
-  await assert.rejects(validateAvatarSource(new File([new Uint8Array(5*1024*1024+1)],"large.jpg")),/5 MB/);
+  await assert.rejects(validateAvatarSource(new File([new Uint8Array(20*1024*1024+1)],"large.jpg")),/20 MB/);
 });
