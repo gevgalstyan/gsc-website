@@ -5,6 +5,7 @@
  * It owns drawer focus/scroll behavior and the compact signed-in profile menu.
  */
 
+import { LanguageSwitch } from "@/components/language-switch";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Menu, UserCircle, X } from "lucide-react";
@@ -129,6 +130,7 @@ export function Header({ onAuth, viewer, liveViewer }: { onAuth?: () => void; vi
           {navigation.map((item) => <Link prefetch={false} className={isActive(item.href) ? "active" : undefined} aria-current={isActive(item.href) ? "page" : undefined} key={item.href} href={item.href}>{item.label}</Link>)}
         </nav>
         <div className="header-actions">
+          <LanguageSwitch />
           <ThemeToggle compact />
           {isAuthenticated && <NotificationBell key={browserViewer.userId} initialNotifications={browserViewer.notifications} />}
           {browserViewer.authLoading ? <span role="status">Checking access…</span> : isAuthenticated ? profileControl : onAuth ? <button className="button button-small button-outline desktop-auth" onClick={openAuth}>Join / Login</button> : <Link className="button button-small button-outline desktop-auth" href="/?auth=login">Join / Login</Link>}

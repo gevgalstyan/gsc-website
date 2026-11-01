@@ -2,7 +2,7 @@
 import { Check, Gift } from "lucide-react";
 import { useDashboardLanguage } from "@/hooks/use-dashboard-language";
 import { loyaltyProgress } from "@/lib/loyalty-progress";
-export function MemberLoyaltyCard({attendance,rewards}:{attendance:{status:string;payment_status:string}[];rewards:{status:string}[]}) {
+export function MemberLoyaltyCard({attendance,rewards}:{attendance:{status:string;payment_status:string}[];rewards:{status:string;expires_at?:string|null}[]}) {
   const {language}=useDashboardLanguage();const ru=language==="ru";
   const {progress,availableRewards}=loyaltyProgress(attendance,rewards);
   return <section id="rewards" className="dashboard-card member-loyalty" lang={language} aria-labelledby="loyalty-heading">

@@ -25,7 +25,7 @@ export function AuthCaptcha({ onToken }: { onToken: (token: string) => void }) {
       if (cancelled || !element.current || !window.turnstile) return;
       onToken("");
       widget = window.turnstile.render(element.current, {
-      sitekey: CAPTCHA_SITE_KEY, theme: "dark", size: compact ? "compact" : "flexible",
+      sitekey: CAPTCHA_SITE_KEY, theme: "auto", size: compact ? "compact" : "flexible",
       callback: (token: string) => { setError(""); onToken(token); },
       "expired-callback": () => { onToken(""); setError("Verification expired. Please complete the security check again."); },
       "error-callback": () => { onToken(""); setError("The security check could not load. Check your connection or reload the page."); },

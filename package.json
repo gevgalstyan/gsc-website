@@ -23,7 +23,9 @@
     "emails:preview": "node scripts/preview-auth-emails.mjs",
     "test:emails:browser": "playwright test --config playwright.emails.config.ts",
     "dashboard:check-schema": "node --use-env-proxy scripts/check-dashboard-schema.mjs",
-    "test:audit:browser": "playwright test --config playwright.audit.config.ts"
+    "test:audit:browser": "playwright test --config playwright.audit.config.ts",
+    "test:refinement:browser": "playwright test --config playwright.refinement.config.ts",
+    "validate:static": "node scripts/validate-static-export.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.8.0",
@@ -34,6 +36,7 @@
     "react-dom": "19.2.4"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
     "@electric-sql/pglite": "0.3.14",
     "@playwright/test": "1.56.1",
     "@types/node": "22.10.5",

@@ -39,19 +39,27 @@ export function BrowserViewerProvider({ children }: { children: ReactNode }) {
           client!.from("notifications").select("id,kind,title,body,meetup_id,booking_id,target_url,read_at,created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(20),
         ]);
         if (!active || current !== revision) return;
-        setViewer(previous => ({ ...previous, role: role.error ? previous.role : role.data?.role === "admin" ? "admin" : "member", name: profile.data?.display_name || previous.name, avatarUrl: profile.data?.avatar_url ?? previous.avatarUrl, notifications: notifications.data ?? previous.notifications }));
+        setViewer(previous => ({ ...previous, role: role.error ? previous.role : role.data?.role === "admin" ? "admin" : "member", name: profile.data?.display_name || previous.name, avatarUrl: profile.data?.avatar_url ?? previous.avatarUrl, notifications: notifications.data?.map(item => ({ ...item, read_at: item.read_at ?? previous.notifications.find(previousItem => previousItem.id === item.id)?.read_at ?? null })) ?? previous.notifications }));
         if (profile.data?.avatar_path) {
           const signed = await client!.storage.from("profile-avatars").createSignedUrl(profile.data.avatar_path, 3600);
           if (active && current === revision && signed.data) setViewer(previous => ({ ...previous, avatarUrl: signed.data.signedUrl }));
         }
       } catch { /* Optional display data cannot turn a member into a guest. RLS still authorizes every operation. */ }
     }
+    function onNotificationsRead(event: Event) {
+      const detail = (event as CustomEvent<{ ids?: unknown; readAt?: unknown }>).detail;
+      if (!detail || !Array.isArray(detail.ids) || typeof detail.readAt !== "string") return;
+      const ids = new Set(detail.ids.filter((id): id is string => typeof id === "string"));
+      const readAt = detail.readAt;
+      setViewer(previous => ({ ...previous, notifications: previous.notifications.map(item => ids.has(item.id) ? { ...item, read_at: readAt } : item) }));
+    }
+    window.addEventListener("gsc-notifications-read", onNotificationsRead);
     const { data } = client.auth.onAuthStateChange((_event, session) => resolve(session));
     const initialRevision = revision;
     void client.auth.getSession().then(({ data, error }) => {
       if (active && revision === initialRevision) resolve(error ? null : data.session);
     }).catch(() => { if (active && revision === initialRevision) setViewer(guest); });
-    return () => { active = false; revision++; timers.forEach(clearTimeout); data.subscription.unsubscribe(); };
+    return () => { active = false; revision++; timers.forEach(clearTimeout); window.removeEventListener("gsc-notifications-read", onNotificationsRead); data.subscription.unsubscribe(); };
   }, []);
   return createElement(ViewerContext.Provider, { value: viewer }, children);
 }
@@ -60,4 +68,9 @@ export function BrowserViewerProvider({ children }: { children: ReactNode }) {
 export function useBrowserViewer(_fallback?: Viewer, _enabled = true) {
   void _fallback; void _enabled;
   return useContext(ViewerContext);
+}
+
+/** Share successful read updates across public headers without another database write. */
+export function notifyViewerNotificationsRead(ids: string[], readAt: string) {
+  window.dispatchEvent(new CustomEvent("gsc-notifications-read", { detail: { ids, readAt } }));
 }

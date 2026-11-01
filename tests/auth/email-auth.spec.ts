@@ -110,7 +110,7 @@ test("verification resend enforces cooldown and forwards the security token", as
   await page.goto("/verify-email/"); await page.getByLabel("Email address").fill(user.email); await captcha(page); await page.getByRole("button", { name: "Send verification email" }).click();
   await expect(page.getByRole("heading", { name: "Request received" })).toBeVisible(); await expect(page.getByRole("button", { name: /Resend in/ })).toBeDisabled();
   await captcha(page); await page.clock.fastForward(61000);
-  await page.getByRole("button", { name: "Resend verification email", exact: true }).click(); expect(requests).toBe(2);
+  await page.getByRole("button", { name: "Resend verification email", exact: true }).click(); await expect.poll(() => requests).toBe(2);
 });
 test("successful email login goes to a same-site member destination", async ({ page }) => {
   await page.route(`${backend}/rest/v1/profiles**`, (route) => route.fulfill({ json: { id: user.id, display_name: "Test member", onboarding_completed: true, created_at: user.created_at } }));

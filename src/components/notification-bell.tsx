@@ -2,9 +2,10 @@
 
 /** Displays member notifications and persists read state through Supabase. */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Bell, Check, CheckCheck } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { notifyViewerNotificationsRead } from "@/hooks/use-browser-viewer";
 import { notificationTarget } from "@/lib/notification-target";
 
 type Notification = { id: string; kind: string; title: string; body: string; meetup_id: string | null; booking_id: string | null; target_url: string | null; read_at: string | null; created_at: string };
@@ -13,7 +14,8 @@ type Notification = { id: string; kind: string; title: string; body: string; mee
 // NOTIFICATIONS
 // ======================================================
 export function NotificationBell({ initialNotifications }: { initialNotifications: Notification[] }) {
-  const [items, setItems] = useState(initialNotifications);
+  const [readOverrides, setReadOverrides] = useState<Record<string, string>>({});
+  const items = useMemo(() => initialNotifications.map(item => ({ ...item, read_at: readOverrides[item.id] ?? item.read_at })), [initialNotifications, readOverrides]);
   const [open, setOpen] = useState(false);
   const [notice, setNotice] = useState("");
   const [now] = useState(() => Date.now());
@@ -45,7 +47,9 @@ export function NotificationBell({ initialNotifications }: { initialNotification
       return;
     }
     setNotice("");
-    setItems((current) => current.map((item) => item.id === id ? { ...item, read_at: new Date().toISOString() } : item));
+    const readAt = new Date().toISOString();
+    setReadOverrides(current => ({ ...current, [id]: readAt }));
+    notifyViewerNotificationsRead([id], readAt);
   }
 
   async function markAllRead() {
@@ -60,7 +64,8 @@ export function NotificationBell({ initialNotifications }: { initialNotification
       return;
     }
     setNotice("");
-    setItems((current) => current.map((item) => item.read_at ? item : { ...item, read_at: readAt }));
+    setReadOverrides(current => ({ ...current, ...Object.fromEntries(unreadIds.map(id => [id, readAt])) }));
+    notifyViewerNotificationsRead(unreadIds, readAt);
   }
 
   async function openNotification(item: Notification) {

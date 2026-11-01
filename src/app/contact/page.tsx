@@ -1,18 +1,15 @@
-import Link from "next/link";
 import { ArrowRight, Clock3, MapPin, MessageCircle, Send } from "lucide-react";
 import { PublicPageShell } from "@/components/public-page-shell";
 import { socialLinks } from "@/lib/site-data";
 import { editablePageMetadata, getPublicContent } from "@/lib/site-content";
-import { resolveAuthCta } from "@/lib/auth-ui";
-import { getViewer } from "@/lib/viewer";
+import { ContactMemberAction } from "@/components/auth-aware-content";
 
 export const revalidate = 60;
 
 export const generateMetadata = () => editablePageMetadata("contact", "Contact", "Contact Galstyan’s Speaking Club about English conversation practice, upcoming meetups, and joining the local community in Sergiev Posad.", "/contact");
 
 export default async function ContactPage() {
-  const [content, viewer] = await Promise.all([getPublicContent(), getViewer()]);
-  const profileCta = resolveAuthCta("profile", viewer.role);
+  const content = await getPublicContent();
   return (
     <PublicPageShell
       eyebrow="Contact"
@@ -26,7 +23,7 @@ export default async function ContactPage() {
         <div className="public-contact-details">
           <div><MapPin /><span><strong>Based in</strong>Sergiev Posad, Moscow Region</span></div>
           <div><Clock3 /><span><strong>What to ask about</strong>Meetup dates, English levels, and conversation practice</span></div>
-          <div><ArrowRight /><span><strong>{viewer.role === "loggedOut" ? "Ready to join?" : "Your member space"}</strong><Link href={profileCta.href}>{profileCta.label}</Link></span></div>
+          <div><ArrowRight /><ContactMemberAction /></div>
           <div className="contact-social-list"><MessageCircle /><span><strong>Other channels</strong><span>{socialLinks.slice(1).map((social) => <a key={social.label} href={content[`settings.${social.label.toLowerCase()}_url`] || social.href} target="_blank" rel="noreferrer">{social.label}</a>)}</span></span></div>
           {content["settings.contact_email"] && <div><MessageCircle /><span><strong>Email</strong><a href={`mailto:${content["settings.contact_email"]}`}>{content["settings.contact_email"]}</a></span></div>}
         </div>
