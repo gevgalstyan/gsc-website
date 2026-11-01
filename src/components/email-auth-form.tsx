@@ -21,7 +21,8 @@ function authError(code?: string, status?: number) {
   if (code === "email_not_confirmed") return "Please verify your email before logging in. You can request a new verification email below.";
   return "We couldn’t complete that request. Check your details and try again. If you already have an account, log in or reset your password.";
 }
-export function EmailAuthForm({ initialMode = "login" }: { initialMode?: AuthMode }) {
+export function EmailAuthForm({ initialMode = "login", headingLevel = 1 }: { initialMode?: AuthMode; headingLevel?: 1 | 2 }) {
+  const Heading = headingLevel === 1 ? "h1" : "h2";
   const viewer = useBrowserViewer();
   const configurationReady = isSupabaseConfigured() && Boolean(CAPTCHA_SITE_KEY);
   const [mode, setMode] = useState<AuthMode>(initialMode);
@@ -99,7 +100,7 @@ export function EmailAuthForm({ initialMode = "login" }: { initialMode?: AuthMod
   if ((initialMode === "login" || initialMode === "register") && viewer.role !== "loggedOut") return <div className={styles.panel}><h1>You’re already signed in</h1><p className={styles.intro}>Your member space is ready.</p><Link className={styles.primary} href="/account/">Open my dashboard</Link></div>;
   return <div className={styles.panel}>
     <Image className={styles.logo} src="/gsc-logo.jpg" alt="Galstyan’s Speaking Club" width={62} height={62} />
-    <span className={styles.eyebrow}>GSC member space</span><h2 id="auth-title">{title}</h2>
+    <span className={styles.eyebrow}>GSC member space</span><Heading id="auth-title">{title}</Heading>
     <p id="auth-description" className={styles.intro}>{sent ? `Your request was received. If ${email} is eligible, check your inbox and spam folder for a ${sent === "signup" ? "verification" : "password reset"} link. For privacy, this response does not confirm that an account was created or an email was sent.` : mode === "register" ? "Real conversations start here. Create your member account." : mode === "forgot" ? "We’ll send a secure link to help you choose a new password." : mode === "verify" ? "Enter your email and complete the security check to request a fresh verification link." : "Your community, meetups, and member profile await."}</p>
     {!configurationReady && <p className={styles.notice} role="status">{AUTH_UNAVAILABLE_MESSAGE} <Link href="/contact/">Contact the club</Link></p>}
     {!sent && <form key={mode} onSubmit={submit} noValidate className={styles.form} aria-busy={busy}>
@@ -107,7 +108,7 @@ export function EmailAuthForm({ initialMode = "login" }: { initialMode?: AuthMod
         {mode === "register" && <AuthProfileFields errors={errors} />}
         <div className={styles.field}><label htmlFor="auth-email">Email address</label><input id="auth-email" name="email" type="email" autoComplete="email" required defaultValue={email} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "auth-email-error" : undefined} />{errors.email && <small id="auth-email-error" className={styles.error}>{errors.email}</small>}</div>
         {(mode === "register" || mode === "login") && <AuthPasswordInput name="password" label="Password" autoComplete={mode === "login" ? "current-password" : "new-password"} error={errors.password} />}
-        {mode === "register" && <><AuthPasswordInput name="confirmation" label="Confirm password" error={errors.confirmation} /><label className={styles.agreement}><input name="agreement" type="checkbox" required aria-invalid={Boolean(errors.agreement)} aria-describedby={errors.agreement ? "auth-agreement-error" : undefined} /><span>I agree to the <Link href="/terms/" target="_blank" rel="noreferrer">Terms of Service</Link> and <Link href="/privacy/" target="_blank" rel="noreferrer">Privacy Policy</Link>.</span></label>{errors.agreement && <small id="auth-agreement-error" className={styles.error}>{errors.agreement}</small>}</>}
+        {mode === "register" && <><AuthPasswordInput name="confirmation" label="Confirm password" error={errors.confirmation} /><label className={styles.agreement}><input name="agreement" type="checkbox" required aria-invalid={Boolean(errors.agreement)} aria-describedby={errors.agreement ? "auth-agreement-error" : undefined} /><span>I agree to the <Link href="/terms/#current-policy" target="_blank" rel="noreferrer">Terms of Service</Link> and <Link href="/privacy/#current-policy" target="_blank" rel="noreferrer">Privacy Policy</Link>.</span></label>{errors.agreement && <small id="auth-agreement-error" className={styles.error}>{errors.agreement}</small>}</>}
       </fieldset>
       {configurationReady && <AuthCaptcha key={captchaRound} onToken={setToken} />}
       <button className={styles.primary} type="submit" disabled={busy || !configurationReady || !token}>{busy ? "Please wait…" : mode === "register" ? "Sign Up" : mode === "login" ? "Log In" : mode === "verify" ? "Send verification email" : "Send reset link"}</button>

@@ -17,8 +17,8 @@ export async function PublicPageShell({
   children,
 }: {
   eyebrow: string;
-  title: string;
-  intro: string;
+  title: React.ReactNode;
+  intro: React.ReactNode;
   breadcrumbLabel: string;
   breadcrumbPath: string;
   children: React.ReactNode;

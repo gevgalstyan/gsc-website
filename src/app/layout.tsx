@@ -8,7 +8,7 @@ import "./business-flow.css";
 import "./design-system.css";
 import "./dashboard-experience.css";
 
-const themeScript = `(()=>{try{const saved=localStorage.getItem('gsc-theme');const theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme}catch(e){}})()`;
+const themeScript = `(()=>{let saved;try{saved=localStorage.getItem('gsc-theme')}catch(e){}const theme=saved==='dark'||saved==='light'?saved:(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');document.documentElement.dataset.theme=theme;document.documentElement.style.colorScheme=theme})()`;
 const canonicalOriginScript = `(()=>{if(location.hostname==='www.galstyansspeakingclub.ru'){location.replace('https://galstyansspeakingclub.ru'+location.pathname+location.search+location.hash)}})()`;
 
 

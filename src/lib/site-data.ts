@@ -12,7 +12,7 @@ export const navigation = [
 export const socialLinks = [
   { label: "Telegram", href: "https://t.me/GalstyansSpeakingClub" },
   { label: "Instagram", href: "https://instagram.com/galstyansspeakingclub" },
-  { label: "Threads", href: "https://threads.net/@galstyansspeakingclub" },
+  { label: "Threads", href: "https://www.threads.com/@galstyansspeakingclub" },
   { label: "VK", href: "https://vk.ru/galstyansspeakingclub" },
 ];
 /** Shared public navigation labels and stable site-wide content constants. */
