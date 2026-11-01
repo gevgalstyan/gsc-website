@@ -56,12 +56,12 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
   const [publicDataAttempt, setPublicDataAttempt] = useState(0);
 
   useEffect(() => {
-    if (browserViewer.role !== "loggedOut") return;
+    if (browserViewer.authLoading || browserViewer.role !== "loggedOut") return;
     const authParam = new URLSearchParams(window.location.search).get("auth");
     if (!authParam) return;
     const openTimer = window.setTimeout(() => setAuthOpen(true), 0);
     return () => window.clearTimeout(openTimer);
-  }, [browserViewer.role]);
+  }, [browserViewer.role, browserViewer.authLoading]);
 
   useEffect(() => {
     if (!deferPublicData) return;
@@ -192,7 +192,7 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
         </section>
       </main>
       <Footer />
-      <AuthDialog open={authOpen} onClose={() => setAuthOpen(false)} />
+      <AuthDialog open={authOpen && !browserViewer.authLoading && browserViewer.role === "loggedOut"} onClose={() => setAuthOpen(false)} />
     </>
   );
 }

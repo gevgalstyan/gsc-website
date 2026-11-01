@@ -131,7 +131,7 @@ export function Header({ onAuth, viewer, liveViewer }: { onAuth?: () => void; vi
         <div className="header-actions">
           <ThemeToggle compact />
           {isAuthenticated && <NotificationBell key={browserViewer.userId} initialNotifications={browserViewer.notifications} />}
-          {isAuthenticated ? profileControl : onAuth ? <button className="button button-small button-outline desktop-auth" onClick={openAuth}>Join / Login</button> : <Link className="button button-small button-outline desktop-auth" href="/?auth=login">Join / Login</Link>}
+          {browserViewer.authLoading ? <span role="status">Checking access…</span> : isAuthenticated ? profileControl : onAuth ? <button className="button button-small button-outline desktop-auth" onClick={openAuth}>Join / Login</button> : <Link className="button button-small button-outline desktop-auth" href="/?auth=login">Join / Login</Link>}
           <button ref={menuButtonRef} className="menu-button" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open} aria-controls="mobile-navigation"><Menu /></button>
         </div>
       </div>
@@ -148,7 +148,7 @@ export function Header({ onAuth, viewer, liveViewer }: { onAuth?: () => void; vi
               </Link>
             ))}
           </nav>
-          {isAuthenticated ? <div className="mobile-account-panel">
+          {browserViewer.authLoading ? <p role="status">Checking access…</p> : isAuthenticated ? <div className="mobile-account-panel">
             <div className="mobile-account-heading">{browserViewer.avatarUrl ? <Image src={browserViewer.avatarUrl} alt="" width={38} height={38} unoptimized /> : <span>{profileInitial}</span>}<div><small>Signed in as</small><strong>{browserViewer.name}</strong></div></div>
             <Link className="mobile-profile-link" href="/account" onClick={closeMenu}><UserCircle size={18} />My account</Link>
             <Link className="mobile-profile-link" href="/account#settings" onClick={closeMenu}>Profile</Link>

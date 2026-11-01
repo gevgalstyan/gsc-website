@@ -1,4 +1,5 @@
 "use client";
+import { ThemeToggle } from "@/components/theme-toggle";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -17,6 +18,7 @@ export function DashboardNavigation({ admin = false }: { admin?: boolean }) {
   }
   return <header className="dashboard-navigation" lang={language}>
     <div className="dashboard-navigation-inner"><Link className="dashboard-navigation-brand" href="/" aria-label="Galstyan’s Speaking Club homepage"><Image src="/gsc-logo.jpg" alt="" width={42} height={42}/><span>Galstyan’s<small>Speaking Club</small></span></Link>
+    <ThemeToggle compact />
     <label className="dashboard-language"><span className="sr-only">Dashboard language</span><select aria-label="Dashboard language" value={language} onChange={event=>setLanguage(event.target.value==="ru"?"ru":"en")}><option value="en">English</option><option value="ru">Русский</option></select></label>
     <button className="dashboard-menu-toggle" type="button" aria-expanded={open} aria-controls="dashboard-links" aria-label={open?"Close navigation":"Open navigation"} onClick={()=>setOpen(!open)}>{open?<X aria-hidden="true"/>:<Menu aria-hidden="true"/>}</button>
     <nav id="dashboard-links" className={open?"dashboard-links open":"dashboard-links"} aria-label="Member website navigation">

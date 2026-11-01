@@ -6,15 +6,16 @@
 // ======================================================
 // AVATAR UPLOAD — CLIENT-SIDE IMAGE PREPARATION
 // ======================================================
-const MAX_SOURCE_BYTES = 5 * 1024 * 1024;
+const MAX_SOURCE_BYTES = 20 * 1024 * 1024;
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 const MAX_DIMENSION = 1024;
 export async function validateAvatarSource(file: File): Promise<string> {
-  if (file.size > MAX_SOURCE_BYTES) throw new AvatarImageError("That photo is larger than 5 MB. Please choose a smaller image.");
+  if (file.size > MAX_SOURCE_BYTES) throw new AvatarImageError("That photo is larger than 20 MB. Please choose a smaller image.");
   if (!file.size) throw new AvatarImageError("That photo is empty. Please choose another image.");
   const bytes = new Uint8Array(await file.slice(0,64).arrayBuffer());
   const text = new TextDecoder("ascii").decode(bytes);
   if (text.slice(4,8)==="ftyp" && /heic|heix|hevc|hevx|mif1|msf1/.test(text)) {
-    throw new AvatarImageError("This iPhone photo is HEIC/HEIF. Export or share it as JPEG using Most Compatible, then choose the JPEG file. JPEG, PNG and WebP are supported; the original photo is unchanged.");
+    return "image/heic";
   }
   if (bytes[0]===255 && bytes[1]===216 && bytes[2]===255) return "image/jpeg";
   if ([137,80,78,71,13,10,26,10].every((value,index)=>bytes[index]===value)) return "image/png";
@@ -24,7 +25,7 @@ export async function validateAvatarSource(file: File): Promise<string> {
 
 export class AvatarImageError extends Error {}
 
-function loadImage(file: File): Promise<HTMLImageElement> {
+export function loadAvatarImage(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
     const image = new Image();
@@ -34,7 +35,7 @@ function loadImage(file: File): Promise<HTMLImageElement> {
     };
     image.onerror = () => {
       URL.revokeObjectURL(url);
-      reject(new AvatarImageError("We couldn’t read that image. Please choose another photo."));
+      reject(new AvatarImageError("This browser couldn’t decode that photo. For HEIC/HEIF, export as JPEG using Most Compatible, then choose the JPEG file."));
     };
     image.src = url;
   });
@@ -53,7 +54,7 @@ function canvasBlob(canvas: HTMLCanvasElement): Promise<Blob> {
 export async function prepareAvatarImage(file: File, crop?: { x: number; y: number; zoom: number }): Promise<Blob> {
   await validateAvatarSource(file);
 
-  const source = await loadImage(file);
+  const source = await loadAvatarImage(file);
   const sourceSize = Math.min(source.naturalWidth, source.naturalHeight) / (crop?.zoom ?? 1);
   if (!sourceSize) throw new AvatarImageError("That image has no usable pixels.");
 
@@ -75,7 +76,7 @@ export async function prepareAvatarImage(file: File, crop?: { x: number; y: numb
 
   const blob = await canvasBlob(canvas);
   if (!["image/jpeg", "image/png", "image/webp"].includes(blob.type)) throw new AvatarImageError("This browser could not prepare a supported photo. Try exporting it as JPEG.");
-  if (blob.size > MAX_SOURCE_BYTES) {
+  if (blob.size > MAX_UPLOAD_BYTES) {
     throw new AvatarImageError("The prepared photo is still larger than 5 MB. Please choose another image.");
   }
   return blob;
