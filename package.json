@@ -25,7 +25,10 @@
     "dashboard:check-schema": "node --use-env-proxy scripts/check-dashboard-schema.mjs",
     "test:audit:browser": "playwright test --config playwright.audit.config.ts",
     "test:refinement:browser": "playwright test --config playwright.refinement.config.ts",
-    "validate:static": "node scripts/validate-static-export.mjs"
+    "validate:static": "node scripts/validate-static-export.mjs",
+    "privacy:check": "node --use-env-proxy scripts/check-privacy-protection.mjs",
+    "test:privacy:browser": "playwright test --config playwright.privacy.config.ts",
+    "test:privacy:build": "GSC_PRIVACY_TEST=enabled node scripts/build-auth-test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.8.0",

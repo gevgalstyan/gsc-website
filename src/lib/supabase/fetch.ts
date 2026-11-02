@@ -1,3 +1,4 @@
+import { privacyRequestBlocked } from "@/lib/privacy-protection";
 /** Timeout-aware network transport shared by browser and server Supabase clients. */
 
 // ======================================================
@@ -14,6 +15,11 @@ const SUPABASE_REQUEST_TIMEOUT = 12_000;
  * the browser in a pending state after the UI has already rendered.
  */
 export function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit = {}) {
+  const requestUrl = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+  const method = init.method ?? (typeof Request !== "undefined" && input instanceof Request ? input.method : "GET");
+  if (privacyRequestBlocked(new URL(requestUrl).pathname, method)) {
+    return Promise.resolve(new Response(JSON.stringify({ code: "privacy_protection", message: "Registration and new bookings are temporarily paused." }), { status: 403, headers: { "content-type": "application/json" } }));
+  }
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), SUPABASE_REQUEST_TIMEOUT);
   const abortUpstream = () => controller.abort();

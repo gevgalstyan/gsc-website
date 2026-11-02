@@ -1,5 +1,7 @@
 "use client";
 import { useBrowserViewer } from "@/hooks/use-browser-viewer";
+import { privacyProtectionEnabled } from "@/lib/privacy-protection";
+import { PrivacyNotice } from "@/components/privacy-notice";
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useEffect, useRef, useState } from "react";
@@ -50,7 +52,7 @@ export function EmailAuthForm({ initialMode = "login", headingLevel = 1 }: { ini
   function changeMode(next: AuthMode) { if (lock.current) return; setMode(next); setSent(null); setNotice(""); setErrors({}); setCanResend(false); resetCaptcha(); }
   function destination() { return safeAuthDestination(new URLSearchParams(window.location.search).get("next"), "/account/"); }
   async function request(resend = false, form?: FormData) {
-    if (lock.current || !configurationReady) return;
+    if (lock.current || !configurationReady || (privacyProtectionEnabled && mode === "register")) return;
     setNotice(""); setErrors({});
     const address = (form ? String(form.get("email") ?? "") : email).trim();
     setEmail(address);
@@ -98,6 +100,7 @@ export function EmailAuthForm({ initialMode = "login", headingLevel = 1 }: { ini
   const title = sent ? "Request received" : mode === "register" ? "Join the club" : mode === "forgot" ? "Forgot your password?" : mode === "verify" ? "Resend verification email" : "Welcome back";
   if ((initialMode === "login" || initialMode === "register") && viewer.authLoading) return <div className={styles.panel}><p role="status">Checking member access…</p></div>;
   if ((initialMode === "login" || initialMode === "register") && viewer.role !== "loggedOut") return <div className={styles.panel}><h1>You’re already signed in</h1><p className={styles.intro}>Your member space is ready.</p><Link className={styles.primary} href="/account/">Open my dashboard</Link></div>;
+  if (privacyProtectionEnabled && mode === "register") return <div className={styles.panel}><Heading id="auth-title">Регистрация временно недоступна / Registration paused</Heading><p id="auth-description" className={styles.intro}>Новые аккаунты сейчас не создаются. Existing account access is unchanged.</p><PrivacyNotice /><Link className={styles.primary} href="/login/">Войти в существующий аккаунт / Sign in</Link></div>;
   return <div className={styles.panel}>
     <Image className={styles.logo} src="/gsc-logo.jpg" alt="Galstyan’s Speaking Club" width={62} height={62} />
     <span className={styles.eyebrow}>GSC member space</span><Heading id="auth-title">{title}</Heading>
@@ -116,7 +119,7 @@ export function EmailAuthForm({ initialMode = "login", headingLevel = 1 }: { ini
     {sent && <><p className={styles.notice}>Already joined with Google or another provider? Use <Link href="/forgot-password/">Forgot password</Link> for your existing account. This keeps your profile and club history together. Do not create a replacement account.</p><p className={styles.notice}>Links are private and single-use. Open only the most recent email.</p>{configurationReady && <AuthCaptcha key={captchaRound} onToken={setToken} />}<button className={styles.primary} type="button" onClick={() => void request(true)} disabled={busy || !configurationReady || seconds > 0 || !token}>{busy ? "Sending…" : seconds ? `Resend in ${seconds}s` : sent === "signup" ? "Resend verification email" : "Resend reset email"}</button><button type="button" className={styles.textButton} onClick={() => changeMode(mode)} disabled={busy}>Use a different email</button></>}
     {canResend && !sent && <button type="button" className={styles.textButton} onClick={() => void request(true)} disabled={busy || !configurationReady || seconds > 0 || !token}>{seconds ? `Resend in ${seconds}s` : "Resend verification email"}</button>}
     {notice && <p className={styles.notice} role="status" aria-live="polite">{notice}</p>}
-    <nav className={styles.links} aria-label="Member access">{mode !== "login" || sent ? <button type="button" onClick={() => changeMode("login")} disabled={busy}>Back to Log In</button> : <><button type="button" onClick={() => changeMode("register")} disabled={busy}>New here? Sign Up</button><button type="button" onClick={() => changeMode("forgot")} disabled={busy}>Forgot password?</button><button type="button" onClick={() => changeMode("verify")} disabled={busy}>Need a new verification link?</button></>}</nav>
+    <nav className={styles.links} aria-label="Member access">{mode !== "login" || sent ? <button type="button" onClick={() => changeMode("login")} disabled={busy}>Back to Log In</button> : <>{!privacyProtectionEnabled && <button type="button" onClick={() => changeMode("register")} disabled={busy}>New here? Sign Up</button>}<button type="button" onClick={() => changeMode("forgot")} disabled={busy}>Forgot password?</button><button type="button" onClick={() => changeMode("verify")} disabled={busy}>Need a new verification link?</button></>}</nav>
     <p className={styles.footer}>Secure email access · Galstyan’s Speaking Club</p>
   </div>;
 }

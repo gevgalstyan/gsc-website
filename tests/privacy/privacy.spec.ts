@@ -1,0 +1,22 @@
+import {test,expect,type Page} from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+async function offlineBackend(page:Page){const calls:string[]=[];await page.route('**/*',async route=>{const url=new URL(route.request().url());if(url.origin==='http://127.0.0.1:4176')return route.continue();calls.push(`${route.request().method()} ${url.pathname}`);return route.abort();});return calls;}
+for(const width of [320,375,430,768])for(const theme of ['light','dark'])test(`protected signup ${width} ${theme}`,async({page})=>{
+ await page.setViewportSize({width,height:900});await page.addInitScript(theme=>localStorage.setItem('gsc-theme',theme),theme);
+ const calls=await offlineBackend(page);await page.goto('/signup/');await expect(page.locator('h1')).toContainText(/paused|приостанов/i);
+ await expect(page.locator('input')).toHaveCount(0);await expect(page.getByText('Registration and new meetup bookings are temporarily paused.',{exact:false}).first()).toBeVisible();
+ await expect(page.locator('main a[href="/login/"]').first()).toBeVisible();
+ expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBe(true);
+ expect(calls.filter(x=>/signup|otp/.test(x))).toEqual([]);
+ const violations=(await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa']).analyze()).violations;expect(violations.map(v=>v.id)).toEqual([]);
+});
+test('local privacy requests make no submission and explain retention',async({page})=>{const calls=await offlineBackend(page);await page.goto('/privacy-requests/');await page.locator('#privacy-kind').selectOption('erase');await expect(page.locator('main')).toContainText('отсутствует иное законное основание');await expect(page.getByRole('status')).toContainText('ничего не отправляет');await expect(page.locator('form')).toHaveCount(0);expect(calls).toEqual([]);});
+test('public information and practice survive with no background data collection',async({page})=>{const calls=await offlineBackend(page);for(const path of ['/','/about/','/meetups/','/questions/','/faq/','/contact/']){await page.goto(path);await expect(page.locator('h1')).toBeVisible();}expect(calls.filter(x=>/rest\/v1|signup|otp/.test(x))).toEqual([]);});
+test('existing email login and recovery remain available',async({page})=>{await offlineBackend(page);await page.goto('/login/');await expect(page.locator('input[type="email"]')).toBeVisible();await expect(page.locator('input[type="password"]')).toBeVisible();await expect(page.getByRole('button',{name:/Sign up/i})).toHaveCount(0);await page.goto('/forgot-password/');await expect(page.locator('input[type="email"]')).toBeVisible();});
+for(const role of ['member','admin'])test(`existing ${role} identity survives protected auth pages`,async({page})=>{
+ const user={id:'22222222-2222-2222-2222-222222222222',email:'fixture@example.invalid',email_confirmed_at:'2026-10-29T00:00:00Z',created_at:'2026-10-29T00:00:00Z',aud:'authenticated',role:'authenticated',app_metadata:{provider:'email'},user_metadata:{name:'Fixture'}};
+ await page.addInitScript(user=>{const token=btoa(JSON.stringify({alg:'HS256',typ:'JWT'}))+'.'+btoa(JSON.stringify({sub:user.id,exp:Math.floor(Date.now()/1000)+3600,role:'authenticated'}))+'.fixture';localStorage.setItem('sb-gsc-auth-test-auth-token',JSON.stringify({access_token:token,refresh_token:'fixture',expires_at:Math.floor(Date.now()/1000)+3600,token_type:'bearer',user}));},user);
+ await page.route('https://gsc-auth-test.supabase.co/**',async route=>{const url=route.request().url();if(url.includes('/auth/v1/user'))return route.fulfill({json:user});const single=route.request().headers().accept?.includes('object');if(url.includes('/profiles'))return route.fulfill({json:single?{id:user.id,display_name:'Fixture',onboarding_completed:true}:[{id:user.id,display_name:'Fixture',onboarding_completed:true}]});if(url.includes('/user_roles'))return route.fulfill({json:single?{role}:[{role,user_id:user.id}]});return route.fulfill({json:[]});});
+ await page.goto('/signup/');await expect(page.locator('h1')).toContainText('already signed in');await expect(page.getByRole('link',{name:'Open my dashboard'})).toBeVisible();await expect(page.locator('input[type="email"]')).toHaveCount(0);
+ await page.goto(role==='admin'?'/admin/':'/account/');await expect(page.locator('main')).toBeVisible();await expect(page.getByRole('heading',{name:/sign in|log in/i})).toHaveCount(0);
+});

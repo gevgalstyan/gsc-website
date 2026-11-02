@@ -6,6 +6,7 @@
  */
 
 import { useBrowserViewer } from "@/hooks/use-browser-viewer";
+import { privacyProtectionEnabled } from "@/lib/privacy-protection";
 import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -36,6 +37,7 @@ export function MeetupBookingButton({
   const router = useRouter();
 
   async function toggleBooking() {
+    if (privacyProtectionEnabled && !booked) return;
     if (!authenticated) {
       router.push("/?auth=login");
       return;
@@ -76,5 +78,5 @@ export function MeetupBookingButton({
         : authenticated ? "Book my place" : "Sign in to book";
   const blocked = !booked && bookingState !== "open";
 
-  return <div className="booking-action"><button className="button button-primary" type="button" onClick={toggleBooking} disabled={busy || blocked || viewer.authLoading}>{busy ? <LoaderCircle className="spin" /> : booked ? <TicketCheck /> : <ArrowRight />}{viewer.authLoading ? "Checking member access…" : busy ? "Updating…" : booked ? "Booked ✓ · Cancel" : stateLabel}</button>{notice && <p className="form-status" role="status" aria-live="polite">{notice}{notice.startsWith("Please log in") && <> <Link href="/?auth=login">Log in</Link></>}</p>}</div>;
+  return <div className="booking-action"><button className="button button-primary" type="button" onClick={toggleBooking} disabled={busy || blocked || viewer.authLoading || (privacyProtectionEnabled && !booked)}>{busy ? <LoaderCircle className="spin" /> : booked ? <TicketCheck /> : <ArrowRight />}{viewer.authLoading ? "Checking member access…" : busy ? "Updating…" : booked ? "Booked ✓ · Cancel" : privacyProtectionEnabled ? "Новая запись приостановлена / Booking paused" : stateLabel}</button>{notice && <p className="form-status" role="status" aria-live="polite">{notice}{notice.startsWith("Please log in") && <> <Link href="/?auth=login">Log in</Link></>}</p>}</div>;
 }

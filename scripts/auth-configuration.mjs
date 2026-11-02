@@ -22,9 +22,9 @@ export function authConfigurationErrors(env, { testBuild = false } = {}) {
   return errors;
 }
 
-export function publicAuthSettingsErrors(settings) {
+export function publicAuthSettingsErrors(settings, { privacyProtection = false } = {}) {
   const errors = [];
-  if (settings.disable_signup !== false) errors.push("Supabase signup is disabled or its status could not be verified.");
+  if (privacyProtection ? settings.disable_signup !== true : settings.disable_signup !== false) errors.push(privacyProtection ? "Privacy protection requires provider disable_signup=true; verify this in Supabase Auth." : "Supabase signup is disabled or its status could not be verified.");
   if (settings.mailer_autoconfirm !== false) errors.push("Enable Confirm email in Supabase Auth. Auto-confirmed users do not receive a verification email.");
   if (settings.external?.email !== true) errors.push("Enable the Supabase email/password provider, or verify its status in the Dashboard.");
   return errors;

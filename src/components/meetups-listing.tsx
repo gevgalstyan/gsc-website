@@ -1,6 +1,8 @@
 "use client";
 /* eslint-disable react-hooks/set-state-in-effect */
 
+import { privacyProtectionEnabled } from "@/lib/privacy-protection";
+import { PrivacyNotice } from "@/components/privacy-notice";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ArrowRight, CalendarDays, Clock3, MapPin, Ticket, Users } from "lucide-react";
@@ -32,6 +34,7 @@ export function MeetupsListing() {
   const [selectedId, setSelectedId] = useState<string | null>(() => typeof window === "undefined" ? null : new URLSearchParams(window.location.search).get("id") ?? new URLSearchParams(window.location.search).get("meetup"));
 
   const refresh = useCallback(async () => {
+    if (privacyProtectionEnabled) return;
     const client = getSupabaseBrowserClient();
     if (!client) { setState("error"); return; }
     setState("loading");
@@ -47,6 +50,7 @@ export function MeetupsListing() {
   }, [refresh]);
   const selected = useMemo(() => selectedId ? meetups.find((meetup) => meetup.id === selectedId) ?? null : null, [meetups, selectedId]);
   const displayed = selected ? [selected] : meetups;
+  if (privacyProtectionEnabled) return <PrivacyNotice />;
   if (state === "loading" && !meetups.length) return <p className="form-status" role="status">Loading published meetups…</p>;
   if (state === "error") return <div className="public-empty-state"><CalendarDays /><h2>Meetups are taking a moment.</h2><p>We couldn’t load the current schedule. Please try again.</p><button className="button button-primary" type="button" onClick={() => void refresh()}>Try again</button></div>;
   if (selectedId && !selected) return <div className="public-empty-state"><CalendarDays /><h2>This meetup is no longer available.</h2><p>It may have been cancelled, completed, or removed from the current schedule.</p><Link className="button button-primary" href="/meetups/">View current meetups</Link></div>;
