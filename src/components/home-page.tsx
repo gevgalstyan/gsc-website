@@ -72,7 +72,7 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
     if (!client) { setPublicDataState("error"); return; }
     Promise.all([
       fetchUpcomingPublishedMeetups(client, browserViewer.userId),
-      client.from("site_content").select("key,value,published_value").eq("is_public", true).eq("published_is_enabled", true),
+      client.from("site_content_public").select("key,value,published_value").eq("is_public", true).eq("published_is_enabled", true),
     ])
       .then(([meetups, contentRows]) => {
         if (contentRows.error) throw new Error("Public content request failed");
