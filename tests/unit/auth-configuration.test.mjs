@@ -30,3 +30,7 @@ test("production-wide redirect rule also covers the static callback", () => {
  const errors = managementAuthSettingsErrors({uri_allow_list:"https://galstyansspeakingclub.ru/**"});
  assert.ok(!errors.some(error => error.includes("callback")));
 });
+test('privacy diagnostics require provider-side signup closure without disabling email login',()=>{
+ assert.deepEqual(publicAuthSettingsErrors({disable_signup:true,mailer_autoconfirm:false,external:{email:true}},{privacyProtection:true}),[]);
+ assert.ok(publicAuthSettingsErrors({disable_signup:false,mailer_autoconfirm:false,external:{email:true}},{privacyProtection:true}).some(x=>x.includes('disable_signup=true')));
+});

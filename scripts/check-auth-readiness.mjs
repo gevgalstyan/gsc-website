@@ -30,7 +30,7 @@ let project;
 try { project = new URL(url); } catch { /* already reported */ }
 if (project?.protocol === "https:" && !project.username && !project.password && project.pathname === "/" && key?.startsWith("sb_publishable_")) {
   const settings = await inspect("Public Supabase Auth settings", `${project.origin}/auth/v1/settings`, { apikey: key });
-  if (settings) { console.log("Public Supabase Auth settings: retrieved."); report(publicAuthSettingsErrors(settings)); }
+  if (settings) { console.log("Public Supabase Auth settings: retrieved."); report(publicAuthSettingsErrors(settings, { privacyProtection: process.env.NEXT_PUBLIC_PRIVACY_PROTECTION_MODE !== "disabled" })); }
   const token = process.env.SUPABASE_ACCESS_TOKEN;
   const reference = project.hostname.match(/^([a-z0-9]+)\.supabase\.co$/)?.[1];
   if (token && reference) {

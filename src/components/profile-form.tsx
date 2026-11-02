@@ -190,7 +190,7 @@ export function ProfileForm({
       : { error: new Error("Profile updates are temporarily unavailable."), data: null };
     const error = result.error || (!result.data ? new Error("Profile record was not saved") : null);
     setSaving(false);
-    if (error) { setNotice({ kind: "error", text: "We couldn’t save your profile. Please check the fields and try again." }); if (debugProfile) console.debug("[gsc:profile] save failed", { message: error.message }); return; }
+    if (error) { setNotice({ kind: "error", text: "We couldn’t save your profile. Please check the fields and try again." }); if (debugProfile) console.debug("[gsc:profile] save failed", { result: "request-failed" }); return; }
     if (onboarding) {
       setNotice({ kind: "success", text: "Profile complete. Opening the club…" });
       window.setTimeout(() => window.location.replace("/"), 450);
@@ -235,13 +235,13 @@ export function ProfileForm({
     {!onboarding && <section className="account-deletion-request" aria-labelledby="deletion-request-title">
       <div>
         <p className="dashboard-kicker">Account and data</p>
-        <h2 id="deletion-request-title">Request account deletion</h2>
+        <h2 id="deletion-request-title">Request account deletion</h2><a href="/privacy-requests/">Виды запросов и безопасная подготовка / Prepare a privacy request</a>
         <p>A deletion request is reviewed by the club before any account or member data is removed. Your bookings, attendance history, rewards, and question progress may no longer be available afterwards.</p>
       </div>
       {!deletionRequestOpen ? <button className="button button-outline-dark button-compact" type="button" onClick={() => setDeletionRequestOpen(true)}>Request deletion</button> : <div className="deletion-confirmation">
         <label><input type="checkbox" checked={deletionConfirmed} onChange={(event) => setDeletionConfirmed(event.target.checked)} />I understand that this is a deletion request and that the club will verify it before acting.</label>
         <div className="account-actions">
-          <a className="button button-outline-dark button-compact" href="https://t.me/GalstyansSpeakingClub" target="_blank" rel="noreferrer" aria-disabled={!deletionConfirmed} onClick={(event) => { if (!deletionConfirmed) event.preventDefault(); }}>Open Telegram to request deletion</a>
+          <a className="button button-outline-dark button-compact" href="/privacy-requests/" aria-disabled={!deletionConfirmed} onClick={(event) => { if (!deletionConfirmed) event.preventDefault(); }}>Prepare a private deletion request</a>
           <button className="button button-compact" type="button" onClick={() => { setDeletionRequestOpen(false); setDeletionConfirmed(false); }}>Cancel</button>
         </div>
       </div>}

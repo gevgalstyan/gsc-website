@@ -6,6 +6,7 @@
  * It coordinates auth-aware CTAs, featured meetups, and the conversation deck.
  */
 
+import { privacyProtectionEnabled } from "@/lib/privacy-protection";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowDown, ArrowRight, BadgeCheck, CalendarDays, Check, Clock3, Coffee, MapPin, MessageCircle, Star, Ticket, Users } from "lucide-react";
@@ -52,7 +53,7 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
   const [authOpen, setAuthOpen] = useState(initialAuthOpen && browserViewer.role === "loggedOut");
   const [publicMeetups, setPublicMeetups] = useState(meetups);
   const [publicContent, setPublicContent] = useState(content);
-  const [publicDataState, setPublicDataState] = useState<"loading" | "ready" | "error">(deferPublicData ? "loading" : "ready");
+  const [publicDataState, setPublicDataState] = useState<"loading" | "ready" | "error">(deferPublicData && !privacyProtectionEnabled ? "loading" : "ready");
   const [publicDataAttempt, setPublicDataAttempt] = useState(0);
 
   useEffect(() => {
@@ -64,7 +65,7 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
   }, [browserViewer.role, browserViewer.authLoading]);
 
   useEffect(() => {
-    if (!deferPublicData) return;
+    if (!deferPublicData || privacyProtectionEnabled) return;
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 2800);
     const client = getSupabaseBrowserClient();
@@ -153,7 +154,7 @@ export function HomePage({ initialAuthOpen = false, viewer, meetups = [], conten
                 <Link className="button button-card" href={`/meetups/?id=${meetup.id}`}>See meetup details <ArrowRight /></Link>
               </article>;
             })}
-          </div> : <div className="meetup-empty"><CalendarDays /><div><h3>{publicDataState === "loading" ? "Loading upcoming meetups…" : publicDataState === "error" ? "Meetups are taking a moment." : "No upcoming meetup yet."}</h3><p>{publicDataState === "error" ? "Couldn’t load this section. Try again, or join Telegram for announcements." : "We’ll let you know when the next one is published. Join Telegram for the first real date, venue, and booking details."}</p>{publicDataState === "error" ? <button className="text-link" type="button" onClick={retryPublicData}>Try again <ArrowRight /></button> : <a className="text-link" href={socialLinks[0].href} target="_blank" rel="noreferrer">Join the announcement channel <ArrowRight /></a>}</div></div>}
+          </div> : <div className="meetup-empty"><CalendarDays /><div><h3>{privacyProtectionEnabled ? "Online booking is temporarily paused." : publicDataState === "loading" ? "Loading upcoming meetups…" : publicDataState === "error" ? "Meetups are taking a moment." : "No upcoming meetup yet."}</h3><p>{privacyProtectionEnabled ? "Информация о клубе и вопросы доступны. Club information and practice questions remain available." : publicDataState === "error" ? "Couldn’t load this section. Try again, or join Telegram for announcements." : "We’ll let you know when the next one is published. Join Telegram for the first real date, venue, and booking details."}</p>{publicDataState === "error" ? <button className="text-link" type="button" onClick={retryPublicData}>Try again <ArrowRight /></button> : <a className="text-link" href={socialLinks[0].href} target="_blank" rel="noreferrer">Join the announcement channel <ArrowRight /></a>}</div></div>}
           <p className="meetup-note"><CalendarDays /> Want to see every published event? <Link href="/meetups">Open the meetups page.</Link></p>
         </section>
 

@@ -10,6 +10,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { questions, type CategoryFilter, type DifficultyFilter } from "@/lib/questions";
 import type { InitialQuestionSyncState, QuestionDeckSyncState } from "@/lib/question-sync";
+import { privacyProtectionEnabled } from "@/lib/privacy-protection";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 const progressKey = "gsc_question_progress_v3";
@@ -41,7 +42,7 @@ type PendingQuestionWrites = {
 const emptyPending: PendingQuestionWrites = { progress: {}, favorites: {}, deckState: null };
 const debugSync = process.env.NODE_ENV === "development";
 function logSync(event: string, detail?: unknown) {
-  if (debugSync) console.debug("[gsc:question-sync]", event, detail ?? "");
+  if (debugSync) console.debug("[gsc:question-sync]", event, typeof detail === "string" ? detail : "request-failed");
 }
 
 function nowIso() {
@@ -182,7 +183,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
   }, []);
 
   const loadAccountState = useCallback(async (userId: string) => {
-    const client = getSupabaseBrowserClient();
+    const client = privacyProtectionEnabled ? null : getSupabaseBrowserClient();
     if (!client) throw new Error("Account sync is unavailable.");
     const sequence = ++loadSequence.current;
     const [progressResult, favoritesResult, deckStateResult] = await Promise.all([
@@ -204,7 +205,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
 
   const flushPendingWrites = useCallback(async (userId: string) => {
     const pending = readPending(userId);
-    const client = getSupabaseBrowserClient();
+    const client = privacyProtectionEnabled ? null : getSupabaseBrowserClient();
     if (!client) throw new Error("Account sync is unavailable.");
     const progressRows = Object.entries(pending.progress)
       .filter(([questionId]) => validIds.has(questionId))
@@ -260,7 +261,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
 
   const mergeGuestState = useCallback(async (userId: string) => {
     try { if (localStorage.getItem(`${mergeKeyPrefix}${userId}`) === "complete") return; } catch { /* Continue idempotently. */ }
-    const client = getSupabaseBrowserClient();
+    const client = privacyProtectionEnabled ? null : getSupabaseBrowserClient();
     if (!client) throw new Error("Account sync is unavailable.");
     const guestSeen = readGuestImportProgress(validIds);
     const guestFavorites = readGuestFavorites(validIds);
@@ -294,7 +295,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
   }, [validIds]);
 
   useEffect(() => {
-    const client = getSupabaseBrowserClient();
+    const client = privacyProtectionEnabled ? null : getSupabaseBrowserClient();
     let active = true;
     const invalidatePendingLoads = () => { loadSequence.current += 1; };
 
@@ -371,7 +372,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
   }, [flushPendingWrites, loadAccountState, mergeGuestState, validIds]);
 
   useEffect(() => {
-    const client = getSupabaseBrowserClient();
+    const client = privacyProtectionEnabled ? null : getSupabaseBrowserClient();
     if (!client || !accountId) return;
     let active = true;
     let channel: ReturnType<typeof client.channel> | null = null;
@@ -414,7 +415,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
   // A real offline queue must recover without waiting for a manual focus event.
   // Backoff is capped to avoid noisy retries on a weak mobile connection.
   useEffect(() => {
-    if (!accountId) return;
+    if (privacyProtectionEnabled || !accountId) return;
     const pending = readPending(accountId);
     if (!Object.keys(pending.progress).length && !Object.keys(pending.favorites).length && !pending.deckState) return;
     const delay = Math.min(30_000, 2_000 * 2 ** retryAttempt.current);
@@ -447,11 +448,11 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
     const alreadySeen = seen.includes(questionId);
     if (!alreadySeen) setSeen([...seen, questionId]);
     setSyncError("");
-    if (!accountId) {
+    if (privacyProtectionEnabled || !accountId) {
       if (!alreadySeen) saveGuestProgress([...seen, questionId]);
       return true;
     }
-    const client = getSupabaseBrowserClient();
+    const client = privacyProtectionEnabled ? null : getSupabaseBrowserClient();
     const { error } = await client!.from("question_progress").upsert({ question_id: questionId, last_viewed_at: timestamp }, { onConflict: "user_id,question_id" });
     if (!error) return true;
     queuePendingWrite(accountId, (pending) => ({ ...pending, progress: { ...pending.progress, [questionId]: timestamp } }));
@@ -465,7 +466,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
     const updated = favorite ? sanitizeIds([...favorites, questionId], validIds) : favorites.filter((id) => id !== questionId);
     setFavorites(updated);
     setSyncError("");
-    if (!accountId) { saveGuestFavorites(updated); return true; }
+    if (privacyProtectionEnabled || !accountId) { saveGuestFavorites(updated); return true; }
     const client = getSupabaseBrowserClient()!;
     const { error } = await client.from("question_favorites").upsert({
       question_id: questionId,
@@ -489,7 +490,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
     };
     setDeckState(updated);
     setSyncError("");
-    if (!accountId) { saveGuestDeckState(updated); return true; }
+    if (privacyProtectionEnabled || !accountId) { saveGuestDeckState(updated); return true; }
     const client = getSupabaseBrowserClient()!;
     const { error } = await client.from("question_deck_state").upsert({
       current_question_id: updated.currentQuestionId,
@@ -512,7 +513,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
     const updated = seen.filter((id) => !remove.has(id));
     setSeen(updated);
     setSyncError("");
-    if (!accountId) { saveGuestProgress(updated); return true; }
+    if (privacyProtectionEnabled || !accountId) { saveGuestProgress(updated); return true; }
     const client = getSupabaseBrowserClient()!;
     for (let index = 0; index < ids.length; index += 200) {
       const { error } = await client.from("question_progress").delete().eq("user_id", accountId).in("question_id", ids.slice(index, index + 200));
@@ -526,7 +527,7 @@ export function useQuestionState(extraQuestionIds: string[] = emptyQuestionIds, 
   }, [accountId, seen, validIds]);
 
   const refreshState = useCallback(async () => {
-    if (!accountId) return;
+    if (privacyProtectionEnabled || !accountId) return;
     await refreshCloudState(accountId);
   }, [accountId, refreshCloudState]);
 

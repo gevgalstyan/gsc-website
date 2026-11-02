@@ -6,6 +6,7 @@
  */
 
 import { LanguageSwitch } from "@/components/language-switch";
+import { privacyProtectionEnabled } from "@/lib/privacy-protection";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronDown, Menu, UserCircle, X } from "lucide-react";
@@ -133,7 +134,7 @@ export function Header({ onAuth, viewer, liveViewer }: { onAuth?: () => void; vi
           <LanguageSwitch />
           <ThemeToggle compact />
           {isAuthenticated && <NotificationBell key={browserViewer.userId} initialNotifications={browserViewer.notifications} />}
-          {browserViewer.authLoading ? <span role="status">Checking access…</span> : isAuthenticated ? profileControl : onAuth ? <button className="button button-small button-outline desktop-auth" onClick={openAuth}>Join / Login</button> : <Link className="button button-small button-outline desktop-auth" href="/?auth=login">Join / Login</Link>}
+          {browserViewer.authLoading ? <span role="status">Checking access…</span> : isAuthenticated ? profileControl : onAuth ? <button className="button button-small button-outline desktop-auth" onClick={openAuth}>{privacyProtectionEnabled ? "Sign in" : "Join / Login"}</button> : <Link className="button button-small button-outline desktop-auth" href="/?auth=login">{privacyProtectionEnabled ? "Sign in" : "Join / Login"}</Link>}
           <button ref={menuButtonRef} className="menu-button" onClick={() => setOpen(true)} aria-label="Open menu" aria-expanded={open} aria-controls="mobile-navigation"><Menu /></button>
         </div>
       </div>
@@ -157,7 +158,7 @@ export function Header({ onAuth, viewer, liveViewer }: { onAuth?: () => void; vi
             <Link className="mobile-profile-link" href="/account#bookings" onClick={closeMenu}>Meetups &amp; bookings</Link>
             {browserViewer.role === "admin" && <Link className="mobile-profile-link" href="/admin" onClick={closeMenu}>Admin dashboard</Link>}
             <button className="mobile-logout" type="button" onClick={signOut}>Log out</button>
-          </div> : onAuth ? <button className="button button-primary mobile-auth-action" onClick={() => { closeMenu(); openAuth(); }}>Join / Login</button> : <Link className="button button-primary mobile-auth-action" href="/?auth=login" onClick={closeMenu}>Join / Login</Link>}
+          </div> : onAuth ? <button className="button button-primary mobile-auth-action" onClick={() => { closeMenu(); openAuth(); }}>{privacyProtectionEnabled ? "Sign in" : "Join / Login"}</button> : <Link className="button button-primary mobile-auth-action" href="/?auth=login" onClick={closeMenu}>{privacyProtectionEnabled ? "Sign in" : "Join / Login"}</Link>}
           <p>English ON. <span>•</span> Sergiev Posad</p>
         </div>
       )}

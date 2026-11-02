@@ -1,5 +1,6 @@
 "use client";
 
+import { privacyProtectionEnabled } from "@/lib/privacy-protection";
 import Image from "next/image";
 import Link from "next/link";
 import { Instagram, Send } from "lucide-react";
@@ -12,6 +13,7 @@ export function Footer() {
   const [settings, setSettings] = useState<Record<string, string>>({});
 
   useEffect(() => {
+    if (privacyProtectionEnabled) return;
     const client = getSupabaseBrowserClient();
     if (!client) return;
     let active = true;
