@@ -28,7 +28,10 @@
     "validate:static": "node scripts/validate-static-export.mjs",
     "privacy:check": "node --use-env-proxy scripts/check-privacy-protection.mjs",
     "test:privacy:browser": "playwright test --config playwright.privacy.config.ts",
-    "test:privacy:build": "GSC_PRIVACY_TEST=enabled node scripts/build-auth-test.mjs"
+    "test:privacy:build": "GSC_PRIVACY_TEST=enabled node scripts/build-auth-test.mjs",
+    "tatnet:schema:build": "node scripts/build-tatnet-schema.mjs",
+    "tatnet:schema:check": "node scripts/build-tatnet-schema.mjs --check",
+    "test:tatnet": "node --test tests/sql/tatnet-clean.test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "0.8.0",

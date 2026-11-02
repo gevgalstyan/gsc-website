@@ -17,7 +17,7 @@ export function Footer() {
     const client = getSupabaseBrowserClient();
     if (!client) return;
     let active = true;
-    void client.from("site_content").select("key,value,published_value").eq("is_public", true).eq("published_is_enabled", true)
+    void client.from("site_content_public").select("key,value,published_value").eq("is_public", true).eq("published_is_enabled", true)
       .then(({ data }) => {
         if (!active || !data) return;
         setSettings(Object.fromEntries(data.map((item) => [item.key, item.published_value ?? item.value])));

@@ -80,3 +80,24 @@ Exact routes and page files: [route catalogue](КАРТА_ПРОЕКТА.md#rout
 - [Privacy report](docs/privacy/REPORT-RU.md), [production change record](docs/privacy/PRODUCTION-CHANGE-RU.md), [operations](docs/privacy/OPERATIONS-RU.md), [legal review requirements](docs/LEGAL-REVIEW-REQUIREMENTS.md): recorded decisions and unresolved prerequisites. Recheck live status only when the task authorizes it.
 - [Older Codebase Map](docs/CODEBASE-MAP.md) is retained for context, but its server-route/Vercel architecture descriptions are outdated for this baseline. Use this index and the verified map below instead of copying those claims.
 - Known source inconsistencies and the documentation maintenance checklist: [risks and upkeep](КАРТА_ПРОЕКТА.md#risks).
+
+## Подготовленная чистая установка Tatnet (ещё не production)
+
+Основа подготовки: `timeweb-static@de094b9dfc9848a0e47e7ef65d941de4843c047c`.
+[Порядок установки, ограничения и приёмка](supabase/tatnet/README.md).
+
+| Задача | Где менять / проверять |
+|---|---|
+| Новая пустая схема, функции, триггеры, RLS | [install.sql](supabase/tatnet/install.sql), генерировать через [build-tatnet-schema.mjs](scripts/build-tatnet-schema.mjs) |
+| Безопасность и минимальные grants | [hardening.sql](supabase/tatnet/hardening.sql), [permissions.sql](supabase/tatnet/permissions.sql); только входы локального генератора |
+| Единственный новый admin | [bootstrap-admin.sql](supabase/tatnet/bootstrap-admin.sql); owner-only, подтверждённый email/password, UUID из нового Auth |
+| Изоляция прав и совместимость | [tatnet-clean.test.mjs](tests/sql/tatnet-clean.test.mjs), [локальный fixture](tests/helpers/supabase-fixture.mjs) |
+| Публичный CMS-контракт | [home-page.tsx](src/components/home-page.tsx), [footer.tsx](src/components/footer.tsx): `site_content_public`; `site_faq_public` пока не используется публичной FAQ |
+
+Новая схема содержит 22 таблицы, без старых пользователей и тестовых строк.
+`site_content`/`site_faq_items` — закрытые admin-источники; публичные проекции синхронизируются
+триггерами только из опубликованных полей. Браузер не меняет `user_roles`, включая admin.
+Исторические миграции сохранены для существующего Cloud и не являются инструкцией установки Tatnet.
+Не выпускать новый CMS-клиент со старой БД, где проекции нет.
+Фактические права Tatnet SQL Editor, Auth, Storage и Realtime требуют staging-проверки;
+локальные PGlite/mocked browser тесты не подтверждают работоспособность платформы.
